@@ -1,0 +1,9 @@
+
+dependencies {
+  api project(':fhir-structures')
+  api project(':tx-manager')
+  api project(':kefhir-core')
+
+  api "io.micronaut:micronaut-management"
+  implementation "io.micronaut:micronaut-http-server"
+}

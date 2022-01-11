@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+  <changeSet id="create_schema_fhir" author="">
+    <sql>
+      create schema if not exists fhir;
+    </sql>
+  </changeSet>
+
+  <changeSet id="set_search_path_fhir" author="" runAlways="true">
+    <sql>
+      SET search_path TO fhir,core,public;
+	</sql>
+  </changeSet>
+
+  <changeSet dbms="PostgreSQL" id="set_search_path_for_fhir_schema" author="">
+    <sql>
+      select core.set_schema_search_path(current_user, 'fhir', p_action := 'BEGIN');
+      select core.session_terminate();
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>
+

@@ -1,0 +1,11 @@
+CREATE DATABASE :db
+  WITH OWNER=:user
+       ENCODING = 'UTF8'
+       TABLESPACE = pg_default
+       CONNECTION LIMIT = -1;
+
+--http://www.postgresql.org/docs/9.0/static/sql-grant.html
+grant create on database :db to :user;
+grant temp on database :db to :user;
+
+

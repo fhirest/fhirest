@@ -1,0 +1,45 @@
+image: registry.gitlab.com/kodality-public/gitlab-ci-builder:latest
+
+stages:
+- build
+- release
+
+build:
+  stage: build
+  script:
+    - ./gradlew build
+  only:
+    - branches
+  except:
+    - master
+  artifacts:
+    reports:
+      junit: '*/build/test-results/test/TEST-*.xml'
+
+build and publish:
+  stage: build
+  variables:
+    DOCKER_DRIVER: overlay2
+
+  before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+  script:
+    - ./gradlew build
+    - ./gradlew publish
+  only:
+    - master
+  artifacts:
+    reports:
+      junit: '*/build/test-results/test/TEST-*.xml'
+
+release:
+  stage: release
+  script:
+    - export APP_VERSION="$CI_COMMIT_REF_NAME"
+    - ./gradlew build -Pversion="$APP_VERSION"
+    - ./gradlew publish -Pversion="$APP_VERSION"
+  only:
+    - /^\d*\.\d*\.\d*$/
+  except:
+    - branches

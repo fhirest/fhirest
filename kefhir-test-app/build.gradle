@@ -1,0 +1,45 @@
+plugins {
+  id "com.github.johnrengelman.shadow" version "7.0.0"
+  id "application"
+}
+
+apply plugin: "application"
+
+dependencies {
+  api project(':kefhir-core')
+  api project(':fhir-rest')
+  api project(':pg-core')
+  api project(':pg-store')
+  api project(':pg-search')
+  api project(':fhir-conformance')
+  api project(':validation-profile')
+  api project(':feature-conditional-reference')
+  api project(':kefhir-scheduler')
+
+  implementation platform("io.micronaut:micronaut-bom:$micronautVersion")
+  annotationProcessor "io.micronaut:micronaut-inject-java"
+  implementation "io.micronaut:micronaut-runtime"
+  implementation "io.micronaut:micronaut-http-server-netty"
+  implementation("io.micronaut.liquibase:micronaut-liquibase")
+
+  runtimeOnly "ch.qos.logback:logback-classic:1.2.9"
+}
+
+shadowJar {
+  zip64 true
+  mergeServiceFiles()
+}
+
+mainClassName = "com.kodality.kefhir.KefhirTestApplication"
+
+tasks.withType(JavaExec) {
+  jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
+  if (project.hasProperty('debug')) {
+    jvmArgs += ['-Xdebug', "-Xrunjdwp:transport=dt_socket,address=" + project.getProperty('debug') + ",server=y,suspend=n"]
+  }
+}
+
+tasks.withType(JavaCompile){
+  options.encoding = "UTF-8"
+  options.compilerArgs.add('-parameters')
+}

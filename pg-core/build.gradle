@@ -1,0 +1,8 @@
+dependencies {
+  api project(':tx-manager')
+
+  api "org.postgresql:postgresql:42.3.1"
+  api "io.micronaut.sql:micronaut-jdbc-hikari"
+  api "org.springframework:spring-jdbc"
+  api "io.micronaut.liquibase:micronaut-liquibase"
+}
