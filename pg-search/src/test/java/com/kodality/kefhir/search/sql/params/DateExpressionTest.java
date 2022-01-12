@@ -74,7 +74,7 @@ public class DateExpressionTest {
       Assertions.assertEquals("", result.getSql());
     } else {
       String expected =
-          String.format("EXISTS (SELECT 1 FROM parasol WHERE resource_key = a.key  AND %s)", expectedCondition);
+          String.format("EXISTS (SELECT 1 FROM search.parasol WHERE resource_key = a.key  AND %s)", expectedCondition);
       Assertions.assertEquals(expected, result.getSql());
     }
   }
