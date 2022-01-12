@@ -10,18 +10,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.store.dao;
+ package com.kodality.kefhir.store.repository;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Singleton
-@RequiredArgsConstructor
 public class ResourceFunctionsRepository {
-  private final JdbcTemplate jdbcTemplate;
+  @Inject
+  @Named("adminJdbcTemplate")
+  private JdbcTemplate adminJdbcTemplate;
 
   public void defineResource(String type) {
-    jdbcTemplate.queryForObject("select fhir.define_resource(?)", String.class, type);
+    adminJdbcTemplate.queryForObject("select store.define_resource(?)", String.class, type);
   }
 }

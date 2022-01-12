@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd
-  http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
   <changeSet id="create_schema_scheduler" author="daniel@kodality.com">
     <sql>
@@ -11,6 +10,16 @@
     <rollback>
       drop schema if exists scheduler cascade;
     </rollback>
+  </changeSet>
+
+
+  <changeSet id="default_privileges_for_schema_scheduler" author="">
+    <sql>
+      GRANT USAGE ON SCHEMA scheduler TO kefhir_app;
+      ALTER DEFAULT PRIVILEGES IN SCHEMA scheduler GRANT USAGE ON SEQUENCES TO kefhir_app;
+      ALTER DEFAULT PRIVILEGES IN SCHEMA scheduler GRANT EXECUTE ON FUNCTIONS TO kefhir_app;
+      ALTER DEFAULT PRIVILEGES IN SCHEMA scheduler GRANT SELECT,INSERT,UPDATE ON TABLES TO kefhir_app;
+    </sql>
   </changeSet>
 
 </databaseChangeLog>

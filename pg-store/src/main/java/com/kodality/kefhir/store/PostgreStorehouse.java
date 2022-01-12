@@ -21,7 +21,7 @@ import com.kodality.kefhir.core.model.search.HistorySearchCriterion;
 import com.kodality.kefhir.core.service.cache.CacheManager;
 import com.kodality.kefhir.core.util.DateUtil;
 import com.kodality.kefhir.core.util.JsonUtil;
-import com.kodality.kefhir.store.dao.ResourceRepository;
+import com.kodality.kefhir.store.repository.ResourceRepository;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.text.SimpleDateFormat;

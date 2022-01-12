@@ -26,8 +26,7 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 public class DateExpressionProvider extends ExpressionProvider {
   private static final Map<Integer, String> intervals;
-  private static final String[] operators =
-      { null, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt };
+  private static final String[] operators = { null, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt };
 
   static {
     intervals = new HashMap<>();

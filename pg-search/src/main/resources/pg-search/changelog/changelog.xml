@@ -1,11 +1,12 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-  <include file="fhir-init.sql" relativeToChangelogFile="true" /> 
+  <include file="search-init.sql" relativeToChangelogFile="true" />
+  <include file="search-schema.xml" relativeToChangelogFile="true" />
 
   <includeAll path="sql" relativeToChangelogFile="true" />
 
-  <changeSet dbms="PostgreSQL" id="search-funcs" runOnChange="true" author="kephir">
+  <changeSet dbms="PostgreSQL" id="search-funcs" runOnChange="true" author="kefhir">
     <sqlFile splitStatements="false" path="functions/range_instant.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/range.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/jsonpath1.sql" relativeToChangelogFile="true" />

@@ -9,8 +9,6 @@
   <include file="core-schema.xml" relativeToChangelogFile="true" /> 
   <include file="core-functions.xml" relativeToChangelogFile="true" /> 
 
-
-    
 </databaseChangeLog>
 
 

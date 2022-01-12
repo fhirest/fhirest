@@ -1,5 +1,5 @@
-CREATE OR REPLACE FUNCTION jsonpath(json jsonb, path text) RETURNS jsonb[] AS $$
+CREATE OR REPLACE FUNCTION search.jsonpath(json jsonb, path text) RETURNS jsonb[] AS $$
 BEGIN 
-  RETURN jsonpath(json, string_to_array(path, '.'));
+  RETURN search.jsonpath(json, string_to_array(path, '.'));
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;

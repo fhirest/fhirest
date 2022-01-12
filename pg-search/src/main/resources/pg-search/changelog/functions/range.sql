@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION range(_date text, _interval text) RETURNS tstzrange AS $$
+CREATE OR REPLACE FUNCTION search.range(_date text, _interval text) RETURNS tstzrange AS $$
 DECLARE
   _ts timestamptz;
 BEGIN

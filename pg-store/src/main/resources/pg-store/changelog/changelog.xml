@@ -1,22 +1,15 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
-        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 
-  <include file="fhir-init.sql" relativeToChangelogFile="true" />
-  <include file="fhir-schema.xml" relativeToChangelogFile="true" />
+  <include file="store-init.sql" relativeToChangelogFile="true" />
+  <include file="store-schema.xml" relativeToChangelogFile="true" />
 
 
-  <changeSet dbms="PostgreSQL" id="store-funcs-1" runOnChange="true" author="kephir">
+  <changeSet dbms="PostgreSQL" id="store-funcs-1" runOnChange="true" author="kefhir">
     <sqlFile splitStatements="false" path="functions/ref.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/define_resource.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/resource_insert_trigger.sql" relativeToChangelogFile="true" />
-    <rollback>
-      drop function ref(varchar, varchar);
-      drop function define_resource(text);
-      drop function resource_insert_trigger();
-    </rollback>
   </changeSet>
   
   <include file="sql/10-resource.sql" relativeToChangelogFile="true" />

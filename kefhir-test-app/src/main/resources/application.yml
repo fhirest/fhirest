@@ -5,20 +5,20 @@ micronaut:
 
 datasources:
   default:
-    url: ${DB_URL:`jdbc:postgresql://localhost:5151/kephirdb`}
-    username: ${DB_APP_USER:kephir}
-    password: ${DB_APP_PASSWORD:kephir}
+    url: ${DB_URL:`jdbc:postgresql://localhost:5151/kefhirdb`}
+    username: ${DB_APP_USER:kefhir_app}
+    password: ${DB_APP_PASSWORD:test}
     maximum.pool.size: ${DB_POOL_SIZE:1}
     driver.class.name: org.postgresql.Driver
-  liquibase:
-    url: ${DB_URL:`jdbc:postgresql://localhost:5151/kephirdb`}
-    username: ${DB_ADMIN_USER:kephir}
-    password: ${DB_ADMIN_PASSWORD:kephir}
+  admin:
+    url: ${DB_URL:`jdbc:postgresql://localhost:5151/kefhirdb`}
+    username: ${DB_ADMIN_USER:kefhir_admin}
+    password: ${DB_ADMIN_PASSWORD:test}
     maximum.pool.size: 1
     driver.class.name: org.postgresql.Driver
 liquibase:
   datasources:
-    liquibase:
+    admin:
       enabled: true
       change-log: 'classpath:changelog.xml'
       default-schema: 'public'
@@ -29,4 +29,3 @@ endpoints:
     details-visible: ANONYMOUS
     sensitive: false
 
-definitions-path: ${DEFINITIONS_PATH:../etc/definitions}

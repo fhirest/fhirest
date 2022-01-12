@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION range_instant(_ts timestamptz) RETURNS tstzrange AS $$
+CREATE OR REPLACE FUNCTION search.range_instant(_ts timestamptz) RETURNS tstzrange AS $$
 BEGIN
   return tstzrange('[' || _ts || ',' || _ts || ']');
 END;

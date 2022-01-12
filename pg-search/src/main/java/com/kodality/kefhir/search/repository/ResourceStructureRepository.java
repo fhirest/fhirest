@@ -14,31 +14,33 @@ package com.kodality.kefhir.search.repository;
 
 import com.kodality.kefhir.search.model.StructureElement;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import static java.util.stream.Collectors.toList;
 
 @Singleton
-@RequiredArgsConstructor
 public class ResourceStructureRepository {
-  private final JdbcTemplate jdbcTemplate;
+  @Inject
+  @Named("adminJdbcTemplate")
+  private JdbcTemplate adminJdbcTemplate;
 
   public void create(List<StructureElement> elements) {
-    String sql = "INSERT INTO resource_structure (base, path, element_type, is_many) VALUES (?,?,?,?)";
+    String sql = "INSERT INTO search.resource_structure (base, path, element_type, is_many) VALUES (?,?,?,?)";
     List<Object[]> args = elements.stream()
         .map(el -> new Object[]{el.getBase(), el.getPath(), el.getType(), el.isMany()})
         .collect(toList());
-    jdbcTemplate.batchUpdate(sql, args);
+    adminJdbcTemplate.batchUpdate(sql, args);
   }
 
   public void refresh() {
-    jdbcTemplate.update("refresh materialized view resource_structure_recursive");
+    adminJdbcTemplate.update("refresh materialized view search.resource_structure_recursive");
   }
 
   public void deleteAll() {
-    jdbcTemplate.update("DELETE FROM resource_structure");
+    adminJdbcTemplate.update("DELETE FROM search.resource_structure");
   }
 
 }

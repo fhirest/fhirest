@@ -55,7 +55,7 @@ public abstract class ExpressionProvider {
 
   protected static String parasol(String resourceType, String key, String alias) {
     String tblName = BlindexRepository.getParasol(resourceType, getPath(resourceType, key));
-    return String.format(tblName + " WHERE resource_key = %s.key ", alias);
+    return String.format("search." + tblName + " WHERE resource_key = %s.key ", alias);
   }
 
 }

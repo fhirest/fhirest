@@ -2,22 +2,14 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-  <changeSet id="create_schema_core" author="daniel@kodality.com">
+  <changeSet id="create_schema_core" author="">
     <sql>
       create schema if not exists core;
-      SET search_path TO core,public;
     </sql>
   </changeSet>
 
-  <changeSet dbms="PostgreSQL" id="add_funcs_exec_path" runOnChange="true" author="daniel@kodality.com">
+  <changeSet dbms="PostgreSQL" id="add_funcs_exec_path" runOnChange="true" author="">
     <sqlFile splitStatements="false" path="functions/exec.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/set_schema_search_path.sql" relativeToChangelogFile="true" />
-  </changeSet>
-
-  <changeSet dbms="PostgreSQL" id="set_search_path" author="daniel@kodality.com">
-    <sql>
-      select core.set_schema_search_path(current_user, 'core', p_action := 'BEGIN');
-    </sql>
   </changeSet>
 
 </databaseChangeLog>

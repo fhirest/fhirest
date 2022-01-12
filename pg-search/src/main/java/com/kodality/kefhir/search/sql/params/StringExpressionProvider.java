@@ -26,7 +26,7 @@ public class StringExpressionProvider extends ExpressionProvider {
 
   @Override
   public SqlBuilder makeExpression(QueryParam param, String alias) {
-    String field = String.format("string(%s, %s)", alias, path(param));
+    String field = String.format("search.string(%s, %s)", alias, path(param));
     SqlBuilder sb = new SqlBuilder(field);
 
     if (param.getModifier() == null) {
@@ -44,7 +44,7 @@ public class StringExpressionProvider extends ExpressionProvider {
 
   @Override
   public SqlBuilder order(String resourceType, String key, String alias) {
-    return new SqlBuilder(String.format("string(%s, %s)", alias, path(resourceType, key)));
+    return new SqlBuilder(String.format("search.string(%s, %s)", alias, path(resourceType, key)));
   }
 
   private static String any(List<String> values, Function<String, String> mapper) {

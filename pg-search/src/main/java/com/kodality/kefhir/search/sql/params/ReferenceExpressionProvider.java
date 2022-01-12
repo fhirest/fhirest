@@ -44,7 +44,7 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
 
   private static SqlBuilder reference(String value, QueryParam param, String alias) {
     SqlBuilder sb = new SqlBuilder();
-    sb.append(String.format("reference(%s, %s)", alias, path(param)));
+    sb.append(String.format("search.reference(%s, %s)", alias, path(param)));
     if (StringUtils.isEmpty(value)) {
       return sb.append(" = array[null]");
     }
@@ -71,11 +71,11 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
     }
     String[] refs = getReferencedTypes(param);
     String alias = generateAlias(refs.length == 1 ? refs[0].toLowerCase() : "friends");
-    sb.append("INNER JOIN resource " + alias);
+    sb.append("INNER JOIN store.resource " + alias);
     sb.append(" ON ").in(alias + ".type", (Object[]) refs);
     String path = path(param);
     path = path.equals("'agent.who'") ? "'agent.whoReference'" : path;//XXX haha
-    sb.and(String.format("reference(%s, %s) && ref(%s.type, %s.id)", parentAlias, path, alias, alias));
+    sb.and(String.format("search.reference(%s, %s) && search.ref(%s.type, %s.id)", parentAlias, path, alias, alias));
     sb.and(alias + ".sys_status = 'A'");
     sb.append(chain(param.getChains(), alias));
     return sb;
@@ -109,7 +109,7 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
   private static class ThreadLocalInteger extends ThreadLocal<Map<String, Integer>> {
     @Override
     protected Map<String, Integer> initialValue() {
-      return new HashMap<String, Integer>();
+      return new HashMap<>();
     }
 
     public Integer get(String key) {

@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.store.dao;
+ package com.kodality.kefhir.store.repository;
 
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;

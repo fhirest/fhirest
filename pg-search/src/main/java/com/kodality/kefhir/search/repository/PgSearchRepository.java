@@ -17,7 +17,7 @@ import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.core.model.search.SearchCriterion;
 import com.kodality.kefhir.search.api.PgResourceSearchFilter;
 import com.kodality.kefhir.search.sql.SqlToster;
-import com.kodality.kefhir.store.dao.ResourceRowMapper;
+import com.kodality.kefhir.store.repository.ResourceRowMapper;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +34,7 @@ public class PgSearchRepository {
   private final Optional<PgResourceSearchFilter> pgResourceSearchFilter;
 
   public Integer count(SearchCriterion criteria) {
-    SqlBuilder sb = new SqlBuilder("SELECT count(1) FROM \"" + criteria.getType().toLowerCase() + "\" base ");
+    SqlBuilder sb = new SqlBuilder("SELECT count(1) FROM store.\"" + criteria.getType().toLowerCase() + "\" base ");
     sb.append(joins(criteria));
     sb.append(" WHERE 1=1");
     sb.append(criteria(criteria));
@@ -44,7 +44,7 @@ public class PgSearchRepository {
   }
 
   public List<ResourceVersion> search(SearchCriterion criteria) {
-    SqlBuilder sb = new SqlBuilder("SELECT base.* FROM \"" + criteria.getType().toLowerCase() + "\" base ");
+    SqlBuilder sb = new SqlBuilder("SELECT base.* FROM store.\"" + criteria.getType().toLowerCase() + "\" base ");
     sb.append(joins(criteria));
     sb.append(" WHERE 1=1");
     sb.append(criteria(criteria));

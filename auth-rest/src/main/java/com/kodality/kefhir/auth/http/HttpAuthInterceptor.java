@@ -68,12 +68,4 @@ public class HttpAuthInterceptor implements KefhirRequestFilter, KefhirResponseF
 
   }
 
-  protected void bind(AuthHeaderAuthenticator authenticator) {
-    authenticators.add(authenticator);
-  }
-
-  protected void unbind(AuthHeaderAuthenticator authenticator) {
-    authenticators.remove(authenticator);
-  }
-
 }

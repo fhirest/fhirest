@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.kodality.kefhir.store.dao;
+package com.kodality.kefhir.store.repository;
 
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
@@ -35,7 +35,7 @@ public class ResourceRepository {
 
   public String getNextResourceId() {
     //TODO: may already exist
-    return String.valueOf(jdbcTemplate.queryForObject("select nextval('resource_id_seq')", Long.class));
+    return String.valueOf(jdbcTemplate.queryForObject("select nextval('store.resource_id_seq')", Long.class));
   }
 
   public void create(ResourceVersion version) {
@@ -43,7 +43,7 @@ public class ResourceRepository {
       version.getId().setResourceId(getNextResourceId());
     }
     String sql =
-        "INSERT INTO resource (type, id, last_version, author, content, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb,?)";
+        "INSERT INTO store.resource (type, id, last_version, author, content, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb,?)";
     jdbcTemplate.update(sql,
         version.getId().getResourceType(),
         version.getId().getResourceId(),
@@ -54,13 +54,13 @@ public class ResourceRepository {
   }
 
   public Integer getLastVersion(ResourceId id) {
-    String sql = "SELECT COALESCE(max(last_version),0) FROM resource WHERE type = ? AND id = ?";
+    String sql = "SELECT COALESCE(max(last_version),0) FROM store.resource WHERE type = ? AND id = ?";
     return jdbcTemplate.queryForObject(sql, Integer.class, id.getResourceType(), id.getResourceId());
   }
 
   public ResourceVersion load(VersionId id) {
     SqlBuilder sb = new SqlBuilder();
-    sb.append("SELECT * FROM resource r WHERE type = ? AND id = ?", id.getResourceType(), id.getResourceId());
+    sb.append("SELECT * FROM store.resource r WHERE type = ? AND id = ?", id.getResourceType(), id.getResourceId());
     if (id.getVersion() != null) {
       sb.append(" AND last_version = ?", id.getVersion());
     } else {
@@ -79,7 +79,7 @@ public class ResourceRepository {
 
   public List<ResourceVersion> loadHistory(HistorySearchCriterion criteria) {
     SqlBuilder sb = new SqlBuilder();
-    sb.append("SELECT * FROM resource r WHERE 1=1");
+    sb.append("SELECT * FROM store.resource r WHERE 1=1");
     sb.appendIfNotNull(" AND type = ?", criteria.getResourceType());
     sb.appendIfNotNull(" AND id = ?", criteria.getResourceId());
     if (criteria.getSince() != null) {

@@ -1,11 +1,11 @@
 #!/bin/bash
 
 if [ -z "$DB_NAME" ]; then
-   DB_NAME="kephirdb"
+   DB_NAME="kefhirdb"
 fi
 
 if [ -z "$DB_USER" ]; then
-   DB_USER="kephir"
+   DB_USER="kefhir"
 fi
 
 if [ -z "$DB_PASSWORD" ]; then

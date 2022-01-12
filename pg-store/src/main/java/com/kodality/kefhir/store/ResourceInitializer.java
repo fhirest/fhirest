@@ -14,7 +14,7 @@ package com.kodality.kefhir.store;
 
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
-import com.kodality.kefhir.store.dao.ResourceFunctionsRepository;
+import com.kodality.kefhir.store.repository.ResourceFunctionsRepository;
 import io.micronaut.runtime.event.annotation.EventListener;
 import java.util.List;
 import javax.inject.Singleton;
@@ -29,8 +29,6 @@ public class ResourceInitializer implements ConformanceUpdateListener {
 
   @EventListener
   public void initConformanceResources(final Object event) {
-    //XXX for some reason search_path is not set on first startup. quick hack.
-    jdbcTemplate.update("set search_path to fhir,core,public");
     List.of("CapabilityStatement", "StructureDefinition", "SearchParameter", "OperationDefinition", "CompartmentDefinition")
         .forEach(r -> resourceFunctionsRepository.defineResource(r));
   }

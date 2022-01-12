@@ -1,7 +1,7 @@
 --liquibase formatted sql
 
---changeset kephir:blindex dbms:postgresql
-create table blindex (
+--changeset kefhir:blindex dbms:postgresql
+create table search.blindex (
   id			bigserial primary key,
   resource_type text not null,
   path 			text not null,

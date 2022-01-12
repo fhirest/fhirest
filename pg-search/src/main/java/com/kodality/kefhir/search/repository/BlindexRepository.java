@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -31,6 +32,9 @@ public class BlindexRepository {
   private static final Map<String, String> parasols = new HashMap<>();
   @Inject
   private JdbcTemplate jdbcTemplate;
+  @Inject
+  @Named("adminJdbcTemplate")
+  private JdbcTemplate adminJdbcTemplate;
 
   @PostConstruct
   public void init() {
@@ -52,17 +56,17 @@ public class BlindexRepository {
 
   public List<Blindex> load(String type) {
     SqlBuilder sb = new SqlBuilder();
-    sb.append("SELECT resource_type, path, index_name FROM blindex");
+    sb.append("SELECT resource_type, path, index_name FROM search.blindex");
     sb.appendIfNotNull("WHERE index_type = ?", type);
-    return jdbcTemplate.query(sb.getSql(), sb.getParams(), new ParasolRowMapper());
+    return jdbcTemplate.query(sb.getSql(), new ParasolRowMapper(), sb.getParams());
   }
 
   public void createIndex(String resourceType, String path) {
-    jdbcTemplate.queryForObject("SELECT create_blindex(?,?)", String.class, resourceType, path);
+    adminJdbcTemplate.queryForObject("SELECT search.create_blindex(?,?)", String.class, resourceType, path);
   }
 
   public void dropIndex(String resourceType, String path) {
-    jdbcTemplate.queryForObject("SELECT drop_blindex(?,?)", String.class, resourceType, path);
+    adminJdbcTemplate.queryForObject("SELECT search.drop_blindex(?,?)", String.class, resourceType, path);
   }
 
   private static class ParasolRowMapper implements RowMapper<Blindex> {

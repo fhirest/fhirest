@@ -35,8 +35,7 @@ public final class SqlToster {
   static {
     specialParams = new HashMap<>();
     specialParams.put("_id", (p, a) -> new SqlBuilder().in(a + ".id", p.getValues()));
-    specialParams.put("_lastUpdated",
-                      (p, a) -> DateExpressionProvider.makeExpression("range_instant(" + a + ".last_updated)", p));
+    specialParams.put("_lastUpdated", (p, a) -> DateExpressionProvider.makeExpression("search.range_instant(" + a + ".last_updated)", p));
     specialParams.put("_content", (p, a) -> {
       throw new FhirException(400, IssueType.NOTSUPPORTED, "_content not implemented");
     });
@@ -44,7 +43,7 @@ public final class SqlToster {
       throw new FhirException(400, IssueType.NOTSUPPORTED, "_text not implemented");
     });
 
-    providers = new HashMap<SearchParamType, ExpressionProvider>();
+    providers = new HashMap<>();
     providers.put(SearchParamType.STRING, new StringExpressionProvider());
     providers.put(SearchParamType.TOKEN, new TokenExpressionProvider());
     providers.put(SearchParamType.DATE, new DateExpressionProvider());

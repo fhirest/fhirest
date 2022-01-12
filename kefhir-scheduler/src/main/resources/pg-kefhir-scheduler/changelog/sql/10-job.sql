@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset kephir:scheduler.job dbms:postgresql
+--changeset kefhir:scheduler.job dbms:postgresql
 create table scheduler.job (
   id bigserial primary key,
   type text not null,

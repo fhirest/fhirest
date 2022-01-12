@@ -41,7 +41,7 @@ public class TokenExpressionProvider extends ExpressionProvider {
     if (StringUtils.equals(param.getModifier(), "not")) {
       throw new FhirException(400, IssueType.PROCESSING, ":not modifier not allowed in token param");
     }
-    sb.append(String.format("token(%s, %s)", alias, path(param)));
+    sb.append(String.format("search.token(%s, %s)", alias, path(param)));
     sb.append(" @> array[?]::text[] ", value.toLowerCase());
     return sb;
   }
