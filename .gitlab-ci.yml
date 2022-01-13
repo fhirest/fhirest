@@ -1,5 +1,11 @@
 image: registry.gitlab.com/kodality-public/gitlab-ci-builder:latest
 
+cache:
+  key: "$CI_PROJECT_NAME"
+  paths:
+    - /tmp/kefhir
+    - .gradle/caches
+
 stages:
 - build
 - test
@@ -9,9 +15,6 @@ build:
   stage: build
   script:
     - ./gradlew assemble
-  artifacts:
-    reports:
-      junit: '*/build/test-results/test/TEST-*.xml'
 
 test:
   stage: test

@@ -51,20 +51,21 @@ function finish() {
 function makemeadb() {
   echo "creating database..."
   docker run -d -e TZ=Europe/Tallinn --restart=unless-stopped --name $DB_DOCKER_NAME -p $DB_PORT:5432 docker.kodality.com/postgres-docker:14 > test-reports/db.log
-  sleep 5
-  docker exec -e "DB_NAME=kefhirdb" -e "USER_PREFIX=kefhir" $DB_DOCKER_NAME /opt/scripts/createdb.sh >> test-reports/db.log
+  sleep 6
+  docker exec -e "DB_NAME=kefhirdb" -e "USER_PREFIX=kefhir" $DB_DOCKER_NAME /opt/scripts/createdb.sh >> test-reports/db.log || finish 1
   echo "database created."
 }
 
 function startkefhir() {
   echo "starting app..."
   export DB_URL="jdbc:postgresql://localhost:$DB_PORT/kefhirdb"
+  [[ -f '/.dockerenv' ]] && export DB_URL="jdbc:postgresql://172.17.0.1:$DB_PORT/kefhirdb"
   export APP_PORT=$APP_PORT
   ../gradlew run 2>&1 >test-reports/server.log &
   PID=$!
 
   if [ -d /tmp/kefhir ]; then
-    sleep 10
+    sleep 20
   fi
   ../etc/download-fhir-definitions.sh "http://localhost:$APP_PORT"
 
