@@ -25,7 +25,9 @@ function main() {
 function runtests() {
     cd postman
     for t in "${tests[@]}"; do
-      newman run $t --env-var "kefhir=http://localhost:$APP_PORT" --env-var "access_token=yupi"
+      newman run $t \
+        --env-var "kefhir=http://localhost:$APP_PORT" \
+        --env-var "access_token=yupi"
       r=$?
       [[ $r -ne 0 ]] && break
     done
@@ -62,7 +64,7 @@ function startkefhir() {
   PID=$!
 
   if [ -d /tmp/kefhir ]; then
-    sleep 15
+    sleep 10
   fi
   ../etc/download-fhir-definitions.sh "http://localhost:$APP_PORT"
 

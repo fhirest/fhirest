@@ -21,7 +21,6 @@ test:
   artifacts:
     reports:
       junit: '*/build/test-results/test/TEST-*.xml'
-      newman: 'kefhir-test-app/test-reports/*'
 
 release snapshot:
   stage: release
