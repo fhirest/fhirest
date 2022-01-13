@@ -90,7 +90,7 @@ public class KefhirEndpointService {
       String[] p = bi.mapping().split(" ");
       this.verb = p[0];
       this.path = StringUtils.removeStart(p[1], "/");
-      this.pathMatcher = Pattern.compile(path.replaceAll("\\{\\}", "[^/].*"));
+      this.pathMatcher = Pattern.compile(path.replaceAll("\\{\\}", "[^/]+"));
     }
   }
 

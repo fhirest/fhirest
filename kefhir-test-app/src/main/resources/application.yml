@@ -1,7 +1,7 @@
 micronaut:
   server:
     thread-selection: AUTO
-    port: 8181
+    port: ${APP_PORT:8181}
 
 datasources:
   default:

@@ -216,16 +216,20 @@ public class FhirResourceServer {
     if (StringUtils.equals(prefer, PreferredReturn.OperationOutcome)) {
       return resourceFormatService.compose(new OperationOutcome(), "json");
     }
-    return version.getContent();
+    if (StringUtils.equals(prefer, PreferredReturn.representation)) {
+      return version.getContent();
+    }
+    return null;
   }
 
   private String uri(ResourceVersion version, KefhirRequest req) {
-    String base = ServerRequestContext.currentRequest().orElseThrow().getUri().toString();
-    base = StringUtils.removeEnd(base, req.getType());
-    if (version == null) {
-      return base;
-    }
-    return base + version.getReference();
+//    String base = ServerRequestContext.currentRequest().orElseThrow().getPath();
+//    base = StringUtils.removeEnd(base, req.getType());
+//    if (version == null) {
+//      return base;
+//    }
+//    return base + version.getReference();
+    return version.getReference();
   }
 
   private void addPagingLinks(Bundle bundle, Integer count, Integer page, KefhirRequest req) {

@@ -1,0 +1,501 @@
+{
+	"info": {
+		"_postman_id": "cd5f1f07-0603-48d4-9f9c-2e7199430b32",
+		"name": "basic-crud",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"});",
+							"",
+							"patientRef = postman.getResponseHeader(\"Location\");",
+							"pm.environment.set(\"patientId\", patientRef.replace(/.*Patient\\/([^\\/]*).*/, '$1'));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-1\"\n        }\n    ],\n    \"name\": [\n        {\n            \"given\": [\n                \"Most\",\n                \"Sick\"\n            ],\n            \"family\": \"Person\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"male\",\n    \"telecom\": [\n        {\n            \"use\": \"work\",\n            \"rank\": 1,\n            \"value\": \"123\",\n            \"system\": \"phone\"\n        }\n    ],\n    \"birthDate\": \"1970-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Patient by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"correct person loaded\", function () {",
+							"    pm.expect(pm.response.json().identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/{{patientId}}",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Patient history",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"history bundle is returned\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"history\");",
+							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/{{patientId}}/_history",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}",
+						"_history"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Patient by history id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"correct person loaded\", function () {",
+							"    pm.expect(pm.response.json().identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/{{patientId}}/_history/1",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}",
+						"_history",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Patient search by identifier",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-1",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "identifier",
+							"value": "TESTPATIENT-1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Patient search by _id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?_id={{patientId}}",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "{{patientId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([204]);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/{{patientId}}",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT unexistant Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-2\"\n        }\n    ],\n    \"name\": [\n        {\n            \"given\": [\n                \"Please\"\n            ],\n            \"family\": \"Justtoask\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"female\",\n    \"telecom\": [\n        {\n            \"use\": \"work\",\n            \"rank\": 1,\n            \"value\": \"123\",\n            \"system\": \"phone\"\n        }\n    ],\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-2",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "identifier",
+							"value": "TESTPATIENT-2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT existant Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"version is 2\", function () {",
+							"  vers = postman.getResponseHeader(\"Content-Location\").replace(/.*Patient\\/[^\\/]*\\/_history\\/([0-9]*)/, \"$1\");",
+							"  pm.expect(vers).to.eql(\"2\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-2\"\n        }\n    ],\n    \"name\": [\n        {\n            \"given\": [\n                \"Please\"\n            ],\n            \"family\": \"Justtoask\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"female\",\n    \"telecom\": [\n        {\n            \"use\": \"work\",\n            \"rank\": 1,\n            \"value\": \"123\",\n            \"system\": \"phone\"\n        }\n    ],\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-2",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "identifier",
+							"value": "TESTPATIENT-2"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -8,7 +8,7 @@ BEGIN
     CASE
       WHEN _blindex.param_type = 'date' THEN
         --EXECUTE format('DELETE FROM %I WHERE resource_key = %s', _blindex.index_name, _resource.key);
-        EXECUTE format('INSERT INTO search.%I (SELECT %s, unnest(''%s''::tstzrange[]))', _blindex.index_name, _resource.key, COALESCE(date(_resource, _blindex.path), '{}'));
+        EXECUTE format('INSERT INTO search.%I (SELECT %s, unnest(''%s''::tstzrange[]))', _blindex.index_name, _resource.key, COALESCE(search.date(_resource, _blindex.path), '{}'));
       ELSE
         RAISE EXCEPTION 'unknown type %', _blindex.param_type;
     END CASE;

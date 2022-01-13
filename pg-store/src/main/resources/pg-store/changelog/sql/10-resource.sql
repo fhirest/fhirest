@@ -11,7 +11,8 @@ create table store.resource (
   last_updated  timestamptz not null default now(),
   author        jsonb,
   content       jsonb,
-  sys_status    char(1) not null default 'A'
+  sys_status    char(1) not null default 'A',
+  constraint resource_id_not_empty check (id != '')
 ) PARTITION BY LIST (type);
 --
 

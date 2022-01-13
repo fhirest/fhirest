@@ -69,7 +69,7 @@ public class PostgreStorehouse implements ResourceStorehouse {
     }
     resourceRepository.create(version);
     cache.removeKeys("pgCache", version.getId().getResourceReference());
-    return version;
+    return load(version.getId());
   }
 
   private ResourceContent toJson(ResourceContent content) {

@@ -28,7 +28,7 @@ BEGIN
           EXECUTE format('CREATE INDEX %3$s ON store.%1$s USING gin (search.reference(%1$s::store.resource, %2$L))', lower(_resource_type), _path, _idx_name);
           _idx_type := 'pizzelle';
         WHEN _param_type ilike 'date' THEN
-          EXECUTE format('CREATE TABLE search.%1$s (resource_key bigint %3$s REFERENCES store.%2$s (key) ON DELETE CASCADE, range tstzrange)', _idx_name, _resource_type, CASE WHEN _struct.is_many THEN '' ELSE 'PRIMARY KEY' END);
+          EXECUTE format('CREATE TABLE search.%1$s (resource_key bigint %3$s REFERENCES store.%2$s (key), range tstzrange)', _idx_name, _resource_type, CASE WHEN _struct.is_many THEN '' ELSE 'PRIMARY KEY' END);
           EXECUTE format('CREATE INDEX %2$s ON search.%1$s USING gist (resource_key, range);', _idx_name, 'idx_' || _idx_name);
           EXECUTE format('INSERT INTO search.%1$s (select key, unnest(search.date(r, %3$L)) from store.%2$s r)', _idx_name, _resource_type, _path);
           EXECUTE format('DROP TRIGGER IF EXISTS trigger_parasolindex ON store.%s', _resource_type);

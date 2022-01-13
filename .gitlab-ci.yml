@@ -2,43 +2,41 @@ image: registry.gitlab.com/kodality-public/gitlab-ci-builder:latest
 
 stages:
 - build
+- test
 - release
 
 build:
   stage: build
   script:
-    - ./gradlew build
-  only:
-    - branches
-  except:
-    - master
+    - ./gradlew assemble
   artifacts:
     reports:
       junit: '*/build/test-results/test/TEST-*.xml'
 
-build and publish:
-  stage: build
+test:
+  stage: test
+  script:
+    - ./gradlew test
+    - kefhir-test-app/run-tests.sh
+  artifacts:
+    reports:
+      junit: '*/build/test-results/test/TEST-*.xml'
+      newman: 'kefhir-test-app/test-reports/*'
+
+release snapshot:
+  stage: release
   variables:
     DOCKER_DRIVER: overlay2
-
-  before_script:
-    - export GRADLE_USER_HOME=`pwd`/.gradle
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
   script:
-    - ./gradlew build
-    - ./gradlew publish
+    - ./gradlew assemble publish
   only:
     - master
-  artifacts:
-    reports:
-      junit: '*/build/test-results/test/TEST-*.xml'
 
-release:
+release tag:
   stage: release
   script:
     - export APP_VERSION="$CI_COMMIT_REF_NAME"
-    - ./gradlew build -Pversion="$APP_VERSION"
-    - ./gradlew publish -Pversion="$APP_VERSION"
+    - ./gradlew assemble publish -Pversion="$APP_VERSION"
   only:
     - /^\d*\.\d*\.\d*$/
   except:
