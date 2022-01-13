@@ -65,22 +65,16 @@ function startkefhir() {
   PID=$!
 
   if [ -d /tmp/kefhir ]; then
-    sleep 20
+    while ! grep -m1 'Startup completed' < test-reports/server.log; do sleep 1; done
   fi
   ../etc/download-fhir-definitions.sh "http://localhost:$APP_PORT"
 
-  try=120
   while true; do
     if ! ps -p $PID > /dev/null; then
       echo 'app failed to start...'
       finish 1
     fi
     curl "http://localhost:$APP_PORT/Patient" -s -o /dev/null -f && break
-    try=$((try-1))
-    if [ $try -lt 0 ]; then
-      echo "failed to start app in 2 minutes. killing myself"
-      finish 1
-    fi
     sleep 1
   done;
   sleep 5
