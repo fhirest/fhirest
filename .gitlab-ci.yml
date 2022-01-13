@@ -19,6 +19,11 @@ test:
     - ./gradlew test
     - kefhir-test-app/run-tests.sh
   artifacts:
+    when: always
+    name: "Test_Result"
+    expire_in: 7 D
+    paths:
+      - "./kefhir-test-app/test-reports"
     reports:
       junit: '*/build/test-results/test/TEST-*.xml'
 
