@@ -66,16 +66,24 @@ function startkefhir() {
   fi
   ../etc/download-fhir-definitions.sh "http://localhost:$APP_PORT"
 
-  while true; do
-    if ! ps -p $PID > /dev/null; then
-      echo 'app failed to start...'
-      finish 1
-    fi
-    curl "http://localhost:$APP_PORT/Patient" -s -o /dev/null -f && break
-    sleep 1
-  done;
-  sleep 10
+  while ! grep -m1 'conformance loaded' < test-reports/server.log; do sleep 1; done
+  while ! grep -m1 'blindex initialization finished' < test-reports/server.log; do sleep 1; done
+  sleep 3
   echo "app started up."
 }
 
 main "$@"
+
+
+
+
+
+
+#  while true; do
+#    if ! ps -p $PID > /dev/null; then
+#      echo 'app failed to start...'
+#      finish 1
+#    fi
+#    curl "http://localhost:$APP_PORT/Patient" -s -o /dev/null -f && break
+#    sleep 1
+#  done;

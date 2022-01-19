@@ -72,6 +72,7 @@ public class BlindexInitializer implements ConformanceUpdateListener {
     create(create);
     drop(drop);
     blindexRepository.init();
+    log.info("blindex initialization finished");
     return null;
   }
 
