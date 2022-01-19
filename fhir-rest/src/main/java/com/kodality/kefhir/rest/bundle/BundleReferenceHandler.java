@@ -101,7 +101,8 @@ public class BundleReferenceHandler {
 
   private ResourceId find(String url) {
     // TODO: find some good url parser?
-    String type = StringUtils.substringAfterLast(StringUtils.substringBefore(url, "?"), "/");
+//    Patient?identifier=xxx
+    String type = StringUtils.substringBefore(url, "?");
     Map<String, List<String>> params = new HashMap<>();
     Arrays.stream(StringUtils.substringAfter(url, "?").split("&")).forEach(q -> {
       String[] p = q.split("=");

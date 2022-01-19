@@ -60,9 +60,6 @@ public class RuleThemAllController {
   private HttpResponse<String> execute(HttpRequest request) {
     KefhirRequest req = buildKefhirRequest(request);
     req.setOperation(endpointService.findOperation(req));
-    if (req.getOperation() == null) {
-      throw new FhirException(406, IssueType.NOTSUPPORTED, "could not find matching enabled interaction");
-    }
     try {
       requestFilters.forEach(f -> f.handleRequest(req));
       KefhirResponse resp = endpointService.execute(req);

@@ -4,6 +4,7 @@ import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.util.ResourceUtil;
 import com.kodality.kefhir.rest.KefhirEndpointService.KefhirEnabledOperation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
@@ -26,6 +28,10 @@ public class KefhirRequest {
   private String body;
 
   private KefhirEnabledOperation operation;
+
+  public void setPath(String path) {
+    this.path = StringUtils.removeEnd(StringUtils.removeStart(path, "/"), "/");
+  }
 
   public VersionId getReference() {
     return ResourceUtil.parseReference(type + "/" + getPath());
@@ -55,5 +61,15 @@ public class KefhirRequest {
     if (name != null && value != null) {
       parameters.computeIfAbsent(name, x -> new ArrayList<>()).add(value);
     }
+  }
+
+  public void putQuery(String query) {
+    if (query == null) {
+      return;
+    }
+    Arrays.stream(query.split("&")).forEach(q -> {
+      String[] p = q.split("=");
+      putParameter(p[0], p[1]);
+    });
   }
 }

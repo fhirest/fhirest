@@ -6,5 +6,7 @@ CREATE OR REPLACE FUNCTION search.token(r store.resource, path text) RETURNS tex
        SELECT lower(d#>>val) FROM subdata
        union all
        SELECT COALESCE((lower(d#>>ns)), '') || '|' || (lower(d#>>val)) FROM subdata WHERE ns IS NOT NULL
+       union all
+       SELECT COALESCE((lower(d#>>ns)), '') || '|' FROM subdata WHERE ns IS NOT NULL
   ) v(v)
 $$ LANGUAGE SQL IMMUTABLE COST 1000;

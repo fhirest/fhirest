@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.validation;
+package com.kodality.kefhir.validation;
 
 import com.kodality.kefhir.core.api.resource.OperationInterceptor;
 import com.kodality.kefhir.core.api.resource.ResourceBeforeSaveInterceptor;
@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.Resource;
 
 @Singleton
 public class StupidResourceValidator extends ResourceBeforeSaveInterceptor implements OperationInterceptor {
@@ -37,17 +38,20 @@ public class StupidResourceValidator extends ResourceBeforeSaveInterceptor imple
     if (StringUtils.isEmpty(parameters.getValue())) {
       return;
     }
-    validate(parameters);
+    try {
+      resourceRepresentationService.parse(parameters);
+    } catch (Exception e) {
+      throw new FhirException(400, IssueType.STRUCTURE, "error during resource parse: " + e.getMessage());
+    }
   }
 
   @Override
   public void handle(ResourceId id, ResourceContent content, String interaction) {
-    validate(content);
-  }
-
-  private void validate(ResourceContent content) {
     try {
-      resourceRepresentationService.parse(content.getValue());
+      Resource res = resourceRepresentationService.parse(content.getValue());
+      if (!id.getResourceType().equals(res.getResourceType().name())) {
+        throw new FhirException(400, IssueType.STRUCTURE, "Not allowed to save resource type " + res.getResourceType() + " to /" + id.getResourceType());
+      }
     } catch (Exception e) {
       throw new FhirException(400, IssueType.STRUCTURE, "error during resource parse: " + e.getMessage());
     }

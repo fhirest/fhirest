@@ -4,9 +4,6 @@ trap ctrlc INT
 APP_PORT=48181
 DB_PORT=45151
 DB_DOCKER_NAME=kefhir-test-postgres
-tests=(
-  basic-crud.postman_collection.json
-)
 
 function main() {
   mkdir -p test-reports
@@ -24,7 +21,7 @@ function main() {
 
 function runtests() {
     cd postman
-    for t in "${tests[@]}"; do
+    for t in ./*; do
       newman run $t \
         --env-var "kefhir=http://localhost:$APP_PORT" \
         --env-var "access_token=yupi"

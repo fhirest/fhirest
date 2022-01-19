@@ -1,5 +1,6 @@
 package com.kodality.kefhir.rest;
 
+import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.rest.filter.KefhirRequestExecutionInterceptor;
 import com.kodality.kefhir.rest.interaction.FhirInteraction;
 import com.kodality.kefhir.rest.interaction.InteractionUtil;
@@ -18,6 +19,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 import static java.util.stream.Collectors.toList;
 
@@ -36,6 +38,9 @@ public class KefhirEndpointService {
   public KefhirEnabledOperation findOperation(KefhirRequest request) {
     List<KefhirEnabledOperation> typeOperations = operations.get(request.getType());
     KefhirEnabledOperation op = typeOperations == null ? null : typeOperations.stream().filter(i -> matches(i, request)).findFirst().orElse(null);
+    if (op == null) {
+      throw new FhirException(406, IssueType.NOTSUPPORTED, "could not find matching enabled interaction for: " + request.getMethod() + " " + request.getPath());
+    }
     return op;
   }
 

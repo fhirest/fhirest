@@ -103,7 +103,7 @@ public class BundleService {
           responseBundleEntry.setResponse(responseEntry);
           return;
         }
-        throw new RuntimeException("entry: " + entry.getFullUrl(), e.getCause());
+        throw new RuntimeException("entry: " + entry.getFullUrl(), e);
       }
     });
     responseBundle.setType(BundleType.BATCHRESPONSE);
@@ -153,7 +153,9 @@ public class BundleService {
     if (resp.getBody() != null && resp.getBody() instanceof ResourceContent) {
       newEntry.setResource(resourceFormatService.parse((ResourceContent) resp.getBody()));
     }
-    newEntry.addLink().setRelation("alternate").setUrl(entry.getFullUrl());
+    if (entry.getFullUrl() != null) {
+      newEntry.addLink().setRelation("alternate").setUrl(entry.getFullUrl());
+    }
     if (StringUtils.equals(prefer, PreferredReturn.OperationOutcome)) {
       newEntry.getResponse().setOutcome(new OperationOutcome());
     }
@@ -163,15 +165,16 @@ public class BundleService {
   private KefhirRequest buildRequest(BundleEntryComponent entry) {
     KefhirRequest req = new KefhirRequest();
     req.setMethod(entry.getRequest().getMethod().toCode());
-    URI uri = URI.create(entry.getRequest().getUrl()); //.replace("|", "%7C")
+    URI uri = URI.create(entry.getRequest().getUrl());
     req.setType(StringUtils.substringBefore(uri.getPath(), "/"));
-    req.setPath(StringUtils.removeStart(uri.getPath(), req.getPath()));
+    req.setPath(StringUtils.removeStart(uri.getPath(), req.getType()));
     req.setUri(uri.toString());
-    if (entry.getRequest().getIfNoneExist() != null) {
-      req.putHeader("If-None-Exist", entry.getRequest().getIfNoneExist());
-    }
+    req.putQuery(uri.getQuery());
+    req.putHeader("If-None-Exist", entry.getRequest().getIfNoneExist());
     req.setHeader("Content-Type", "application/json");
-    req.setBody(resourceFormatService.compose(entry.getResource(), "json").getValue());
+    if (entry.getResource() != null) {
+      req.setBody(resourceFormatService.compose(entry.getResource(), "json").getValue());
+    }
     return req;
   }
 

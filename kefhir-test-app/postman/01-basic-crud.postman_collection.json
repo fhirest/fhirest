@@ -1,0 +1,787 @@
+{
+	"info": {
+		"_postman_id": "cd5f1f07-0603-48d4-9f9c-2e7199430b32",
+		"name": "01-basic-crud",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"});",
+							"",
+							"patientRef = postman.getResponseHeader(\"Location\");",
+							"pm.environment.set(\"patientId\", patientRef.replace(/.*Patient\\/([^\\/]*).*/, '$1'));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-1\"\n        }\n    ],\n    \"name\": [\n        {\n            \"given\": [\n                \"Most\",\n                \"Sick\"\n            ],\n            \"family\": \"Person\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"male\",\n    \"telecom\": [\n        {\n            \"use\": \"work\",\n            \"rank\": 1,\n            \"value\": \"123\",\n            \"system\": \"phone\"\n        }\n    ],\n    \"birthDate\": \"1970-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "load Patient by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"correct person loaded\", function () {",
+							"    pm.expect(pm.response.json().identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/{{patientId}}",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient history",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"history bundle is returned\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"history\");",
+							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/{{patientId}}/_history",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}",
+						"_history"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "load Patient by history id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"correct person loaded\", function () {",
+							"    pm.expect(pm.response.json().identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/{{patientId}}/_history/1",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}",
+						"_history",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient search by identifier",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-1",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "identifier",
+							"value": "TESTPATIENT-1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient search by _id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?_id={{patientId}}",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "{{patientId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([204]);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/{{patientId}}",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update unexistant Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-2\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"female\",\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/randomid",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"randomid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"version is 2\", function () {",
+							"  vers = postman.getResponseHeader(\"Content-Location\").replace(/.*Patient\\/[^\\/]*\\/_history\\/([0-9]*)/, \"$1\");",
+							"  pm.expect(vers).to.eql(\"2\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-2\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"female\",\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/randomid",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"randomid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conditional update unexistant Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-3\"\n        }\n    ],\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-3",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "identifier",
+							"value": "TESTPATIENT-3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conditional update Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"version is 2\", function () {",
+							"  vers = postman.getResponseHeader(\"Content-Location\").replace(/.*Patient\\/[^\\/]*\\/_history\\/([0-9]*)/, \"$1\");",
+							"  pm.expect(vers).to.eql(\"2\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-3\"\n        }\n    ],\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-3",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "identifier",
+							"value": "TESTPATIENT-3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transaction 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"transaction responses\", function () {",
+							"    pm.expect(pm.response.json().type).to.eql(\"transaction-response\");",
+							"    pm.expect(pm.response.json().entry[0].response.status).to.eql(\"201\");",
+							"    patientRef = pm.response.json().entry[0].response.location",
+							"    pm.environment.set(\"patientId\", patientRef.replace(/.*Patient\\/([^\\/]*).*/, '$1'));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"request\": {\n        \"method\": \"POST\"\n      },\n      \"resource\": {\n        \"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-3\"\n        }\n    ],\n        \"name\": [\n          {\n            \"family\": \"Saltaformaggio\"\n          }\n        ],\n        \"gender\": \"male\",\n        \"active\": true,\n        \"birthDate\": \"1999-01-01\",\n        \"resourceType\": \"Patient\"\n      }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{kefhir}}",
+					"host": [
+						"{{kefhir}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transaction 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"transaction responses\", function () {",
+							"    pm.expect(pm.response.json().type).to.eql(\"transaction-response\");",
+							"    resp = {};",
+							"    pm.response.json().entry.forEach(e => resp[e.link[0].url] = e.response);",
+							"    pm.expect(resp[\"res1\"].status).to.eql(\"200\");",
+							"    pm.expect(resp[\"res1\"].location).to.eql(\"Patient/\" + pm.environment.get(\"patientId\") + \"/_history/2\");",
+							"    pm.expect(resp[\"res2\"].status).to.eql(\"201\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n        \"fullUrl\": \"res1\",\n      \"request\": {\n          \"url\": \"Patient/{{patientId}}\",\n          \"method\": \"PUT\"\n      },\n      \"resource\": {\n                  \"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-4\"\n        }\n    ],\n        \"name\": [\n          {\n            \"family\": \"Saltaformaggiooo\"\n          }\n        ],\n        \"gender\": \"male\",\n        \"active\": true,\n        \"birthDate\": \"1999-01-01\",\n        \"resourceType\": \"Patient\"\n      }\n    },\n        {\n            \"fullUrl\": \"res2\",\n      \"request\": {\n          \"method\": \"POST\"\n      },\n      \"resource\": {\n        \"name\": [\n          {\n            \"family\": \"Quattroformaggio\"\n          }\n        ],\n        \"gender\": \"male\",\n        \"active\": true,\n        \"birthDate\": \"2020-01-01\",\n        \"resourceType\": \"Patient\"\n      }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{kefhir}}",
+					"host": [
+						"{{kefhir}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "batch 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"transaction responses\", function () {",
+							"    pm.expect(pm.response.json().type).to.eql(\"batch-response\");",
+							"    resp = {};",
+							"    pm.response.json().entry.forEach(e => resp[e.link[0].url] = e.response);",
+							"    pm.expect(resp[\"res1\"].status).to.eql(\"200\");",
+							"    pm.expect(resp[\"res1\"].location).to.eql(\"Patient/\" + pm.environment.get(\"patientId\") + \"/_history/3\");",
+							"    pm.expect(resp[\"res2\"].status).to.eql(\"201\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"batch\",\n  \"entry\": [\n    {\n        \"fullUrl\": \"res1\",\n      \"request\": {\n          \"url\": \"Patient/{{patientId}}\",\n          \"method\": \"PUT\"\n      },\n      \"resource\": {\n                  \"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-4\"\n        }\n    ],\n        \"name\": [\n          {\n            \"family\": \"Saltaformaggiooo\"\n          }\n        ],\n        \"gender\": \"male\",\n        \"active\": true,\n        \"birthDate\": \"1999-01-01\",\n        \"resourceType\": \"Patient\"\n      }\n    },\n        {\n            \"fullUrl\": \"res2\",\n      \"request\": {\n          \"url\": \"Patient\",\n          \"method\": \"POST\"\n      },\n      \"resource\": {\n        \"name\": [\n          {\n            \"family\": \"Quattroformaggio\"\n          }\n        ],\n        \"gender\": \"male\",\n        \"active\": true,\n        \"birthDate\": \"2020-01-01\",\n        \"resourceType\": \"Patient\"\n      }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{kefhir}}",
+					"host": [
+						"{{kefhir}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transaction 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"transaction responses\", function () {",
+							"    pm.expect(pm.response.json().type).to.eql(\"transaction-response\");",
+							"    pm.expect(pm.response.json().entry[0].response.status).to.eql(\"204\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"request\": {\n          \"url\": \"Patient/{{patientId}}\",\n          \"method\": \"DELETE\"\n      }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{kefhir}}",
+					"host": [
+						"{{kefhir}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

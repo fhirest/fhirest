@@ -41,7 +41,6 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StructureDefinition;
-import org.hl7.fhir.utilities.validation.ValidationMessage;
 
 import static java.util.stream.Collectors.toList;
 
@@ -104,7 +103,7 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
         OperationOutcomeIssueComponent issue = new OperationOutcomeIssueComponent();
         issue.setCode(IssueType.INVALID);
 //        issue.setSeverity(severity(msg));
-        issue.setSeverity(IssueSeverity.fromCode(msg.getSeverity().name()));
+        issue.setSeverity(severity(msg.getSeverity()));
         issue.setDetails(new CodeableConcept().setText(msg.getMessage()));
         issue.addLocation(msg.getLocationString());
         return issue;
@@ -121,9 +120,9 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
 //        || level == org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity.FATAL;
 //  }
 
-  private IssueSeverity severity(ValidationMessage msg) {
+  private IssueSeverity severity(ResultSeverityEnum msg) {
     try {
-      return IssueSeverity.fromCode(msg.getLevel().toCode());
+      return IssueSeverity.fromCode(msg.getCode());
     } catch (FHIRException e) {
       throw new RuntimeException("спасибо вам.", e);
     }
