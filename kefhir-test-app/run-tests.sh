@@ -74,7 +74,7 @@ function startkefhir() {
     curl "http://localhost:$APP_PORT/Patient" -s -o /dev/null -f && break
     sleep 1
   done;
-  sleep 5
+  sleep 10
   echo "app started up."
 }
 
