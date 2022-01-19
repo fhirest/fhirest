@@ -19,6 +19,7 @@ import com.kodality.kefhir.search.repository.BlindexRepository;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.TimeZone;
 import org.hl7.fhir.r4.model.CodeType;
 import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
 import org.hl7.fhir.r4.model.SearchParameter;
@@ -49,21 +50,22 @@ public class DateExpressionTest {
 
   @Test
   public void test() {
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Tallinn"));
     test(null, null);
     test("", null);
-    test("1111", "range && range('1111-01-01T00:00:00+00:00', '1 year')");
-    test("le1111", "(range && range('1111-01-01T00:00:00+00:00', '1 year') OR range << range('1111-01-01T00:00:00+00:00', '1 year'))");
-    test("lt1111", "range << range('1111-01-01T00:00:00+00:00', '1 year')");
-    test("ge1111", "(range && range('1111-01-01T00:00:00+00:00', '1 year') OR range >> range('1111-01-01T00:00:00+00:00', '1 year'))");
-    test("gt1111", "range >> range('1111-01-01T00:00:00+00:00', '1 year')");
-    test("1111-11", "range && range('1111-11-01T00:00:00+00:00', '1 month')");
-    test("1111-11-11", "range && range('1111-11-11T00:00:00+00:00', '1 day')");
-    test("1111-11-11T11", "range && range('1111-11-11T11:00:00+00:00', '1 hour')");
-    test("1111-11-11T11:11", "range && range('1111-11-11T11:11:00+00:00', '1 minute')");
-    test("1111-11-11T11:11:11", "range && range('1111-11-11T11:11:11+00:00', '1 second')");
+    test("2000", "range && search.range('2000-01-01T00:00:00+02:00', '1 year')");
+    test("le2000", "(range && search.range('2000-01-01T00:00:00+02:00', '1 year') OR range << search.range('2000-01-01T00:00:00+02:00', '1 year'))");
+    test("lt2000", "range << search.range('2000-01-01T00:00:00+02:00', '1 year')");
+    test("ge2000", "(range && search.range('2000-01-01T00:00:00+02:00', '1 year') OR range >> search.range('2000-01-01T00:00:00+02:00', '1 year'))");
+    test("gt2000", "range >> search.range('2000-01-01T00:00:00+02:00', '1 year')");
+    test("2000-11", "range && search.range('2000-11-01T00:00:00+02:00', '1 month')");
+    test("2000-11-11", "range && search.range('2000-11-11T00:00:00+02:00', '1 day')");
+    test("2000-11-11T11", "range && search.range('2000-11-11T11:00:00+02:00', '1 hour')");
+    test("2000-11-11T11:11", "range && search.range('2000-11-11T11:11:00+02:00', '1 minute')");
+    test("2000-11-11T11:11:11", "range && search.range('2000-11-11T11:11:11+02:00', '1 second')");
 
-    test("1111-11-11T11:11:11Z", "range && range('1111-11-11T11:11:11+00:00', '1 second')");
-    test("1111-11-11T11:11:11+07:00", "range && range('1111-11-11T11:11:11+07:00', '1 second')");
+    test("2000-11-11T11:11:11Z", "range && search.range('2000-11-11T11:11:11+00:00', '1 second')");
+    test("2000-11-11T11:11:11+07:00", "range && search.range('2000-11-11T11:11:11+07:00', '1 second')");
   }
 
   private void test(String input, String expectedCondition) {

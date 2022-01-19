@@ -17,6 +17,9 @@ import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.core.util.DateUtil;
 import com.kodality.kefhir.search.sql.SearchPrefix;
 import com.kodality.kefhir.util.sql.SqlBuilder;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +29,7 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 public class DateExpressionProvider extends ExpressionProvider {
   private static final Map<Integer, String> intervals;
-  private static final String[] operators = { null, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt };
+  private static final String[] operators = {null, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt};
 
   static {
     intervals = new HashMap<>();
@@ -94,15 +97,27 @@ public class DateExpressionProvider extends ExpressionProvider {
   private static String range(String value) {
     value = StringUtils.replace(value, "Z", "+00:00");
     String[] input = StringUtils.split(value, "-T:+");
-    String interval = intervals.get(input.length);
-    String[] mask = mask(input);
-    String date = String.format("%s-%s-%sT%s:%s:%s+%s:%s", (Object[]) mask);
-    DateUtil.parse(date, DateUtil.ISO_DATETIME).orElseThrow(() -> new IllegalArgumentException("Cannot parse date " + date)); //just for validation
-    return "range('" + date + "', '" + interval + "')";
+    if (value.contains("+")) { //with specified timezone
+      String date = String.format("%s-%s-%sT%s:%s:%s+%s:%s", (Object[]) maskTz(input));
+      DateUtil.parse(date, DateUtil.ISO_DATETIME).orElseThrow(() -> new IllegalArgumentException("Cannot parse date " + date)); //just for validation
+      String interval = intervals.get(input.length);
+      return "search.range('" + date + "', '" + interval + "')";
+    } else { //with system timezone
+      String date = String.format("%s-%s-%sT%s:%s:%s", (Object[]) mask(input));
+      date = LocalDateTime.parse(date).atZone(ZoneId.systemDefault()).toOffsetDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
+      String interval = intervals.get(input.length);
+      return "search.range('" + date + "', '" + interval + "')";
+    }
+  }
+
+  private static String[] maskTz(String[] input) {
+    String[] mask = new String[]{"0000", "01", "01", "00", "00", "00", "00", "00"};
+    System.arraycopy(input, 0, mask, 0, input.length);
+    return mask;
   }
 
   private static String[] mask(String[] input) {
-    String[] mask = new String[] { "0000", "01", "01", "00", "00", "00", "00", "00" };
+    String[] mask = new String[]{"0000", "01", "01", "00", "00", "00"};
     System.arraycopy(input, 0, mask, 0, input.length);
     return mask;
   }
