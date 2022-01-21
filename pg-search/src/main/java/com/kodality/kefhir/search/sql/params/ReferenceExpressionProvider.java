@@ -75,7 +75,7 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
     sb.append(" ON ").in(alias + ".type", (Object[]) refs);
     String path = path(param);
     path = path.equals("'agent.who'") ? "'agent.whoReference'" : path;//XXX haha
-    sb.and(String.format("search.reference(%s, %s) && search.ref(%s.type, %s.id)", parentAlias, path, alias, alias));
+    sb.and(String.format("search.reference(%s, %s) && store.ref(%s.type, %s.id)", parentAlias, path, alias, alias));
     sb.and(alias + ".sys_status = 'A'");
     sb.append(chain(param.getChains(), alias));
     return sb;
