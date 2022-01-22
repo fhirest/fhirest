@@ -68,7 +68,7 @@ function startkefhir() {
 
   while ! grep -m1 'conformance loaded' < test-reports/server.log; do sleep 1; done
   while ! grep -m1 'blindex initialization finished' < test-reports/server.log; do sleep 1; done
-  sleep 3
+  sleep 5
   echo "app started up."
 }
 
