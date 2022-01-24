@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "187ace0e-0a86-4fa7-8a4f-cd640cd93568",
-		"name": "42-search-string",
+		"_postman_id": "a293ec8d-10d6-4614-949a-1ec2c4b44cd6",
+		"name": "41-search-token",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -36,7 +36,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"fullUrl\": \"test-bunny-1\",\n      \"request\": {\n        \"url\": \"Patient/ps100\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"identifier\": [\n          {\n            \"system\": \"urn:kefhir-search-tests\",\n            \"value\": \"TESTPATIENT-100\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Margherita\"\n          }\n        ],\n        \"active\": true,\n        \"gender\": \"female\",\n        \"birthDate\": \"1975-02-02\",\n        \"resourceType\": \"Patient\"\n      }\n    },\n    {\n      \"fullUrl\": \"test-bunny-2\",\n      \"request\": {\n        \"url\": \"Patient/ps101\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"identifier\": [\n          {\n            \"value\": \"TESTPATIENT-nosystem-101\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Marinara-rita\"\n          }\n        ],\n        \"active\": true,\n        \"gender\": \"female\",\n        \"resourceType\": \"Patient\"\n      }\n    }\n  ]\n}\n"
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"fullUrl\": \"test-bunny-1\",\n      \"request\": {\n        \"url\": \"Patient/ps100\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"identifier\": [\n          {\n            \"system\": \"urn:kefhir-search-tests\",\n            \"value\": \"TESTPATIENT-100\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Margherita\"\n          }\n        ],\n        \"active\": true,\n        \"gender\": \"female\",\n        \"birthDate\": \"1975-02-02\",\n        \"resourceType\": \"Patient\"\n      }\n    },\n    {\n      \"fullUrl\": \"test-bunny-2\",\n      \"request\": {\n        \"url\": \"Patient/ps101\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"identifier\": [\n          {\n            \"value\": \"TESTPATIENT-nosystem-101\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Marinara\"\n          }\n        ],\n        \"active\": true,\n        \"gender\": \"female\",\n        \"resourceType\": \"Patient\"\n      }\n    }\n  ]\n}\n"
 				},
 				"url": {
 					"raw": "{{kefhir}}",
@@ -48,7 +48,7 @@
 			"response": []
 		},
 		{
-			"name": "string param unexistant",
+			"name": "token param unexistant",
 			"event": [
 				{
 					"listen": "test",
@@ -91,7 +91,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?name=kakoitodzigurda",
+					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-oopsyatypo",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -100,8 +100,8 @@
 					],
 					"query": [
 						{
-							"key": "name",
-							"value": "kakoitodzigurda"
+							"key": "identifier",
+							"value": "TESTPATIENT-oopsyatypo"
 						}
 					]
 				}
@@ -109,7 +109,7 @@
 			"response": []
 		},
 		{
-			"name": "string param by beginning",
+			"name": "token param: value",
 			"event": [
 				{
 					"listen": "test",
@@ -153,7 +153,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?name=margher",
+					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-100",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -162,8 +162,8 @@
 					],
 					"query": [
 						{
-							"key": "name",
-							"value": "margher"
+							"key": "identifier",
+							"value": "TESTPATIENT-100"
 						}
 					]
 				}
@@ -171,194 +171,7 @@
 			"response": []
 		},
 		{
-			"name": "string param by beginning",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"OK\", function () {",
-							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
-							"});",
-							"pm.test(\"validate search result\", function () {",
-							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
-							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
-							"    pm.expect(pm.response.json().total).to.eql(2);",
-							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
-							"    pm.expect(pm.response.json().entry[1].resource.id).to.eql(\"ps101\");",
-							"});",
-							"",
-							"",
-							"",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{kefhir}}/Patient?name=mar",
-					"host": [
-						"{{kefhir}}"
-					],
-					"path": [
-						"Patient"
-					],
-					"query": [
-						{
-							"key": "name",
-							"value": "mar"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "string param by ending",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"OK\", function () {",
-							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
-							"});",
-							"pm.test(\"validate search result\", function () {",
-							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
-							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
-							"    pm.expect(pm.response.json().total).to.eql(0);",
-							"});",
-							"",
-							"",
-							"",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{kefhir}}/Patient?name=rita",
-					"host": [
-						"{{kefhir}}"
-					],
-					"path": [
-						"Patient"
-					],
-					"query": [
-						{
-							"key": "name",
-							"value": "rita"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "string param by ending",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"OK\", function () {",
-							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
-							"});",
-							"pm.test(\"validate search result\", function () {",
-							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
-							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
-							"    pm.expect(pm.response.json().total).to.eql(2);",
-							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
-							"    pm.expect(pm.response.json().entry[1].resource.id).to.eql(\"ps101\");",
-							"});",
-							"",
-							"",
-							"",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{kefhir}}/Patient?name:contains=rita",
-					"host": [
-						"{{kefhir}}"
-					],
-					"path": [
-						"Patient"
-					],
-					"query": [
-						{
-							"key": "name:contains",
-							"value": "rita"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "string param by ending",
+			"name": "token param: system|value",
 			"event": [
 				{
 					"listen": "test",
@@ -371,7 +184,7 @@
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
 							"    pm.expect(pm.response.json().total).to.eql(1);",
-							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
+							"pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
 							"});",
 							"",
 							"",
@@ -402,7 +215,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?name:contains=gherita",
+					"raw": "{{kefhir}}/Patient?identifier=urn:kefhir-search-tests%7CTESTPATIENT-100",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -411,8 +224,8 @@
 					],
 					"query": [
 						{
-							"key": "name:contains",
-							"value": "gherita"
+							"key": "identifier",
+							"value": "urn:kefhir-search-tests%7CTESTPATIENT-100"
 						}
 					]
 				}
@@ -420,68 +233,7 @@
 			"response": []
 		},
 		{
-			"name": "string param exact",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"OK\", function () {",
-							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
-							"});",
-							"pm.test(\"validate search result\", function () {",
-							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
-							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
-							"    pm.expect(pm.response.json().total).to.eql(0);",
-							"});",
-							"",
-							"",
-							"",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{kefhir}}/Patient?name:exact=margherita",
-					"host": [
-						"{{kefhir}}"
-					],
-					"path": [
-						"Patient"
-					],
-					"query": [
-						{
-							"key": "name:exact",
-							"value": "margherita"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "string param exact",
+			"name": "token param |value",
 			"event": [
 				{
 					"listen": "test",
@@ -494,7 +246,7 @@
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
 							"    pm.expect(pm.response.json().total).to.eql(1);",
-							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
+							"pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps101\");",
 							"});",
 							"",
 							"",
@@ -525,7 +277,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?name:exact=Margherita",
+					"raw": "{{kefhir}}/Patient?identifier=%7CTESTPATIENT-nosystem-101",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -534,8 +286,70 @@
 					],
 					"query": [
 						{
-							"key": "name:exact",
-							"value": "Margherita"
+							"key": "identifier",
+							"value": "%7CTESTPATIENT-nosystem-101"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "token param system|",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?identifier=urn:kefhir-search-tests%7C",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "identifier",
+							"value": "urn:kefhir-search-tests%7C"
 						}
 					]
 				}

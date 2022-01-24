@@ -68,7 +68,7 @@ public class ResourceSearchService {
   }
 
   private void include(SearchResult result, SearchCriterion criteria) {
-    //TODO: :recursive
+    //TODO: :iterate
     criteria.getResultParams(SearchCriterion._INCLUDE).forEach(ip -> ip.getValues().forEach(includeKey -> {
       String[] includeTokens = SearchUtil.parseInclude(includeKey);
       String resourceType = includeTokens[0];
@@ -87,7 +87,7 @@ public class ResourceSearchService {
   }
 
   private void revInclude(SearchResult result, SearchCriterion criteria) {
-    //TODO: :recursive
+    //TODO: :iterate
     if (CollectionUtils.isEmpty(criteria.getResultParams(SearchCriterion._REVINCLUDE))) {
       return;
     }

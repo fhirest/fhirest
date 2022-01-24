@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "a293ec8d-10d6-4614-949a-1ec2c4b44cd6",
-		"name": "42-search-token",
+		"_postman_id": "1b4a02c3-8329-4155-8c52-dbf3d85651be",
+		"name": "41-search-date",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -36,7 +36,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"fullUrl\": \"test-bunny-1\",\n      \"request\": {\n        \"url\": \"Patient/ps100\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"identifier\": [\n          {\n            \"system\": \"urn:kefhir-search-tests\",\n            \"value\": \"TESTPATIENT-100\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Margherita\"\n          }\n        ],\n        \"active\": true,\n        \"gender\": \"female\",\n        \"birthDate\": \"1975-02-02\",\n        \"resourceType\": \"Patient\"\n      }\n    },\n    {\n      \"fullUrl\": \"test-bunny-2\",\n      \"request\": {\n        \"url\": \"Patient/ps101\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"identifier\": [\n          {\n            \"value\": \"TESTPATIENT-nosystem-101\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Marinara\"\n          }\n        ],\n        \"active\": true,\n        \"gender\": \"female\",\n        \"resourceType\": \"Patient\"\n      }\n    }\n  ]\n}\n"
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"fullUrl\": \"test-bunny-1\",\n      \"request\": {\n        \"url\": \"Patient/ps100\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"identifier\": [\n          {\n            \"system\": \"urn:kefhir-search-tests\",\n            \"value\": \"TESTPATIENT-100\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Margherita\"\n          }\n        ],\n        \"active\": true,\n        \"gender\": \"female\",\n        \"birthDate\": \"2000-02-02\",\n        \"resourceType\": \"Patient\"\n      }\n    },\n    {\n      \"fullUrl\": \"test-bunny-2\",\n      \"request\": {\n        \"url\": \"Patient/ps101\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"identifier\": [\n          {\n            \"value\": \"TESTPATIENT-nosystem-101\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Marinara\"\n          }\n        ],\n        \"active\": true,\n        \"gender\": \"female\",\n        \"resourceType\": \"Patient\",\n        \"birthDate\": \"2020-02-02\"\n      }\n    }\n  ]\n}\n"
 				},
 				"url": {
 					"raw": "{{kefhir}}",
@@ -48,7 +48,7 @@
 			"response": []
 		},
 		{
-			"name": "token param unexistant",
+			"name": "date param",
 			"event": [
 				{
 					"listen": "test",
@@ -91,7 +91,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-oopsyatypo",
+					"raw": "{{kefhir}}/Patient?birthdate=1900-01-01",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -100,8 +100,8 @@
 					],
 					"query": [
 						{
-							"key": "identifier",
-							"value": "TESTPATIENT-oopsyatypo"
+							"key": "birthdate",
+							"value": "1900-01-01"
 						}
 					]
 				}
@@ -109,7 +109,7 @@
 			"response": []
 		},
 		{
-			"name": "token param: value",
+			"name": "date param",
 			"event": [
 				{
 					"listen": "test",
@@ -153,7 +153,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-100",
+					"raw": "{{kefhir}}/Patient?birthdate=2000-02-02",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -162,8 +162,8 @@
 					],
 					"query": [
 						{
-							"key": "identifier",
-							"value": "TESTPATIENT-100"
+							"key": "birthdate",
+							"value": "2000-02-02"
 						}
 					]
 				}
@@ -171,7 +171,7 @@
 			"response": []
 		},
 		{
-			"name": "token param: system|value",
+			"name": "date param",
 			"event": [
 				{
 					"listen": "test",
@@ -184,7 +184,7 @@
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
 							"    pm.expect(pm.response.json().total).to.eql(1);",
-							"pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
 							"});",
 							"",
 							"",
@@ -215,7 +215,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?identifier=urn:kefhir-search-tests%7CTESTPATIENT-100",
+					"raw": "{{kefhir}}/Patient?birthdate=2000-02",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -224,8 +224,8 @@
 					],
 					"query": [
 						{
-							"key": "identifier",
-							"value": "urn:kefhir-search-tests%7CTESTPATIENT-100"
+							"key": "birthdate",
+							"value": "2000-02"
 						}
 					]
 				}
@@ -233,7 +233,7 @@
 			"response": []
 		},
 		{
-			"name": "token param |value",
+			"name": "date param",
 			"event": [
 				{
 					"listen": "test",
@@ -246,7 +246,7 @@
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
 							"    pm.expect(pm.response.json().total).to.eql(1);",
-							"pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps101\");",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
 							"});",
 							"",
 							"",
@@ -277,7 +277,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?identifier=%7CTESTPATIENT-nosystem-101",
+					"raw": "{{kefhir}}/Patient?birthdate=2000",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -286,8 +286,8 @@
 					],
 					"query": [
 						{
-							"key": "identifier",
-							"value": "%7CTESTPATIENT-nosystem-101"
+							"key": "birthdate",
+							"value": "2000"
 						}
 					]
 				}
@@ -295,7 +295,7 @@
 			"response": []
 		},
 		{
-			"name": "token param system|",
+			"name": "date param",
 			"event": [
 				{
 					"listen": "test",
@@ -308,7 +308,7 @@
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
 							"    pm.expect(pm.response.json().total).to.eql(1);",
-							"pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
 							"});",
 							"",
 							"",
@@ -339,7 +339,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?identifier=urn:kefhir-search-tests%7C",
+					"raw": "{{kefhir}}/Patient?birthdate=le2000-02-02&_id=ps100,ps101",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -348,8 +348,142 @@
 					],
 					"query": [
 						{
-							"key": "identifier",
-							"value": "urn:kefhir-search-tests%7C"
+							"key": "birthdate",
+							"value": "le2000-02-02"
+						},
+						{
+							"key": "_id",
+							"value": "ps100,ps101"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "date param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(0);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?birthdate=lt2000-02-02&_id=ps100,ps101",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "birthdate",
+							"value": "lt2000-02-02"
+						},
+						{
+							"key": "_id",
+							"value": "ps100,ps101"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "date param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(2);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?birthdate=ge2000-02-02&_id=ps100,ps101",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "birthdate",
+							"value": "ge2000-02-02"
+						},
+						{
+							"key": "_id",
+							"value": "ps100,ps101"
 						}
 					]
 				}

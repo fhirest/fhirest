@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "f6e334a1-c018-4e20-9e34-851ad4e96da1",
-		"name": "43-search-reference",
+		"name": "42-search-reference",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -462,7 +462,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Observation?subject.identifier=TESTPATIENT-100",
+					"raw": "{{kefhir}}/Observation?subject:Patient.identifier=TESTPATIENT-100",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -471,7 +471,7 @@
 					],
 					"query": [
 						{
-							"key": "subject.identifier",
+							"key": "subject:Patient.identifier",
 							"value": "TESTPATIENT-100"
 						}
 					]

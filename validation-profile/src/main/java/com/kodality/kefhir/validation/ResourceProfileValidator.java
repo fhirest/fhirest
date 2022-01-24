@@ -28,7 +28,6 @@ import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.api.ResourceRepresentation;
 import com.kodality.kefhir.structure.service.HapiContextHolder;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
-import java.io.ByteArrayInputStream;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -134,7 +133,6 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
     try {
       FhirValidator validator = (FhirValidator) hapiContextHolder.getContext().newValidator();
 //      validator.setAnyExtensionsAllowed(true);
-      ByteArrayInputStream input = new ByteArrayInputStream(content.getBytes());
       ValidationResult vr = validator.validateWithResult(resourceFormatService.parse(content));
       return vr.getMessages();
 //      element = validator.validate(null, messages, input, getFhirFormat(content));
