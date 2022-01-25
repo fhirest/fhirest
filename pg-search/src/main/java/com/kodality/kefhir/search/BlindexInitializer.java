@@ -86,7 +86,7 @@ public class BlindexInitializer implements ConformanceUpdateListener {
         if (e.getCause() instanceof PSQLException) {
           err = (e.getCause().getMessage().substring(0, e.getCause().getMessage().indexOf("\n")));
         }
-        log.debug("failed " + key + ": " + err);
+        log.info("failed " + key + ": " + err);
         errors.add(key + ": " + err);
       }
     }
