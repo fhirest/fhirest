@@ -185,6 +185,169 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "_include:iterate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry.length).to.eql(3);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"observation100\");",
+							"    pm.expect(pm.response.json().entry[1].resource.id).to.eql(\"ps100\");",
+							"    pm.expect(pm.response.json().entry[2].resource.id).to.eql(\"enc100\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Observation?_id=observation100&_include=Observation:subject&_include=Observation:encounter&_include=Encounter:subject&_include=Encounter:service-provider",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Observation"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "observation100"
+						},
+						{
+							"key": "_include",
+							"value": "Observation:subject"
+						},
+						{
+							"key": "_include",
+							"value": "Observation:encounter"
+						},
+						{
+							"key": "_include",
+							"value": "Encounter:subject"
+						},
+						{
+							"key": "_include",
+							"value": "Encounter:service-provider"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "_include:iterate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry.length).to.eql(4);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"observation100\");",
+							"    pm.expect(pm.response.json().entry[1].resource.id).to.eql(\"ps100\");",
+							"    pm.expect(pm.response.json().entry[2].resource.id).to.eql(\"enc100\");",
+							"    pm.expect(pm.response.json().entry[3].resource.id).to.eql(\"organization100\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Observation?_id=observation100&_include=Observation:subject&_include=Observation:encounter&_include:iterate=Encounter:subject&_include:iterate=Encounter:service-provider",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Observation"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "observation100"
+						},
+						{
+							"key": "_include",
+							"value": "Observation:subject"
+						},
+						{
+							"key": "_include",
+							"value": "Observation:encounter"
+						},
+						{
+							"key": "_include:iterate",
+							"value": "Encounter:subject"
+						},
+						{
+							"key": "_include:iterate",
+							"value": "Encounter:service-provider"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

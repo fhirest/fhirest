@@ -5,7 +5,7 @@ import com.kodality.kefhir.core.util.ResourceUtil;
 import com.kodality.kefhir.rest.KefhirEndpointService.KefhirEnabledOperation;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
@@ -22,8 +22,8 @@ public class KefhirRequest {
   private String method;
   private String type;
   private String path;
-  private Map<String, List<String>> parameters = new HashMap<>();
-  private Map<String, List<String>> headers = new HashMap<>();
+  private Map<String, List<String>> parameters = new LinkedHashMap<>();
+  private Map<String, List<String>> headers = new LinkedHashMap<>();
   private String uri;
   private String body;
 

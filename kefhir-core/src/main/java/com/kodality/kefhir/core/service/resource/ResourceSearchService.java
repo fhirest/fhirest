@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.core.service.resource;
+package com.kodality.kefhir.core.service.resource;
 
 import com.kodality.kefhir.core.api.resource.ResourceSearchHandler;
 import com.kodality.kefhir.core.exception.FhirServerException;
@@ -21,6 +21,7 @@ import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.core.service.FhirPath;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.core.util.ResourceUtil;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -68,14 +69,17 @@ public class ResourceSearchService {
   }
 
   private void include(SearchResult result, SearchCriterion criteria) {
-    //TODO: :iterate
     criteria.getResultParams(SearchCriterion._INCLUDE).forEach(ip -> ip.getValues().forEach(includeKey -> {
       String[] includeTokens = SearchUtil.parseInclude(includeKey);
       String resourceType = includeTokens[0];
       String searchParam = includeTokens[1];
       String targetType = includeTokens[2];
       List<String> expressions = findReferenceParams(resourceType, searchParam);
-      result.getEntries().stream().filter(e -> e.getId().getResourceType().equals(resourceType)).forEach(entry -> {
+      List<ResourceVersion> entries = new ArrayList<>(result.getEntries());
+      if ("iterate".equals(ip.getModifier())) {
+        entries.addAll(result.getIncludes());
+      }
+      entries.stream().filter(e -> e.getId().getResourceType().equals(resourceType)).forEach(entry -> {
         expressions.stream()
             .flatMap(expr -> evaluate(entry, expr))
             .map(ref -> ResourceUtil.parseReference(ref.getReference()))
@@ -118,13 +122,13 @@ public class ResourceSearchService {
       //TODO: if reference is non-versioned - last version must be included.
       //      need to make sure if included resource is already last version or not.
       return reference.getVersion() == null
-                                            ? e.getId().getResourceReference().equals(reference.getResourceReference())
-                                            : e.getId().getReference().equals(reference.getReference());
+          ? e.getId().getResourceReference().equals(reference.getResourceReference())
+          : e.getId().getReference().equals(reference.getReference());
     });
   }
 
   private Stream<org.hl7.fhir.r4.model.Reference> evaluate(ResourceVersion entry, String expr) {
-    return fhirPath.<org.hl7.fhir.r4.model.Reference> evaluate(entry.getContent().getValue(), expr).stream();
+    return fhirPath.<org.hl7.fhir.r4.model.Reference>evaluate(entry.getContent().getValue(), expr).stream();
   }
 
   private List<String> findReferenceParams(String resourceType, String param) {
