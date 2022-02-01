@@ -110,6 +110,13 @@ public class PostgreStorehouse implements ResourceStorehouse {
   }
 
   @Override
+  public List<ResourceVersion> load(List<ResourceId> ids) {
+    List<ResourceVersion> versions = resourceRepository.load(ids);
+    versions.forEach(v -> decorate(v));
+    return versions;
+  }
+
+  @Override
   public List<ResourceVersion> loadHistory(HistorySearchCriterion criteria) {
     List<ResourceVersion> history = resourceRepository.loadHistory(criteria);
     history.forEach(this::decorate);

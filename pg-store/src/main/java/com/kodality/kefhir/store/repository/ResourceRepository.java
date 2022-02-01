@@ -24,8 +24,11 @@ import java.util.List;
 import java.util.Optional;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import static java.util.stream.Collectors.joining;
 
 @Singleton
 @RequiredArgsConstructor
@@ -43,7 +46,7 @@ public class ResourceRepository {
       version.getId().setResourceId(getNextResourceId());
     }
     String sql =
-        "INSERT INTO store.resource (type, id, last_version, author, content, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb,?)";
+        "INSERT INTO store.resource (type, id, version, author, content, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb,?)";
     jdbcTemplate.update(sql,
         version.getId().getResourceType(),
         version.getId().getResourceId(),
@@ -54,17 +57,28 @@ public class ResourceRepository {
   }
 
   public Integer getLastVersion(ResourceId id) {
-    String sql = "SELECT COALESCE(max(last_version),0) FROM store.resource WHERE type = ? AND id = ?";
+    String sql = "SELECT COALESCE(max(version),0) FROM store.resource WHERE type = ? AND id = ?";
     return jdbcTemplate.queryForObject(sql, Integer.class, id.getResourceType(), id.getResourceId());
+  }
+
+  public List<ResourceVersion> load(List<ResourceId> ids) {
+    if (CollectionUtils.isEmpty(ids)) {
+      return List.of();
+    }
+    SqlBuilder sb = new SqlBuilder();
+    sb.append("SELECT * FROM store.resource r WHERE sys_status = 'A'");
+    sb.append(" and (type, id) in (").append(ids.stream().map(id -> "(?,?)").collect(joining(","))).append(")");
+    ids.forEach(id -> sb.add(id.getResourceType(), id.getResourceId()));
+    return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
   }
 
   public ResourceVersion load(VersionId id) {
     SqlBuilder sb = new SqlBuilder();
     sb.append("SELECT * FROM store.resource r WHERE type = ? AND id = ?", id.getResourceType(), id.getResourceId());
     if (id.getVersion() != null) {
-      sb.append(" AND last_version = ?", id.getVersion());
+      sb.append(" AND version = ?", id.getVersion());
     } else {
-      sb.append(" AND sys_status != 'T'");
+      sb.append(" AND sys_status = 'A'");
     }
     pgResourceFilter.ifPresent(f -> f.filter(sb, "r"));
     try {
@@ -83,10 +97,10 @@ public class ResourceRepository {
     sb.appendIfNotNull(" AND type = ?", criteria.getResourceType());
     sb.appendIfNotNull(" AND id = ?", criteria.getResourceId());
     if (criteria.getSince() != null) {
-      sb.append(" AND last_updated >= ?", DateUtil.parse(criteria.getSince()));
+      sb.append(" AND updated >= ?", DateUtil.parse(criteria.getSince()));
     }
     pgResourceFilter.ifPresent(f -> f.filter(sb, "r"));
-    sb.append(" ORDER BY last_updated desc");
+    sb.append(" ORDER BY updated desc");
     return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
   }
 

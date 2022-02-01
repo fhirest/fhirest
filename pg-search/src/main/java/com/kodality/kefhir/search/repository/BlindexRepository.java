@@ -10,11 +10,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.search.repository;
+package com.kodality.kefhir.search.repository;
 
 import com.kodality.kefhir.core.exception.FhirServerException;
+import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.search.model.Blindex;
-import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -29,51 +29,55 @@ import org.springframework.jdbc.core.RowMapper;
 
 @Singleton
 public class BlindexRepository {
-  private static final Map<String, String> parasols = new HashMap<>();
+  private static final Map<String, String> INDEXES = new HashMap<>();
   @Inject
   private JdbcTemplate jdbcTemplate;
   @Inject
   @Named("adminJdbcTemplate")
   private JdbcTemplate adminJdbcTemplate;
 
+  //TODO: will not work on multiple nodes.
   @PostConstruct
-  public void init() {
-    parasols.clear();
-    load(Blindex.PARASOL).forEach(p -> parasols.put(p.getKey(), p.getName()));
+  public void refreshCache() {
+    loadIndexes().forEach(p -> INDEXES.put(p.getKey(), p.getName()));
   }
 
-  public static String getParasol(String resourceType, String path) {
+  public static String getIndex(String resourceType, String path) {
     String key = resourceType + "." + path;
-    if (!parasols.containsKey(key)) {
+    if (!INDEXES.containsKey(key)) {
       throw new FhirServerException(500, key + " not indexed");
     }
-    return parasols.get(key);
+    return INDEXES.get(key);
   }
 
-  public List<Blindex> load() {
-    return load(null);
+  public List<Blindex> loadIndexes() {
+    String sql = "SELECT * FROM search.blindex";
+    return jdbcTemplate.query(sql, new BlindexRowMapper());
   }
 
-  public List<Blindex> load(String type) {
-    SqlBuilder sb = new SqlBuilder();
-    sb.append("SELECT resource_type, path, index_name FROM search.blindex");
-    sb.appendIfNotNull("WHERE index_type = ?", type);
-    return jdbcTemplate.query(sb.getSql(), new ParasolRowMapper(), sb.getParams());
+  public Blindex createIndex(String resourceType, String path) {
+    return adminJdbcTemplate.queryForObject("SELECT * from search.create_blindex(?,?)", new BlindexRowMapper(), resourceType, path);
   }
 
-  public void createIndex(String resourceType, String path) {
-    adminJdbcTemplate.queryForObject("SELECT search.create_blindex(?,?)", String.class, resourceType, path);
+  public void merge(Long blindexId, ResourceId id, String jsonContent) {
+    String sql = "select search.merge_blindex(?, sid, ?::jsonb) from search.resource where resource_type = search.resource_type_id(?) and resource_id = ?";
+    adminJdbcTemplate.queryForObject(sql, Object.class, blindexId, jsonContent, id.getResourceType(), id.getResourceId());
   }
 
   public void dropIndex(String resourceType, String path) {
     adminJdbcTemplate.queryForObject("SELECT search.drop_blindex(?,?)", String.class, resourceType, path);
   }
 
-  private static class ParasolRowMapper implements RowMapper<Blindex> {
+  public void cleanup() {
+    adminJdbcTemplate.queryForObject("SELECT search.cleanup_indexes()", Object.class);
+  }
+
+  private static class BlindexRowMapper implements RowMapper<Blindex> {
 
     @Override
     public Blindex mapRow(ResultSet rs, int rowNum) throws SQLException {
       Blindex p = new Blindex();
+      p.setId(rs.getLong("id"));
       p.setResourceType(rs.getString("resource_type"));
       p.setPath(rs.getString("path"));
       p.setName(rs.getString("index_name"));

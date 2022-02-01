@@ -13,35 +13,27 @@
  package com.kodality.kefhir.search;
 
 import com.kodality.kefhir.core.api.resource.ResourceSearchHandler;
-import com.kodality.kefhir.core.model.ResourceVersion;
+import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.search.SearchCriterion;
 import com.kodality.kefhir.core.model.search.SearchResult;
-import com.kodality.kefhir.core.util.JsonUtil;
 import com.kodality.kefhir.search.repository.PgSearchRepository;
 import java.util.List;
-import java.util.Map;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
 @Singleton
 @RequiredArgsConstructor
-public class PgSearch implements ResourceSearchHandler {
-  private final PgSearchRepository pgSearchDao;
+public class PgSearchHandler implements ResourceSearchHandler {
+  private final PgSearchRepository pgSearchRepository;
 
   @Override
   public SearchResult search(SearchCriterion criteria) {
-    Integer total = pgSearchDao.count(criteria);
+    Integer total = pgSearchRepository.count(criteria);
     if (total == 0) {
       return SearchResult.empty();
     }
-    List<ResourceVersion> result = pgSearchDao.search(criteria);
-    result.stream().forEach(vers -> {
-      // TODO: maybe rewrite this when better times come and resource will be parsed until end.
-      Map<String, Object> hack = JsonUtil.fromJson(vers.getContent().getValue());
-      hack.put("id", vers.getId().getResourceId());
-      vers.getContent().setValue(JsonUtil.toJson(hack));
-    });
-    return new SearchResult(total, result);
+    List<ResourceId> ids = pgSearchRepository.search(criteria);
+    return SearchResult.lazy(total, ids);
   }
 
 }

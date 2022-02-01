@@ -23,10 +23,10 @@ import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.exception.FhirServerException;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
+import com.kodality.kefhir.core.service.conformance.HapiContextHolder;
 import com.kodality.kefhir.structure.api.ParseException;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.api.ResourceRepresentation;
-import com.kodality.kefhir.structure.service.HapiContextHolder;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.List;
 import javax.inject.Inject;
@@ -38,6 +38,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.StructureDefinition;
 
@@ -128,21 +129,22 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
   }
 
   private List<SingleValidationMessage> validate(String resourceType, ResourceContent content) {
-//    Element element;
-//    List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
+      Resource resource = resourceFormatService.parse(content);
+    if (!resource.getResourceType().name().equals(resourceType)) {
+      String msg = "was expecting " + resourceType + " but found " + resource.getResourceType().name();
+      throw new FhirException(400, IssueType.INVALID, msg);
+    }
     try {
-      FhirValidator validator = (FhirValidator) hapiContextHolder.getContext().newValidator();
+//    List<ValidationMessage> messages = new ArrayList<>();
+//      hapiContextHolder.getHapiContext().newValidator().validate(hapiContextHolder.getContext(), messages, resource, getFhirFormat(content).name());
+      FhirValidator validator = hapiContextHolder.getContext().newValidator();
 //      validator.setAnyExtensionsAllowed(true);
-      ValidationResult vr = validator.validateWithResult(resourceFormatService.parse(content));
+      ValidationResult vr = validator.validateWithResult(resource);
       return vr.getMessages();
 //      element = validator.validate(null, messages, input, getFhirFormat(content));
     } catch (Exception e) {
       throw new RuntimeException(":/", e);
     }
-//    if (element != null && !element.getType().equals(resourceType)) {
-//      String msg = "was expecting " + resourceType + " but found " + element.getType();
-//      throw new FhirException(400, IssueType.INVALID, msg);
-//    }
 //    return messages;
   }
 

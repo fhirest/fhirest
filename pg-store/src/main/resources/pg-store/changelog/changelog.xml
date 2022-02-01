@@ -7,7 +7,6 @@
 
 
   <changeSet dbms="PostgreSQL" id="store-funcs-1" runOnChange="true" author="kefhir">
-    <sqlFile splitStatements="false" path="functions/ref.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/define_resource.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/resource_insert_trigger.sql" relativeToChangelogFile="true" />
   </changeSet>

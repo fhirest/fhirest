@@ -13,12 +13,18 @@
     <sqlFile splitStatements="false" path="functions/jsonpath2.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/jsonpath3.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/subpaths.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/date.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/number.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/string.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/token.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/reference.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/merge_parasolindex.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/resource_type_id.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/system_id.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/extract_date.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/extract_number.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/extract_string.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/extract_token.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/extract_reference.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/merge_blindex.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/cleanup_indexes.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/define_resource.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/save_resource.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/delete_resource.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/create_blindex.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/drop_blindex.sql" relativeToChangelogFile="true" />
   </changeSet>

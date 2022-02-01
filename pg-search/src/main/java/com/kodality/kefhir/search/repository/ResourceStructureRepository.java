@@ -13,7 +13,9 @@
 package com.kodality.kefhir.search.repository;
 
 import com.kodality.kefhir.search.model.StructureElement;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -23,9 +25,17 @@ import static java.util.stream.Collectors.toList;
 
 @Singleton
 public class ResourceStructureRepository {
+  private static Map<String, Long> RESOURCE_TYPES = new HashMap<>();
   @Inject
   @Named("adminJdbcTemplate")
   private JdbcTemplate adminJdbcTemplate;
+
+  public static Long getTypeId(String type) {
+    if (!RESOURCE_TYPES.containsKey(type)) {
+      throw new RuntimeException(type + " isn't defined or not yet loaded");
+    }
+    return RESOURCE_TYPES.get(type);
+  }
 
   public void create(List<StructureElement> elements) {
     String sql = "INSERT INTO search.resource_structure (base, path, element_type, is_many) VALUES (?,?,?,?)";
@@ -37,10 +47,21 @@ public class ResourceStructureRepository {
 
   public void refresh() {
     adminJdbcTemplate.update("refresh materialized view search.resource_structure_recursive");
+    RESOURCE_TYPES = adminJdbcTemplate.query("select * from search.resource_type", rs -> {
+      Map<String, Long> map = new HashMap<>();
+      while(rs.next()) {
+        map.put(rs.getString("type"), rs.getLong("id"));
+      }
+      return map;
+    });
   }
 
   public void deleteAll() {
     adminJdbcTemplate.update("DELETE FROM search.resource_structure");
+  }
+
+  public void defineResource(String type) {
+    adminJdbcTemplate.queryForObject("select search.define_resource(?)", String.class, type);
   }
 
 }

@@ -4,7 +4,7 @@ DECLARE
 _tbl_name text;
 BEGIN
   _tbl_name := lower(_type);
-  IF EXISTS(SELECT * FROM pg_class WHERE relname = _tbl_name) THEN
+  IF EXISTS(select 1 FROM pg_tables where schemaname = 'store' AND tablename = _tbl_name) THEN
     RETURN;
   END IF;
   
@@ -13,9 +13,9 @@ BEGIN
   EXECUTE FORMAT('select core.create_table_metadata(''store'', %L);', _tbl_name);
   EXECUTE FORMAT('CREATE TRIGGER insert_%s_trigger BEFORE INSERT ON store.%I FOR EACH ROW EXECUTE PROCEDURE store.resource_insert_trigger();', _tbl_name, _tbl_name);
   
-  EXECUTE FORMAT('create index %s_reference_idx on store.%I using gin (store.ref(%L,id))', _tbl_name, _tbl_name, _tbl_name);
-  EXECUTE FORMAT('create unique index %s_udx on store.%I (id,last_version)', _tbl_name, _tbl_name);
-  EXECUTE FORMAT('alter table store.%I add primary key (key)', _tbl_name);
+  EXECUTE FORMAT('create index %s_reference_idx on store.%I (type, id) where sys_status = ''A''', _tbl_name, _tbl_name);
+  EXECUTE FORMAT('create unique index %s_udx on store.%I (id,version)', _tbl_name, _tbl_name);
+  EXECUTE FORMAT('alter table store.%I add primary key (uid)', _tbl_name);
   
 END;
 $$ LANGUAGE plpgsql;

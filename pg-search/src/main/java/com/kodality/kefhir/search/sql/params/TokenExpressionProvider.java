@@ -10,40 +10,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.search.sql.params;
+package com.kodality.kefhir.search.sql.params;
 
 import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.util.sql.SqlBuilder;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 public class TokenExpressionProvider extends ExpressionProvider {
 
   @Override
+  protected SqlBuilder makeCondition(QueryParam param, String v) {
+    String system = StringUtils.contains(v, "|") ? StringUtils.substringBefore(v, "|") : null;
+    String value = StringUtils.contains(v, "|") ? StringUtils.substringAfter(v, "|") : v;
+    value = StringUtils.isBlank(value) ? null : value;
+    SqlBuilder sb = new SqlBuilder();
+    sb.append("(");
+    sb.appendIfNotNull("i.value = ?", value);
+    sb.appendIfTrue(value != null && system != null, " and ");
+    sb.appendIfNotNull("i.system_id = search.system_id(?)", system);
+    sb.append(")");
+    return sb;
+  }
+
+  @Override
   public SqlBuilder makeExpression(QueryParam param, String alias) {
-    List<SqlBuilder> ors = new ArrayList<>();
-    for (String value : param.getValues()) {
-      ors.add(token(value, param, alias));
+    if (StringUtils.equals(param.getModifier(), "not")) {
+      throw new FhirException(400, IssueType.PROCESSING, ":not modifier not allowed in token param");
     }
-    return new SqlBuilder().or(ors);
+    return super.makeExpression(param, alias);
   }
 
   @Override
   public SqlBuilder order(String resourceType, String key, String alias) {
     return new SqlBuilder("1"); // TODO:
-  }
-
-  private SqlBuilder token(String value, QueryParam param, String alias) {
-    SqlBuilder sb = new SqlBuilder();
-    if (StringUtils.equals(param.getModifier(), "not")) {
-      throw new FhirException(400, IssueType.PROCESSING, ":not modifier not allowed in token param");
-    }
-    sb.append(String.format("search.token(%s, %s)", alias, path(param)));
-    sb.append(" @> array[?]::text[] ", value.toLowerCase());
-    return sb;
   }
 
 }

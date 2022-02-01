@@ -13,7 +13,7 @@
 package com.kodality.kefhir.core.service;
 
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
-import com.kodality.kefhir.structure.service.HapiContextHolder;
+import com.kodality.kefhir.core.service.conformance.HapiContextHolder;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.List;
 import javax.annotation.PostConstruct;

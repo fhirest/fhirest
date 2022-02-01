@@ -20,12 +20,13 @@ import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+
+import static java.util.stream.Collectors.toList;
 
 public class DateExpressionProvider extends ExpressionProvider {
   private static final Map<Integer, String> intervals;
@@ -44,31 +45,20 @@ public class DateExpressionProvider extends ExpressionProvider {
   }
 
   @Override
-  public SqlBuilder makeExpression(QueryParam param, String alias) {
-    List<SqlBuilder> ors = new ArrayList<>();
-    for (String value : param.getValues()) {
-      if (!StringUtils.isEmpty(value)) {
-        SqlBuilder sb = new SqlBuilder("EXISTS (SELECT 1 FROM " + parasol(param, alias));
-        sb.and(rangeSql("range", value)).append(")");
-        ors.add(sb);
-      }
-    }
-    return new SqlBuilder().or(ors);
+  protected SqlBuilder makeCondition(QueryParam param, String v) {
+    return new SqlBuilder(rangeSql("i.range", v));
   }
 
   public static SqlBuilder makeExpression(String field, QueryParam param) {
-    List<SqlBuilder> ors = new ArrayList<>();
-    for (String value : param.getValues()) {
-      if (!StringUtils.isEmpty(value)) {
-        ors.add(new SqlBuilder(rangeSql(field, value)));
-      }
-    }
+    List<SqlBuilder> ors = param.getValues().stream().filter(v -> !StringUtils.isEmpty(v))
+        .map(v -> new SqlBuilder(rangeSql(field, v)))
+        .collect(toList());
     return new SqlBuilder().or(ors);
   }
 
   @Override
   public SqlBuilder order(String resourceType, String key, String alias) {
-    String sql = String.format("SELECT range FROM " + parasol(resourceType, key, alias), alias);
+    String sql = String.format("SELECT range FROM " + index(resourceType, key, alias), alias);
     return new SqlBuilder("(" + sql + ")");
   }
 

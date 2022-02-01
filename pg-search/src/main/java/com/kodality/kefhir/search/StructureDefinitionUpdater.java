@@ -16,6 +16,8 @@ import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.search.model.StructureElement;
 import com.kodality.kefhir.search.repository.ResourceStructureRepository;
+import io.micronaut.context.event.StartupEvent;
+import io.micronaut.runtime.event.annotation.EventListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Singleton;
@@ -29,17 +31,32 @@ import org.hl7.fhir.r4.model.StructureDefinition;
 @RequiredArgsConstructor
 public class StructureDefinitionUpdater implements ConformanceUpdateListener {
   private final ResourceStructureRepository structureDefinitionRepository;
+  private final BlindexInitializer blindexInitializer;
+
+  @EventListener
+  public void initConformanceResources(final StartupEvent event) {
+    List.of("CapabilityStatement", "StructureDefinition", "SearchParameter", "OperationDefinition", "CompartmentDefinition")
+        .forEach(r -> structureDefinitionRepository.defineResource(r));
+    structureDefinitionRepository.refresh();
+  }
 
   @Override
   public void updated() {
+    String domainResource = "http://hl7.org/fhir/StructureDefinition/DomainResource";
+    ConformanceHolder.getDefinitions().stream()
+        .filter(def -> domainResource.equals(def.getBaseDefinition()) || def.getName().equals("Binary"))
+        .forEach(d -> structureDefinitionRepository.defineResource(d.getName()));
+
     // TODO: check if already up to date
     structureDefinitionRepository.deleteAll();
     ConformanceHolder.getDefinitions().forEach(d -> saveDefinition(d));
     structureDefinitionRepository.refresh();
+
+    blindexInitializer.execute();
   }
 
   private void saveDefinition(StructureDefinition def) {
-    List<String> many = new ArrayList<String>();
+    List<String> many = new ArrayList<>();
     List<StructureElement> elements = new ArrayList<>(def.getSnapshot().getElement().size());
     for (ElementDefinition elementDef : def.getSnapshot().getElement()) {
       if (elementDef.getId().contains(":")) {
@@ -66,7 +83,7 @@ public class StructureDefinitionUpdater implements ConformanceUpdateListener {
   }
 
   private static List<String> parents(String path) {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     result.add(path);
     while (path.contains(".")) {
       path = StringUtils.substringBeforeLast(path, ".");

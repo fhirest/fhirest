@@ -34,6 +34,8 @@ public interface ResourceStorehouse {
 
   ResourceVersion load(VersionId id);
 
+  List<ResourceVersion> load(List<ResourceId> ids);
+
   List<ResourceVersion> loadHistory(HistorySearchCriterion criteria);
 
   String generateNewId();

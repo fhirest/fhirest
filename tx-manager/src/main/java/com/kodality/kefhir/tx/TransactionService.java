@@ -12,6 +12,7 @@
  */
 package com.kodality.kefhir.tx;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import javax.inject.Singleton;
@@ -26,6 +27,7 @@ public class TransactionService {
 
   public <T> T transaction(Supplier<T> fn) {
     List<TransactionRef> txs = txManagers.stream().map(tx -> tx.requireTransaction()).collect(toList());
+    Collections.reverse(txs); // close transactions in reverse order
     T returnme = null;
     try {
       returnme = fn.get();

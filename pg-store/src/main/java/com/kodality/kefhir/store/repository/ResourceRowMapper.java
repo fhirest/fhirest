@@ -30,7 +30,7 @@ public class ResourceRowMapper implements RowMapper<ResourceVersion> {
     resource.setContent(mapContent(rs));
     resource.setDeleted(rs.getString("sys_status").equals("C"));
     resource.setAuthor(JsonUtil.fromJson(rs.getString("author")));
-    resource.setModified(new Date(rs.getTimestamp("last_updated").getTime()));
+    resource.setModified(new Date(rs.getTimestamp("updated").getTime()));
     return resource;
   }
 
@@ -39,7 +39,7 @@ public class ResourceRowMapper implements RowMapper<ResourceVersion> {
   }
 
   private VersionId mapVersion(ResultSet rs) throws SQLException {
-    return new VersionId(rs.getString("type"), rs.getString("id"), rs.getInt("last_version"));
+    return new VersionId(rs.getString("type"), rs.getString("id"), rs.getInt("version"));
   }
 
 }
