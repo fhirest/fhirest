@@ -12,12 +12,12 @@
  */
 package com.kodality.kefhir.search.repository;
 
+import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.core.model.search.SearchCriterion;
 import com.kodality.kefhir.search.api.PgResourceSearchFilter;
-import com.kodality.kefhir.search.sql.SqlToster;
-import com.kodality.kefhir.store.repository.ResourceRowMapper;
+import com.kodality.kefhir.search.sql.SearchSqlUtil;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.List;
 import java.util.Optional;
@@ -33,26 +33,38 @@ public class PgSearchRepository {
   private final JdbcTemplate jdbcTemplate;
   private final Optional<PgResourceSearchFilter> pgResourceSearchFilter;
 
+  public void saveResource(ResourceVersion version) {
+    String sql = "select search.save_resource(?,?,?,?::jsonb)";
+    jdbcTemplate.queryForObject(sql, Object.class, version.getId().getResourceId(), version.getId().getResourceType(), version.getModified(),
+        version.getContent().getValue());
+  }
+
+  public void deleteResource(ResourceId resourceId) {
+    String sql = "select search.delete_resource(?,?)";
+    jdbcTemplate.queryForObject(sql, Object.class, resourceId.getResourceId(), resourceId.getResourceType());
+  }
+
   public Integer count(SearchCriterion criteria) {
-    SqlBuilder sb = new SqlBuilder("SELECT count(1) FROM store.\"" + criteria.getType().toLowerCase() + "\" base ");
+    SqlBuilder sb = new SqlBuilder("SELECT count(1) FROM search.resource base ");
     sb.append(joins(criteria));
-    sb.append(" WHERE 1=1");
+    sb.append(" WHERE base.resource_type = ?", ResourceStructureRepository.getTypeId(criteria.getType()));
     sb.append(criteria(criteria));
     pgResourceSearchFilter.ifPresent(f -> f.filter(sb, "base"));
     log.debug(sb.getPretty());
     return jdbcTemplate.queryForObject(sb.getSql(), Integer.class, sb.getParams());
   }
 
-  public List<ResourceVersion> search(SearchCriterion criteria) {
-    SqlBuilder sb = new SqlBuilder("SELECT base.* FROM store.\"" + criteria.getType().toLowerCase() + "\" base ");
+  public List<ResourceId> search(SearchCriterion criteria) {
+    SqlBuilder sb = new SqlBuilder("SELECT base.resource_id, rt.type resource_type FROM search.resource base ");
+    sb.append(" INNER JOIN search.resource_type rt on rt.id = base.resource_type ");
     sb.append(joins(criteria));
-    sb.append(" WHERE 1=1");
+    sb.append(" WHERE base.resource_type = ?", ResourceStructureRepository.getTypeId(criteria.getType()));
     sb.append(criteria(criteria));
     pgResourceSearchFilter.ifPresent(f -> f.filter(sb, "base"));
     sb.append(order(criteria));
     sb.append(limit(criteria));
     log.debug(sb.getPretty());
-    return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
+    return jdbcTemplate.query(sb.getSql(), (rs, x) -> new ResourceId(rs.getString("resource_type"), rs.getString("resource_id")), sb.getParams());
   }
 
   private SqlBuilder limit(SearchCriterion criteria) {
@@ -65,19 +77,19 @@ public class PgSearchRepository {
 
   private SqlBuilder joins(SearchCriterion criteria) {
     SqlBuilder sb = new SqlBuilder();
-    sb.append(SqlToster.chain(criteria.getChains(), "base"));
+    sb.append(SearchSqlUtil.chain(criteria.getChains(), "base"));
     return sb;
   }
 
   private SqlBuilder criteria(SearchCriterion criteria) {
     SqlBuilder sb = new SqlBuilder();
     for (QueryParam param : criteria.getConditions()) {
-      SqlBuilder peanut = SqlToster.condition(param, "base");
+      SqlBuilder peanut = SearchSqlUtil.condition(param, "base");
       if (peanut != null) {
         sb.and("(").append(peanut).append(")");
       }
     }
-    sb.and("base.sys_status = 'A'");
+    sb.and("base.active = true");
     return sb;
   }
 
@@ -85,7 +97,7 @@ public class PgSearchRepository {
     SqlBuilder sb = new SqlBuilder();
     boolean first = true;
     for (QueryParam param : criteria.getResultParams(SearchCriterion._SORT)) {
-      SqlBuilder sql = SqlToster.order(param, "base");
+      SqlBuilder sql = SearchSqlUtil.order(param, "base");
       if (sql == null) {
         continue;
       }

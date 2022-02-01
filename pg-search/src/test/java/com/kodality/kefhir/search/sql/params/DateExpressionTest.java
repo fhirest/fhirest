@@ -40,12 +40,14 @@ public class DateExpressionTest {
 
     new BlindexRepository() {
       @Override
-      public java.util.List<Blindex> load(String type) {
-        Blindex b = new Blindex("NotAResource", "h.o.y");
-        b.setName("parasol");
+      public java.util.List<Blindex> loadIndexes() {
+        Blindex b = new Blindex();
+        b.setResourceType("NotAResource");
+        b.setPath("h.o.y");
+        b.setName("date_index_table");
         return Collections.singletonList(b);
       };
-    }.init();
+    }.refreshCache();
   }
 
   @Test
@@ -53,19 +55,19 @@ public class DateExpressionTest {
     TimeZone.setDefault(TimeZone.getTimeZone("Europe/Tallinn"));
     test(null, null);
     test("", null);
-    test("2000", "range && search.range('2000-01-01T00:00:00+02:00', '1 year')");
-    test("le2000", "(range && search.range('2000-01-01T00:00:00+02:00', '1 year') OR range << search.range('2000-01-01T00:00:00+02:00', '1 year'))");
-    test("lt2000", "range << search.range('2000-01-01T00:00:00+02:00', '1 year')");
-    test("ge2000", "(range && search.range('2000-01-01T00:00:00+02:00', '1 year') OR range >> search.range('2000-01-01T00:00:00+02:00', '1 year'))");
-    test("gt2000", "range >> search.range('2000-01-01T00:00:00+02:00', '1 year')");
-    test("2000-11", "range && search.range('2000-11-01T00:00:00+02:00', '1 month')");
-    test("2000-11-11", "range && search.range('2000-11-11T00:00:00+02:00', '1 day')");
-    test("2000-11-11T11", "range && search.range('2000-11-11T11:00:00+02:00', '1 hour')");
-    test("2000-11-11T11:11", "range && search.range('2000-11-11T11:11:00+02:00', '1 minute')");
-    test("2000-11-11T11:11:11", "range && search.range('2000-11-11T11:11:11+02:00', '1 second')");
+    test("2000", "i.range && search.range('2000-01-01T00:00:00+02:00', '1 year')");
+    test("le2000", "(i.range && search.range('2000-01-01T00:00:00+02:00', '1 year') OR i.range << search.range('2000-01-01T00:00:00+02:00', '1 year'))");
+    test("lt2000", "i.range << search.range('2000-01-01T00:00:00+02:00', '1 year')");
+    test("ge2000", "(i.range && search.range('2000-01-01T00:00:00+02:00', '1 year') OR i.range >> search.range('2000-01-01T00:00:00+02:00', '1 year'))");
+    test("gt2000", "i.range >> search.range('2000-01-01T00:00:00+02:00', '1 year')");
+    test("2000-11", "i.range && search.range('2000-11-01T00:00:00+02:00', '1 month')");
+    test("2000-11-11", "i.range && search.range('2000-11-11T00:00:00+02:00', '1 day')");
+    test("2000-11-11T11", "i.range && search.range('2000-11-11T11:00:00+02:00', '1 hour')");
+    test("2000-11-11T11:11", "i.range && search.range('2000-11-11T11:11:00+02:00', '1 minute')");
+    test("2000-11-11T11:11:11", "i.range && search.range('2000-11-11T11:11:11+02:00', '1 second')");
 
-    test("2000-11-11T11:11:11Z", "range && search.range('2000-11-11T11:11:11+00:00', '1 second')");
-    test("2000-11-11T11:11:11+07:00", "range && search.range('2000-11-11T11:11:11+07:00', '1 second')");
+    test("2000-11-11T11:11:11Z", "i.range && search.range('2000-11-11T11:11:11+00:00', '1 second')");
+    test("2000-11-11T11:11:11+07:00", "i.range && search.range('2000-11-11T11:11:11+07:00', '1 second')");
   }
 
   private void test(String input, String expectedCondition) {
@@ -76,7 +78,7 @@ public class DateExpressionTest {
       Assertions.assertEquals("", result.getSql());
     } else {
       String expected =
-          String.format("EXISTS (SELECT 1 FROM search.parasol WHERE resource_key = a.key  AND %s)", expectedCondition);
+          String.format("EXISTS (SELECT 1 FROM search.date_index_table i WHERE i.active = true and i.sid = a.sid  AND %s)", expectedCondition);
       Assertions.assertEquals(expected, result.getSql());
     }
   }

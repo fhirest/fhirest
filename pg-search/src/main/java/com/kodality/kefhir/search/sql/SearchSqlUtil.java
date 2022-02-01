@@ -28,13 +28,13 @@ import java.util.Map;
 import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
-public final class SqlToster {
+public final class SearchSqlUtil {
   private static final Map<String, SpecialParamBuilder> specialParams;
   private static final Map<SearchParamType, ExpressionProvider> providers;
 
   static {
     specialParams = new HashMap<>();
-    specialParams.put("_id", (p, a) -> new SqlBuilder().in(a + ".id", p.getValues()));
+    specialParams.put("_id", (p, a) -> new SqlBuilder().in(a + ".resource_id", p.getValues()));
     specialParams.put("_lastUpdated", (p, a) -> DateExpressionProvider.makeExpression("search.range_instant(" + a + ".last_updated)", p));
     specialParams.put("_content", (p, a) -> {
       throw new FhirException(400, IssueType.NOTSUPPORTED, "_content not implemented");
@@ -51,7 +51,7 @@ public final class SqlToster {
     providers.put(SearchParamType.NUMBER, new NumberExpressionProvider());
   }
 
-  private SqlToster() {
+  private SearchSqlUtil() {
     //
   }
 

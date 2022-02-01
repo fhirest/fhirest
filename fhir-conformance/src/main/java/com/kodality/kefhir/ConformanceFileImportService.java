@@ -1,11 +1,11 @@
 package com.kodality.kefhir;
 
+import com.kodality.kefhir.core.api.resource.ResourceAfterSaveInterceptor;
 import com.kodality.kefhir.core.api.resource.ResourceStorehouse;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.service.conformance.ConformanceInitializationService;
-import com.kodality.kefhir.core.service.resource.ResourceService;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +25,8 @@ import org.hl7.fhir.r4.model.Resource;
 @Singleton
 @RequiredArgsConstructor
 public class ConformanceFileImportService {
-  private final ResourceService resourceService;
   private final ResourceStorehouse storehouse;
+  private final List<ResourceAfterSaveInterceptor> afterSaveInterceptors;
   private final ResourceFormatService formatService;
   private final ConformanceInitializationService conformanceService;
 
@@ -59,7 +60,8 @@ public class ConformanceFileImportService {
     ResourceId resourceId = new ResourceId(r.getResourceType().name(), r.getId());
     ResourceVersion current = storehouse.load(new VersionId(resourceId));
     if (current == null || current.getModified().before(fileModified)) {
-      storehouse.save(resourceId, formatService.compose(r, "json"));
+      ResourceVersion version = storehouse.save(resourceId, formatService.compose(r, "json"));
+      afterSaveInterceptors.stream().filter(i -> i.getPhase().equals(ResourceAfterSaveInterceptor.TRANSACTION)).forEach(i -> i.handle(version));
     }
   }
 

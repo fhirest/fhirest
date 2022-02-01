@@ -15,6 +15,7 @@ package com.kodality.kefhir.store;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.store.repository.ResourceFunctionsRepository;
+import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import java.util.List;
 import javax.inject.Singleton;
@@ -28,7 +29,7 @@ public class ResourceInitializer implements ConformanceUpdateListener {
   private final JdbcTemplate jdbcTemplate;
 
   @EventListener
-  public void initConformanceResources(final Object event) {
+  public void initConformanceResources(final StartupEvent event) {
     List.of("CapabilityStatement", "StructureDefinition", "SearchParameter", "OperationDefinition", "CompartmentDefinition")
         .forEach(r -> resourceFunctionsRepository.defineResource(r));
   }

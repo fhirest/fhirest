@@ -17,6 +17,11 @@ public class DatabaseConfig {
   }
 
   @Bean
+  public PgTransactionManager transactionManager(@Primary DataSource dataSource) {
+    return new PgTransactionManager(dataSource);
+  }
+
+  @Bean
   @Named("adminJdbcTemplate")
   public JdbcTemplate adminJdbcTemplate(@Named("admin") DataSource dataSource) {
     return new JdbcTemplate(dataSource);

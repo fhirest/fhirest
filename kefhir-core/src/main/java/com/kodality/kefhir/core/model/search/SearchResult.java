@@ -10,13 +10,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.core.model.search;
+package com.kodality.kefhir.core.model.search;
 
+import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 
 public class SearchResult {
@@ -25,7 +27,7 @@ public class SearchResult {
   private final List<ResourceVersion> includes = new ArrayList<>();
 
   public SearchResult() {
-    this(0, new ArrayList<ResourceVersion>());
+    this(0, new ArrayList<>());
   }
 
   public SearchResult(Integer total, List<ResourceVersion> entries) {
@@ -33,16 +35,12 @@ public class SearchResult {
     this.entries = entries;
   }
 
-  public static SearchResult lazy(Integer total, List<VersionId> ids) {
-    List<ResourceVersion> versions = new ArrayList<>();
-    for (VersionId id : ids) {
-      versions.add(new ResourceVersion(id, null));
-    }
-    return new SearchResult(total, versions);
+  public static SearchResult lazy(Integer total, List<ResourceId> ids) {
+    return new SearchResult(total, ids.stream().map(id -> new ResourceVersion(new VersionId(id), null)).collect(Collectors.toList()));
   }
 
   public static SearchResult empty() {
-    return new SearchResult(0, Collections.<ResourceVersion> emptyList());
+    return new SearchResult(0, Collections.<ResourceVersion>emptyList());
   }
 
   public boolean isEmpty() {

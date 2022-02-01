@@ -338,7 +338,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Observation?subject.identifier=doesnotexist",
+					"raw": "{{kefhir}}/Observation?subject:Patient.identifier=doesnotexist",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -347,70 +347,8 @@
 					],
 					"query": [
 						{
-							"key": "subject.identifier",
+							"key": "subject:Patient.identifier",
 							"value": "doesnotexist"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "reference param chain",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"OK\", function () {",
-							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
-							"});",
-							"pm.test(\"validate search result\", function () {",
-							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
-							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
-							"    pm.expect(pm.response.json().total).to.eql(1);",
-							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"observation100\");",
-							"});",
-							"",
-							"",
-							"",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{kefhir}}/Observation?subject.identifier=TESTPATIENT-100",
-					"host": [
-						"{{kefhir}}"
-					],
-					"path": [
-						"Observation"
-					],
-					"query": [
-						{
-							"key": "subject.identifier",
-							"value": "TESTPATIENT-100"
 						}
 					]
 				}
@@ -646,7 +584,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Observation?performer.identifier=TEST-ORGANIZATION-100",
+					"raw": "{{kefhir}}/Observation?performer:Organization.identifier=TEST-ORGANIZATION-100",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -655,7 +593,7 @@
 					],
 					"query": [
 						{
-							"key": "performer.identifier",
+							"key": "performer:Organization.identifier",
 							"value": "TEST-ORGANIZATION-100"
 						}
 					]
@@ -708,7 +646,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Observation?performer.identifier=TEST-PRACTITIONER-100",
+					"raw": "{{kefhir}}/Observation?performer:Practitioner.identifier=TEST-PRACTITIONER-100",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -717,7 +655,7 @@
 					],
 					"query": [
 						{
-							"key": "performer.identifier",
+							"key": "performer:Practitioner.identifier",
 							"value": "TEST-PRACTITIONER-100"
 						}
 					]
@@ -787,7 +725,7 @@
 			"response": []
 		},
 		{
-			"name": "reference param chain.chain Copy",
+			"name": "reference param chain.chain",
 			"event": [
 				{
 					"listen": "test",

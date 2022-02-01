@@ -14,6 +14,7 @@ package com.kodality.kefhir.core.service.resource;
 
 import com.kodality.kefhir.core.api.resource.ResourceSearchHandler;
 import com.kodality.kefhir.core.exception.FhirServerException;
+import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.model.search.SearchCriterion;
@@ -55,14 +56,21 @@ public class ResourceSearchService {
   }
 
   public SearchResult search(SearchCriterion criteria) {
-    if (searchHandler == null || searchHandler.isEmpty()) {
+    if (searchHandler.isEmpty()) {
       throw new FhirServerException(500, "search module not installed");
     }
     SearchResult result = searchHandler.get().search(criteria);
+    List<ResourceId> loadIds = result.getEntries().stream().filter(e -> e.getContent() == null).map(e -> (ResourceId) e.getId()).collect(toList());
+    Map<String, ResourceVersion> versions = resourceService.load(loadIds).stream().collect(toMap(v -> v.getId().getResourceReference(), v -> v));
     result.getEntries()
         .stream()
         .filter(e -> e.getContent() == null)
-        .forEach(e -> e.setContent(resourceService.load(e.getId()).getContent()));
+        .forEach(e -> {
+          ResourceVersion version = versions.get(e.getId().getResourceReference());
+          e.setId(version.getId());
+          e.setContent(version.getContent());
+          e.setAuthor(version.getAuthor());
+        });
     include(result, criteria);
     revInclude(result, criteria);
     return result;

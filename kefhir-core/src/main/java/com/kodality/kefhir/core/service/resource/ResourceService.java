@@ -74,6 +74,10 @@ public class ResourceService {
     return version;
   }
 
+  public List<ResourceVersion> load(List<ResourceId> ids) {
+    return storehouse.load(ids);
+  }
+
   public List<ResourceVersion> loadHistory(HistorySearchCriterion criteria) {
     return storehouse.loadHistory(criteria);
   }

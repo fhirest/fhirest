@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.search.sql.params;
+package com.kodality.kefhir.search.sql.params;
 
 import com.kodality.kefhir.core.exception.FhirServerException;
 import com.kodality.kefhir.core.model.search.QueryParam;
@@ -18,14 +18,29 @@ import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.search.repository.BlindexRepository;
 import com.kodality.kefhir.search.util.FhirPathHackUtil;
 import com.kodality.kefhir.util.sql.SqlBuilder;
+import java.util.List;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import static java.util.stream.Collectors.toList;
 
 public abstract class ExpressionProvider {
 
-  public abstract SqlBuilder makeExpression(QueryParam param, String alias);
+  protected abstract SqlBuilder makeCondition(QueryParam param, String value);
 
   public abstract SqlBuilder order(String resourceType, String key, String alias);
+
+  public SqlBuilder makeExpression(QueryParam param, String alias) {
+      List<SqlBuilder> ors = param.getValues().stream().filter(v -> !StringUtils.isEmpty(v)).map(v -> {
+       SqlBuilder sb = new SqlBuilder("EXISTS (SELECT 1 FROM " + index(param, alias));
+       sb.and(makeCondition(param, v));
+       sb.append(")");
+       return sb;
+      }).collect(toList());
+      return new SqlBuilder().or(ors);
+  }
+
 
   protected static String path(QueryParam param) {
     return path(param.getResourceType(), param.getKey());
@@ -46,16 +61,16 @@ public abstract class ExpressionProvider {
       throw new FhirServerException(500, "config problem. path empty for param " + key);
     }
     path = FhirPathHackUtil.replaceAs(path);
-    return StringUtils.removeFirst(path, resourceType + "\\.");
+    return RegExUtils.removeFirst(path, resourceType + "\\.");
   }
 
-  protected static String parasol(QueryParam param, String alias) {
-    return parasol(param.getResourceType(), param.getKey(), alias);
+  protected static String index(QueryParam param, String parentAlias) {
+    return index(param.getResourceType(), param.getKey(), parentAlias);
   }
 
-  protected static String parasol(String resourceType, String key, String alias) {
-    String tblName = BlindexRepository.getParasol(resourceType, getPath(resourceType, key));
-    return String.format("search." + tblName + " WHERE resource_key = %s.key ", alias);
+  protected static String index(String resourceType, String key, String parentAlias) {
+    String tblName = BlindexRepository.getIndex(resourceType, getPath(resourceType, key));
+    return String.format("search.%s i WHERE i.active = true and i.sid = %s.sid ", tblName, parentAlias);
   }
 
 }

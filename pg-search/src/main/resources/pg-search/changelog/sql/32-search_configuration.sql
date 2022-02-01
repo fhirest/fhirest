@@ -6,7 +6,7 @@ create table search.search_configuration (
   element_type 	text not null,
   param_type 	text not null,
   path 			jsonb[] not null,
-  constraint search_configuration_element_type_param_type_ukey unique (element_type, param_type)
+  constraint search_configuration_element_type_param_type_ukey unique (element_type)
 );
 --rollback drop table search_configuration;
 

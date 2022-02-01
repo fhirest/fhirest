@@ -23,7 +23,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 public class NumberExpressionProvider extends ExpressionProvider {
-  private static final Map<Integer, BigDecimal> precisions = new HashMap<Integer, BigDecimal>() {
+  private static final Map<Integer, BigDecimal> precisions = new HashMap<>() {
     @Override
     public BigDecimal get(Object key) {
       return computeIfAbsent((Integer) key, k -> new BigDecimal("0." + StringUtils.repeat('0', k) + "5"));
@@ -53,6 +53,11 @@ public class NumberExpressionProvider extends ExpressionProvider {
   }
 
   @Override
+  protected SqlBuilder makeCondition(QueryParam param, String v) {
+    return null;
+  }
+
+  @Override
   public SqlBuilder order(String resourceType, String key, String alias) {
     return new SqlBuilder("1"); // TODO:
   }
@@ -63,7 +68,7 @@ public class NumberExpressionProvider extends ExpressionProvider {
     String op = operators.get(prefix.getPrefix());
     BigDecimal number = new BigDecimal(prefix.getValue());
 
-    sb.append("EXISTS (SELECT 1 FROM " + parasol(param, alias));
+    sb.append("EXISTS (SELECT 1 FROM " + index(param, alias));
     if (prefix.getPrefix() == null) {
       sb.and("number BETWEEN ? AND ?", lower(number), upper(number));
     } else {

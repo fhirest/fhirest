@@ -12,13 +12,16 @@
  */
 package com.kodality.kefhir.search;
 
-import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
+import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
+import com.kodality.kefhir.core.service.resource.ResourceSearchService;
+import com.kodality.kefhir.search.model.Blindex;
 import com.kodality.kefhir.search.repository.BlindexRepository;
 import com.kodality.kefhir.search.util.FhirPathHackUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -33,23 +36,15 @@ import org.postgresql.util.PSQLException;
 @Slf4j
 @Singleton
 @RequiredArgsConstructor
-public class BlindexInitializer implements ConformanceUpdateListener {
+public class BlindexInitializer {
   private final BlindexRepository blindexRepository;
-
-  @Override
-  public void updated() {
-    CompletableFuture.runAsync(() -> {
-      try {
-        Thread.sleep(5000);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-      execute();
-    });
-  }
+  private final ResourceSearchService resourceSearchService;
 
   public Object execute() {
-    List<String> defined = ConformanceHolder.getDefinitions().stream().map(def -> def.getName()).collect(Collectors.toList());
+    String domainResource = "http://hl7.org/fhir/StructureDefinition/DomainResource";
+    List<String> defined = ConformanceHolder.getDefinitions().stream()
+        .filter(def -> domainResource.equals(def.getBaseDefinition()) || def.getName().equals("Binary"))
+        .map(def -> def.getName()).collect(Collectors.toList());
     if (CollectionUtils.isEmpty(defined)) {
       log.error("blindex: will not run. definitions either empty, either definitions not yet loaded.");
       return null;
@@ -62,7 +57,7 @@ public class BlindexInitializer implements ConformanceUpdateListener {
               .filter(s -> defined.contains(StringUtils.substringBefore(s, ".")));
         }).collect(Collectors.toSet());
 
-    Set<String> current = blindexRepository.load().stream().map(i -> i.getKey()).collect(Collectors.toSet());
+    Set<String> current = blindexRepository.loadIndexes().stream().map(i -> i.getKey()).collect(Collectors.toSet());
     Set<String> drop = new HashSet<>(current);
     drop.removeAll(create);
     create.removeAll(current);
@@ -71,16 +66,18 @@ public class BlindexInitializer implements ConformanceUpdateListener {
     log.debug("need to remove: " + drop);
     create(create);
     drop(drop);
-    blindexRepository.init();
+    blindexRepository.refreshCache();
     log.info("blindex initialization finished");
     return null;
   }
 
   private void create(Set<String> create) {
     List<String> errors = new ArrayList<>();
+    List<Blindex> createdIndexed = new ArrayList<>();
     for (String key : create) {
+      log.debug("creating index on " + key);
       try {
-        blindexRepository.createIndex(StringUtils.substringBefore(key, "."), StringUtils.substringAfter(key, "."));
+        createdIndexed.add(blindexRepository.createIndex(StringUtils.substringBefore(key, "."), StringUtils.substringAfter(key, ".")));
       } catch (Exception e) {
         String err = e.getMessage();
         if (e.getCause() instanceof PSQLException) {
@@ -91,6 +88,40 @@ public class BlindexInitializer implements ConformanceUpdateListener {
       }
     }
     log.error("failed to create " + errors.size() + " indexes");
+    recalculate(createdIndexed);
+  }
+
+  private void recalculate(List<Blindex> blindexes) {
+    if (CollectionUtils.isEmpty(blindexes)) {
+      return;
+    }
+    CompletableFuture.runAsync(() -> {
+      try {
+        Thread.sleep(3000);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+      Map<String, List<Blindex>> resourceTypeBlindexes = blindexes.stream().collect(Collectors.groupingBy(b -> b.getResourceType()));
+      log.info("recalculating " + blindexes.size() + " indexes for " + resourceTypeBlindexes.size() + " resources");
+      resourceTypeBlindexes.forEach((type, indexes) -> {
+        try {
+          Long page = 1L;
+          Integer batch = 1000;
+          while (true) {
+            String[][] p = {{"_count", batch.toString()}, {"_page", page.toString()}};
+            SearchResult search = resourceSearchService.search(type, p);
+            indexes.forEach(i -> search.getEntries().forEach(v -> blindexRepository.merge(i.getId(), v.getId(), v.getContent().getValue())));
+            if (search.getEntries().size() < batch) {
+              break;
+            }
+            page++;
+          }
+        } catch (Exception e) {
+          log.error("failed to recalculate indexes for  " + type, e);
+        }
+      });
+      log.info("index recalculation finished");
+    });
   }
 
   private void drop(Set<String> drop) {

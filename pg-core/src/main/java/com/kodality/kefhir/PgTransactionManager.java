@@ -14,15 +14,12 @@
 
 import com.kodality.kefhir.tx.TransactionManager;
 import com.kodality.kefhir.tx.TransactionRef;
-import javax.inject.Singleton;
 import javax.sql.DataSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.transaction.interceptor.TransactionAttribute;
 
-@Singleton
 public class PgTransactionManager extends TransactionAspectSupport implements TransactionManager {
   protected PlatformTransactionManager tm;
 
@@ -32,7 +29,7 @@ public class PgTransactionManager extends TransactionAspectSupport implements Tr
 
   @Override
   public TransactionRef requireTransaction() {
-    TransactionAttribute txAttr = new DefaultTransactionAttribute();
+    DefaultTransactionAttribute txAttr = new DefaultTransactionAttribute();
     TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, null);
     return new TransactionRef() {
 
