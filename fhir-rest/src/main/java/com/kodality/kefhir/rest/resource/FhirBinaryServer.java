@@ -1,7 +1,7 @@
 package com.kodality.kefhir.rest.resource;
 
 import com.kodality.kefhir.core.exception.FhirException;
-import com.kodality.kefhir.rest.FhirResourceServer;
+import com.kodality.kefhir.rest.DefaultFhirResourceServer;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.rest.model.KefhirResponse;
 import javax.inject.Singleton;
@@ -9,7 +9,7 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.ResourceType;
 
 @Singleton
-public class FhirBinaryServer extends FhirResourceServer {
+public class FhirBinaryServer extends DefaultFhirResourceServer {
 
   @Override
   public String getTargetType() {

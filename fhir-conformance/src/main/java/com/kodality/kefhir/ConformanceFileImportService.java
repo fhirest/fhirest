@@ -1,7 +1,7 @@
 package com.kodality.kefhir;
 
 import com.kodality.kefhir.core.api.resource.ResourceAfterSaveInterceptor;
-import com.kodality.kefhir.core.api.resource.ResourceStorehouse;
+import com.kodality.kefhir.core.api.resource.ResourceStorage;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
@@ -25,7 +25,7 @@ import org.hl7.fhir.r4.model.Resource;
 @Singleton
 @RequiredArgsConstructor
 public class ConformanceFileImportService {
-  private final ResourceStorehouse storehouse;
+  private final ResourceStorage storehouse;
   private final List<ResourceAfterSaveInterceptor> afterSaveInterceptors;
   private final ResourceFormatService formatService;
   private final ConformanceInitializationService conformanceService;

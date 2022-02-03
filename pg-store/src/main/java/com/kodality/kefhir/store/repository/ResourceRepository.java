@@ -20,21 +20,28 @@ import com.kodality.kefhir.core.util.DateUtil;
 import com.kodality.kefhir.core.util.JsonUtil;
 import com.kodality.kefhir.store.api.PgResourceFilter;
 import com.kodality.kefhir.util.sql.SqlBuilder;
+import io.micronaut.context.annotation.Primary;
 import java.util.List;
 import java.util.Optional;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import static java.util.stream.Collectors.joining;
 
+@Primary
 @Singleton
-@RequiredArgsConstructor
 public class ResourceRepository {
   private final JdbcTemplate jdbcTemplate;
-  private final Optional<PgResourceFilter> pgResourceFilter;
+  @Inject
+  private Optional<PgResourceFilter> pgResourceFilter;
+
+  public ResourceRepository(@Named("storeAppJdbcTemplate") JdbcTemplate jdbcTemplate) {
+    this.jdbcTemplate = jdbcTemplate;
+  }
 
   public String getNextResourceId() {
     //TODO: may already exist
@@ -45,8 +52,7 @@ public class ResourceRepository {
     if (version.getId().getResourceId() == null) {
       version.getId().setResourceId(getNextResourceId());
     }
-    String sql =
-        "INSERT INTO store.resource (type, id, version, author, content, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb,?)";
+    String sql = "INSERT INTO store.resource (type, id, version, author, content, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb,?)";
     jdbcTemplate.update(sql,
         version.getId().getResourceType(),
         version.getId().getResourceId(),

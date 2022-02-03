@@ -2,14 +2,16 @@ package com.kodality.kefhir.scheduler;
 
 import java.util.Date;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@RequiredArgsConstructor
 @Singleton
 public class JobRepository {
-  private final JdbcTemplate jdbcTemplate;
+  @Inject
+  @Named("schedulerAppJdbcTemplate")
+  private JdbcTemplate jdbcTemplate;
 
   public void insert(String type, String identifier, Date scheduled) {
     String sql = "INSERT INTO scheduler.job (type, identifier, scheduled) values (?,?,?)";

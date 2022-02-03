@@ -10,18 +10,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.store.repository;
+package com.kodality.kefhir.store.repository;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Singleton
 public class ResourceFunctionsRepository {
-  @Inject
-  @Named("adminJdbcTemplate")
-  private JdbcTemplate adminJdbcTemplate;
+  private final JdbcTemplate adminJdbcTemplate;
+
+  public ResourceFunctionsRepository(@Named("storeAdminJdbcTemplate") JdbcTemplate adminJdbcTemplate) {
+    this.adminJdbcTemplate = adminJdbcTemplate;
+  }
 
   public void defineResource(String type) {
     adminJdbcTemplate.queryForObject("select store.define_resource(?)", String.class, type);

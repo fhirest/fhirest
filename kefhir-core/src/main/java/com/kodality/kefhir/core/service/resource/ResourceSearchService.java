@@ -43,7 +43,7 @@ import static java.util.stream.Collectors.toMap;
 public class ResourceSearchService {
   private static final String INCLUDE_ALL = "*";
   private final Optional<ResourceSearchHandler> searchHandler;
-  private final ResourceService resourceService;
+  private final ResourceStorageService storageService;
   private final FhirPath fhirPath;
 
   public SearchResult search(String resourceType, String[]... params) {
@@ -61,7 +61,7 @@ public class ResourceSearchService {
     }
     SearchResult result = searchHandler.get().search(criteria);
     List<ResourceId> loadIds = result.getEntries().stream().filter(e -> e.getContent() == null).map(e -> (ResourceId) e.getId()).collect(toList());
-    Map<String, ResourceVersion> versions = resourceService.load(loadIds).stream().collect(toMap(v -> v.getId().getResourceReference(), v -> v));
+    Map<String, ResourceVersion> versions = storageService.load(loadIds).stream().collect(toMap(v -> v.getId().getResourceReference(), v -> v));
     result.getEntries()
         .stream()
         .filter(e -> e.getContent() == null)
@@ -93,7 +93,7 @@ public class ResourceSearchService {
             .map(ref -> ResourceUtil.parseReference(ref.getReference()))
             .filter(reference -> targetType == null || reference.getResourceType().equals(targetType))
             .filter(reference -> !contains(result, reference))
-            .forEach(reference -> result.addInclude(resourceService.load(reference)));
+            .forEach(reference -> result.addInclude(storageService.load(reference)));
       });
     }));
   }

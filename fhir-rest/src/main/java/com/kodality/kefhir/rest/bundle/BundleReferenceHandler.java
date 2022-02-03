@@ -96,7 +96,7 @@ public class BundleReferenceHandler {
   }
 
   private String generateNewId(String resourceType) {
-    return resourceType + "/" + resourceService.generateNewId();
+    return resourceType + "/" + resourceService.generateNewId(resourceType);
   }
 
   private ResourceId find(String url) {

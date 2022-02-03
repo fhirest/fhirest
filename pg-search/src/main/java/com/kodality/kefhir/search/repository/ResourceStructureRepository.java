@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.toList;
 public class ResourceStructureRepository {
   private static Map<String, Long> RESOURCE_TYPES = new HashMap<>();
   @Inject
-  @Named("adminJdbcTemplate")
+  @Named("searchAdminJdbcTemplate")
   private JdbcTemplate adminJdbcTemplate;
 
   public static Long getTypeId(String type) {

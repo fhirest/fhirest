@@ -15,8 +15,6 @@ package com.kodality.kefhir.core.service.resource;
 import com.kodality.kefhir.core.api.resource.ResourceAfterDeleteInterceptor;
 import com.kodality.kefhir.core.api.resource.ResourceAfterSaveInterceptor;
 import com.kodality.kefhir.core.api.resource.ResourceBeforeSaveInterceptor;
-import com.kodality.kefhir.core.api.resource.ResourceStorehouse;
-import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
@@ -27,7 +25,6 @@ import com.kodality.kefhir.tx.TransactionService;
 import java.util.List;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 import static com.kodality.kefhir.core.api.resource.ResourceAfterSaveInterceptor.FINALIZATION;
 import static com.kodality.kefhir.core.api.resource.ResourceBeforeSaveInterceptor.BUSINESS_VALIDATION;
@@ -37,7 +34,7 @@ import static com.kodality.kefhir.core.api.resource.ResourceBeforeSaveIntercepto
 @Singleton
 @RequiredArgsConstructor
 public class ResourceService {
-  private final ResourceStorehouse storehouse;
+  private final ResourceStorageService storageService;
   private final List<ResourceBeforeSaveInterceptor> beforeSaveInterceptors;
   private final List<ResourceAfterSaveInterceptor> afterSaveInterceptors;
   private final List<ResourceAfterDeleteInterceptor> afterDeleteInterceptor;
@@ -48,10 +45,10 @@ public class ResourceService {
     interceptBeforeSave(NORMALIZATION, id, content, interaction);
     interceptBeforeSave(BUSINESS_VALIDATION, id, content, interaction);
 
-    id.setResourceId(id.getResourceId() == null ? generateNewId() : id.getResourceId());
+    id.setResourceId(id.getResourceId() == null ? generateNewId(id.getResourceType()) : id.getResourceId());
     ResourceVersion version = tx.transaction(() -> {
       interceptBeforeSave(ResourceBeforeSaveInterceptor.TRANSACTION, id, content, interaction);
-      ResourceVersion ver = store(id, content);
+      ResourceVersion ver = storageService.store(id, content);
       interceptAfterSave(ResourceAfterSaveInterceptor.TRANSACTION, ver);
       return ver;
     });
@@ -67,44 +64,24 @@ public class ResourceService {
   }
 
   public ResourceVersion load(VersionId id) {
-    ResourceVersion version = storehouse.load(id);
-    if (version == null) {
-      throw new FhirException(404, IssueType.NOTFOUND, id.getReference() + " not found");
-    }
-    return version;
+    return storageService.load(id);
   }
 
   public List<ResourceVersion> load(List<ResourceId> ids) {
-    return storehouse.load(ids);
+    return storageService.load(ids);
   }
 
   public List<ResourceVersion> loadHistory(HistorySearchCriterion criteria) {
-    return storehouse.loadHistory(criteria);
+    return storageService.loadHistory(criteria);
   }
 
   public void delete(ResourceId id) {
-    storehouse.delete(id);
+    storageService.delete(id);
     afterDeleteInterceptor.forEach(i -> i.delete(id));
   }
 
-  /**
-   * use with caution. only business logic
-   * inside transaction
-   */
-  public ResourceVersion store(ResourceId id, ResourceContent content) {
-    return storehouse.save(id, content);
-  }
-
-  /**
-   * use with caution. only business logic
-   * outside of transaction
-   */
-  public ResourceVersion storeForce(ResourceId id, ResourceContent content) {
-    return storehouse.saveForce(id, content);
-  }
-
-  public String generateNewId() {
-    return storehouse.generateNewId();
+  public String generateNewId(String resourceType) {
+    return storageService.generateNewId(resourceType);
   }
 
   private void interceptBeforeSave(String phase, ResourceId id, ResourceContent content, String interaction) {

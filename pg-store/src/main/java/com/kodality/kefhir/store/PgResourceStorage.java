@@ -13,7 +13,7 @@
 package com.kodality.kefhir.store;
 
 import com.kodality.kefhir.auth.ClientIdentity;
-import com.kodality.kefhir.core.api.resource.ResourceStorehouse;
+import com.kodality.kefhir.core.api.resource.ResourceStorage;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
@@ -24,38 +24,42 @@ import com.kodality.kefhir.core.util.JsonUtil;
 import com.kodality.kefhir.store.repository.ResourceRepository;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
+import io.micronaut.context.annotation.Primary;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
-import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r4.model.Resource;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
+@Primary
 @Singleton
-@RequiredArgsConstructor
-public class PostgreStorehouse implements ResourceStorehouse {
-  private final ClientIdentity clientIdentity;
+public class PgResourceStorage implements ResourceStorage {
+  @Inject
+  private ClientIdentity clientIdentity;
+  @Inject
+  private CacheManager cache;
+  @Inject
+  private ResourceFormatService resourceFormatService;
   private final ResourceRepository resourceRepository;
-  private final CacheManager cache;
-  private final ResourceFormatService resourceFormatService;
+
+  public PgResourceStorage(ResourceRepository resourceRepository) {
+    this.resourceRepository = resourceRepository;
+  }
 
   @PostConstruct
   private void init() {
-    cache.registerCache("pgCache", 2000, 64);
+    cache.registerCache("pgCache-" + getResourceType(), 2000, 64);
   }
 
   @Override
-  @Transactional
   public ResourceVersion save(ResourceId id, ResourceContent content) {
     return store(id, content);
   }
 
   @Override
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public ResourceVersion saveForce(ResourceId id, ResourceContent content) {
     return store(id, content);
   }
@@ -68,7 +72,7 @@ public class PostgreStorehouse implements ResourceStorehouse {
       version.setAuthor(clientIdentity.get().getClaims());
     }
     resourceRepository.create(version);
-    cache.removeKeys("pgCache", version.getId().getResourceReference());
+    cache.removeKeys("pgCache-" + getResourceType(), version.getId().getResourceReference());
     return load(version.getId());
   }
 
@@ -83,7 +87,6 @@ public class PostgreStorehouse implements ResourceStorehouse {
   }
 
   @Override
-  @Transactional
   public void delete(ResourceId id) {
     ResourceVersion current = resourceRepository.load(new VersionId(id));
     if (current == null || current.isDeleted()) {
@@ -97,13 +100,13 @@ public class PostgreStorehouse implements ResourceStorehouse {
       version.setAuthor(clientIdentity.get().getClaims());
     }
     resourceRepository.create(version);
-    cache.removeKeys("pgCache", version.getId().getResourceReference());
+    cache.removeKeys("pgCache-" + getResourceType(), version.getId().getResourceReference());
   }
 
   @Override
   public ResourceVersion load(VersionId id) {
     //FIXME: when transaction is rolled back this cache breaks everything
-    //    ResourceVersion version = cache.get("pgCache", id.getReference(), () -> resourceDao.load(id));
+    //    ResourceVersion version = cache.get("pgCache-" + getResourceType(), id.getReference(), () -> resourceDao.load(id));
     ResourceVersion version = resourceRepository.load(id);
     decorate(version);
     return version;

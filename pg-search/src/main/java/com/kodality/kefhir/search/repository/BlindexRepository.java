@@ -31,9 +31,10 @@ import org.springframework.jdbc.core.RowMapper;
 public class BlindexRepository {
   private static final Map<String, String> INDEXES = new HashMap<>();
   @Inject
+  @Named("searchAppJdbcTemplate")
   private JdbcTemplate jdbcTemplate;
   @Inject
-  @Named("adminJdbcTemplate")
+  @Named("searchAdminJdbcTemplate")
   private JdbcTemplate adminJdbcTemplate;
 
   //TODO: will not work on multiple nodes.

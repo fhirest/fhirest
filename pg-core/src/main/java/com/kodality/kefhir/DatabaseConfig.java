@@ -2,29 +2,17 @@ package com.kodality.kefhir;
 
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Primary;
+import io.micronaut.context.annotation.Requires;
 import javax.inject.Named;
 import javax.sql.DataSource;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @Factory
 public class DatabaseConfig {
 
+  @Requires(property = "datasources.default")
   @Bean
-  @Primary
-  public JdbcTemplate jdbcTemplate(@Primary DataSource dataSource) {
-    return new JdbcTemplate(dataSource);
-  }
-
-  @Bean
-  public PgTransactionManager transactionManager(@Primary DataSource dataSource) {
+  public PgTransactionManager transactionManager(@Named("default") DataSource dataSource) {
     return new PgTransactionManager(dataSource);
-  }
-
-  @Bean
-  @Named("adminJdbcTemplate")
-  public JdbcTemplate adminJdbcTemplate(@Named("admin") DataSource dataSource) {
-    return new JdbcTemplate(dataSource);
   }
 
 }

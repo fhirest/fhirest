@@ -16,7 +16,6 @@ import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import java.util.Collections;
 import java.util.List;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +36,7 @@ import static java.util.stream.Collectors.toList;
 public class KefhirEndpointInitializer implements ConformanceUpdateListener {
   private final KefhirEndpointService endpointService;
   private final List<FhirResourceServer> resourceServers;
-  @Named("default")
-  private final FhirResourceServer defaultResourceServer;
+  private final DefaultFhirResourceServer defaultResourceServer;
   private final FhirRootServer rootServer;
 
   private CapabilityStatement capability;
@@ -96,7 +94,7 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
 
   private void start(CapabilityStatementRestComponent rest) {
     endpointService.startRoot(rootServer);
-    rest.getResource().forEach(rr -> start(rr));
+    rest.getResource().forEach(this::start);
   }
 
   private void start(CapabilityStatementRestResourceComponent resourceRest) {

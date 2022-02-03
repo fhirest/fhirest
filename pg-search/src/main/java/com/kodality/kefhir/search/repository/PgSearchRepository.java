@@ -21,17 +21,20 @@ import com.kodality.kefhir.search.sql.SearchSqlUtil;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.List;
 import java.util.Optional;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Slf4j
 @Singleton
-@RequiredArgsConstructor
 public class PgSearchRepository {
-  private final JdbcTemplate jdbcTemplate;
-  private final Optional<PgResourceSearchFilter> pgResourceSearchFilter;
+  @Inject
+  @Named("searchAppJdbcTemplate")
+  private JdbcTemplate jdbcTemplate;
+  @Inject
+  private Optional<PgResourceSearchFilter> pgResourceSearchFilter;
 
   public void saveResource(ResourceVersion version) {
     String sql = "select search.save_resource(?,?,?,?::jsonb)";

@@ -81,12 +81,12 @@ public class KefhirEndpointService {
 
   @Getter
   public static class KefhirEnabledOperation {
-    private String verb;
-    private String path;
-    private Pattern pathMatcher;
-    private Method method;
-    private Object service;
-    private String interaction;
+    private final String verb;
+    private final String path;
+    private final Pattern pathMatcher;
+    private final Method method;
+    private final Object service;
+    private final String interaction;
 
     public KefhirEnabledOperation(Method m, Object service) {
       FhirInteraction bi = m.getAnnotation(FhirInteraction.class);

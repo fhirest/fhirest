@@ -19,7 +19,13 @@ import com.kodality.kefhir.core.model.search.HistorySearchCriterion;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import java.util.List;
 
-public interface ResourceStorehouse {
+public interface ResourceStorage {
+  String DEFAULT = "default";
+
+  default String getResourceType() {
+    return DEFAULT;
+  }
+
   /**
    * transaction supports
    */

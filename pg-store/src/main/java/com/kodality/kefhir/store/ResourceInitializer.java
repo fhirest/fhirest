@@ -20,13 +20,11 @@ import io.micronaut.runtime.event.annotation.EventListener;
 import java.util.List;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @Singleton
 @RequiredArgsConstructor
 public class ResourceInitializer implements ConformanceUpdateListener {
   private final ResourceFunctionsRepository resourceFunctionsRepository;
-  private final JdbcTemplate jdbcTemplate;
 
   @EventListener
   public void initConformanceResources(final StartupEvent event) {
