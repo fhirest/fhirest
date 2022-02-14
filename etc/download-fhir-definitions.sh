@@ -8,7 +8,8 @@ if [ ! -d $path ]; then
   mkdir downloads && cd downloads
   wget http://www.hl7.org/fhir/definitions.json.zip &&\
     unzip definitions.json.zip
-  mv profiles-resources.json profiles-types.json search-parameters.json extension-definitions.json ..
+  rm -rv definitions.json.zip fhir.schema.json.zip version.info
+  mv * ..
   cd .. && rm -rf downloads
 fi
 

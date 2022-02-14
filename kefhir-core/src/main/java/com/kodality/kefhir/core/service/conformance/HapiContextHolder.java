@@ -1,11 +1,18 @@
 package com.kodality.kefhir.core.service.conformance;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
+import ca.uhn.fhir.validation.FhirValidator;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
-import com.kodality.kefhir.structure.service.ResourceFormatService;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
+import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.PrePopulatedValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain;
+import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.context.IWorkerContext;
 import org.hl7.fhir.r4.hapi.ctx.HapiWorkerContext;
 
@@ -14,7 +21,7 @@ import org.hl7.fhir.r4.hapi.ctx.HapiWorkerContext;
 public class HapiContextHolder implements ConformanceUpdateListener {
   private IWorkerContext hapiContext;
   private FhirContext context;
-  private final ResourceFormatService resourceFormatService;
+  private FhirValidator validator;
 
   public IWorkerContext getHapiContext() {
     return hapiContext;
@@ -24,17 +31,28 @@ public class HapiContextHolder implements ConformanceUpdateListener {
     return context;
   }
 
+  public FhirValidator getValidator() {
+    return validator;
+  }
+
+  @PostConstruct
+  public void init() {
+    context = FhirContext.forR4();
+  }
+
   @Override
   public void updated() {
-    context = FhirContext.forR4();
-    hapiContext = new HapiWorkerContext(context, new DefaultProfileValidationSupport(context));
-//    try {
-//      Map<String, byte[]> map = ConformanceHolder.getDefinitions().stream()
-//          .collect(Collectors.toMap(c -> c.getName(), c -> resourceFormatService.compose(c, "json").getBytes()));
-//      hapiContext = SimpleWorkerContext.fromDefinitions(map, null);
-//    } catch (IOException e) {
-//      throw new RuntimeException("hapi hapi hapi...");
-//    }
+    Map<String, IBaseResource> defs = ConformanceHolder.getDefinitions().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
+    Map<String, IBaseResource> vs = ConformanceHolder.getValueSets().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
+    Map<String, IBaseResource> cs = ConformanceHolder.getCodeSystems().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
+    PrePopulatedValidationSupport validationSupport = new PrePopulatedValidationSupport(context, defs, vs, cs);
+
+    hapiContext = new HapiWorkerContext(context, validationSupport);
+
+    ValidationSupportChain chain = new ValidationSupportChain(validationSupport);
+    FhirInstanceValidator instanceValidator = new FhirInstanceValidator(new CachingValidationSupport(chain));
+    validator = context.newValidator();
+    validator.registerValidatorModule(instanceValidator);
   }
 
 }

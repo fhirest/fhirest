@@ -12,11 +12,8 @@
  */
 package com.kodality.kefhir.validation;
 
-import ca.uhn.fhir.validation.FhirValidator;
 import ca.uhn.fhir.validation.ResultSeverityEnum;
 import ca.uhn.fhir.validation.SingleValidationMessage;
-import ca.uhn.fhir.validation.ValidationResult;
-import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.api.resource.OperationInterceptor;
 import com.kodality.kefhir.core.api.resource.ResourceBeforeSaveInterceptor;
 import com.kodality.kefhir.core.exception.FhirException;
@@ -24,16 +21,14 @@ import com.kodality.kefhir.core.exception.FhirServerException;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.core.service.conformance.HapiContextHolder;
-import com.kodality.kefhir.structure.api.ParseException;
 import com.kodality.kefhir.structure.api.ResourceContent;
-import com.kodality.kefhir.structure.api.ResourceRepresentation;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r4.elementmodel.Manager.FhirFormat;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
@@ -45,32 +40,14 @@ import org.hl7.fhir.r4.model.StructureDefinition;
 import static java.util.stream.Collectors.toList;
 
 @Singleton
-public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor implements ConformanceUpdateListener, OperationInterceptor {
+public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor implements OperationInterceptor {
   @Inject
   private ResourceFormatService resourceFormatService;
-  @Inject
-  private ResourceFormatService representationService;
   @Inject
   private HapiContextHolder hapiContextHolder;
 
   public ResourceProfileValidator() {
     super(ResourceBeforeSaveInterceptor.INPUT_VALIDATION);
-  }
-
-  @Override
-  public void updated() {
-//    if (definition == null) {
-//      return;
-//    }
-//    try {
-//      fhirContext = SimpleWorkerContext.fromDefinitions(definition);
-//      ((BaseWorkerContext) fhirContext).setCanRunWithoutTerminology(true);
-//    } catch (IOException | FHIRException e) {
-//      throw new RuntimeException("fhir fhir ");
-//    }
-//
-//  IWorkerContext fhirContext = SimpleWorkerContext.fromDefinitions(definition);
-//((BaseWorkerContext) fhirContext).setCanRunWithoutTerminology(true);
   }
 
   @Override
@@ -85,7 +62,6 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
   public void handle(ResourceId id, ResourceContent content, String interaction) {
     String resourceType = id.getResourceType();
     runValidation(resourceType, content);
-
   }
 
   private void runValidation(String resourceType, ResourceContent content) {
@@ -102,7 +78,6 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
       throw new FhirException(400, errors.stream().map(msg -> {
         OperationOutcomeIssueComponent issue = new OperationOutcomeIssueComponent();
         issue.setCode(IssueType.INVALID);
-//        issue.setSeverity(severity(msg));
         issue.setSeverity(severity(msg.getSeverity()));
         issue.setDetails(new CodeableConcept().setText(msg.getMessage()));
         issue.addLocation(msg.getLocationString());
@@ -112,13 +87,8 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
   }
 
   private boolean isError(ResultSeverityEnum level) {
-    return level == ResultSeverityEnum.ERROR
-        || level == ResultSeverityEnum.FATAL;
+    return level == ResultSeverityEnum.ERROR || level == ResultSeverityEnum.FATAL;
   }
-//  private boolean isError(org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity level) {
-//    return level == org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity.ERROR
-//        || level == org.hl7.fhir.utilities.validation.ValidationMessage.IssueSeverity.FATAL;
-//  }
 
   private IssueSeverity severity(ResultSeverityEnum msg) {
     try {
@@ -128,31 +98,19 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
     }
   }
 
+  private FhirInstanceValidator x;
+
   private List<SingleValidationMessage> validate(String resourceType, ResourceContent content) {
-      Resource resource = resourceFormatService.parse(content);
+    Resource resource = resourceFormatService.parse(content);
     if (!resource.getResourceType().name().equals(resourceType)) {
       String msg = "was expecting " + resourceType + " but found " + resource.getResourceType().name();
       throw new FhirException(400, IssueType.INVALID, msg);
     }
     try {
-//    List<ValidationMessage> messages = new ArrayList<>();
-//      hapiContextHolder.getHapiContext().newValidator().validate(hapiContextHolder.getContext(), messages, resource, getFhirFormat(content).name());
-      FhirValidator validator = hapiContextHolder.getContext().newValidator();
-//      validator.setAnyExtensionsAllowed(true);
-      ValidationResult vr = validator.validateWithResult(resource);
-      return vr.getMessages();
-//      element = validator.validate(null, messages, input, getFhirFormat(content));
+      return hapiContextHolder.getValidator().validateWithResult(resource).getMessages();
     } catch (Exception e) {
       throw new RuntimeException(":/", e);
     }
-//    return messages;
-  }
-
-  private FhirFormat getFhirFormat(ResourceContent content) {
-    String ct = StringUtils.substringBefore(content.getContentType(), ";");
-    ResourceRepresentation repr =
-        representationService.findPresenter(ct).orElseThrow(() -> new ParseException("unknown format"));
-    return repr.getFhirFormat();
   }
 
 }

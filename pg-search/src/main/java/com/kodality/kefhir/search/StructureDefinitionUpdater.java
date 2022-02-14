@@ -35,7 +35,7 @@ public class StructureDefinitionUpdater implements ConformanceUpdateListener {
 
   @EventListener
   public void initConformanceResources(final StartupEvent event) {
-    List.of("CapabilityStatement", "StructureDefinition", "SearchParameter", "OperationDefinition", "CompartmentDefinition")
+    List.of("CapabilityStatement", "StructureDefinition", "SearchParameter", "OperationDefinition", "CompartmentDefinition", "ValueSet", "CodeSystem", "ConceptMap")
         .forEach(r -> structureDefinitionRepository.defineResource(r));
     structureDefinitionRepository.refresh();
   }

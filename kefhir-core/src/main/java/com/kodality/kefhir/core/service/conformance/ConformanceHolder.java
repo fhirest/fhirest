@@ -18,9 +18,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.SearchParameter;
 import org.hl7.fhir.r4.model.StructureDefinition;
+import org.hl7.fhir.r4.model.ValueSet;
 
 import static java.util.stream.Collectors.toList;
 
@@ -29,6 +31,8 @@ public class ConformanceHolder {
   protected static Map<String, StructureDefinition> definitions;
   //resource type -> code -> param
   protected static Map<String, Map<String, SearchParameter>> searchParams;
+  protected static List<ValueSet> valueSets;
+  protected static List<CodeSystem> codeSystems;
 
   protected static void setCapabilityStatement(CapabilityStatement capabilityStatement) {
     ConformanceHolder.capabilityStatement = capabilityStatement;
@@ -45,6 +49,13 @@ public class ConformanceHolder {
         ct -> ConformanceHolder.searchParams.computeIfAbsent(ct.getValue(), x -> new HashMap<>()).put(p.getCode(), p)));
   }
 
+  protected static void setValueSets(List<ValueSet> valueSets) {
+    ConformanceHolder.valueSets = valueSets;
+  }
+
+  protected static void setCodeSystems(List<CodeSystem> codeSystems) {
+    ConformanceHolder.codeSystems = codeSystems;
+  }
 
   public static CapabilityStatement getCapabilityStatement() {
     return capabilityStatement;
@@ -56,6 +67,14 @@ public class ConformanceHolder {
 
   public static StructureDefinition getDefinition(String type) {
     return definitions.get(type);
+  }
+
+  public static List<ValueSet> getValueSets() {
+    return valueSets;
+  }
+
+  public static List<CodeSystem> getCodeSystems() {
+    return codeSystems;
   }
 
   public static List<SearchParameter> getSearchParams() {

@@ -46,7 +46,6 @@ public class ResourceStructureRepository {
   }
 
   public void refresh() {
-    adminJdbcTemplate.update("refresh materialized view search.resource_structure_recursive");
     RESOURCE_TYPES = adminJdbcTemplate.query("select * from search.resource_type", rs -> {
       Map<String, Long> map = new HashMap<>();
       while(rs.next()) {
@@ -54,6 +53,7 @@ public class ResourceStructureRepository {
       }
       return map;
     });
+    adminJdbcTemplate.update("refresh materialized view search.resource_structure_recursive");
   }
 
   public void deleteAll() {

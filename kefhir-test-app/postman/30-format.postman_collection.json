@@ -36,7 +36,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"resourceType\": \"Patient\"\n}"
+					"raw": "{\n    \"active\": true,\n    \"resourceType\": \"Patient\"\n}"
 				},
 				"url": {
 					"raw": "{{kefhir}}/Patient/formattest1",
@@ -194,7 +194,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "<Patient xmlns=\"http://hl7.org/fhir\">\n</Patient>",
+					"raw": "<Patient xmlns=\"http://hl7.org/fhir\">\n<active value=\"true\"></active>\n</Patient>",
 					"options": {
 						"raw": {
 							"language": "xml"

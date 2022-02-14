@@ -39,7 +39,7 @@ public class ConformanceInitializationService {
   @Async
   public void init(final StartupEvent event) {
     try {
-      Thread.sleep(2000);
+      Thread.sleep(3000);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
@@ -51,6 +51,8 @@ public class ConformanceInitializationService {
     ConformanceHolder.setCapabilityStatement(this.<CapabilityStatement>load("CapabilityStatement").stream().findFirst().orElse(null));
     ConformanceHolder.setStructureDefinitions(load("StructureDefinition"));
     ConformanceHolder.setSearchParams(load("SearchParameter"));
+    ConformanceHolder.setValueSets(load("ValueSet"));
+    ConformanceHolder.setCodeSystems(load("CodeSystem"));
     conformanceUpdateListeners.forEach(l -> l.updated());
     log.info("conformance loaded");
   }
