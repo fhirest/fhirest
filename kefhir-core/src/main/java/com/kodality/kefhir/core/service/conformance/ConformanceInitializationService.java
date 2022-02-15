@@ -19,12 +19,14 @@ import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.scheduling.annotation.Async;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.Resource;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
@@ -48,11 +50,13 @@ public class ConformanceInitializationService {
 
   public void refresh() {
     log.info("refreshing conformance...");
-    ConformanceHolder.setCapabilityStatement(this.<CapabilityStatement>load("CapabilityStatement").stream().findFirst().orElse(null));
-    ConformanceHolder.setStructureDefinitions(load("StructureDefinition"));
-    ConformanceHolder.setSearchParams(load("SearchParameter"));
-    ConformanceHolder.setValueSets(load("ValueSet"));
-    ConformanceHolder.setCodeSystems(load("CodeSystem"));
+    CompletableFuture.allOf(
+        runAsync(() -> ConformanceHolder.setCapabilityStatement(this.<CapabilityStatement>load("CapabilityStatement").stream().findFirst().orElse(null))),
+        runAsync(() -> ConformanceHolder.setStructureDefinitions(load("StructureDefinition"))),
+        runAsync(() -> ConformanceHolder.setSearchParams(load("SearchParameter"))),
+        runAsync(() -> ConformanceHolder.setValueSets(load("ValueSet"))),
+        runAsync(() -> ConformanceHolder.setCodeSystems(load("CodeSystem")))
+    ).join();
     conformanceUpdateListeners.forEach(l -> l.updated());
     log.info("conformance loaded");
   }

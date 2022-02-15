@@ -14,6 +14,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,29 +33,30 @@ public class ConformanceFileImportService {
   private final ConformanceInitializationService conformanceService;
 
   public void importFromFile(String path) {
-    readDir(new File(path));
+    CompletableFuture.allOf(readDir(new File(path)).toArray(CompletableFuture[]::new)).join();
     conformanceService.refresh();
   }
 
-  private void readDir(File dir) {
-    Arrays.stream(dir.listFiles()).forEach(f -> {
+  private Stream<CompletableFuture> readDir(File dir) {
+    return Arrays.stream(dir.listFiles()).flatMap(f -> {
       if (f.isDirectory()) {
-        readDir(f);
-        return;
+        return readDir(f);
       }
-      process(f);
+      return Stream.of(process(f));
     });
   }
 
-  private void process(File f) {
-    log.info("processing " + f);
-    Resource r = readFile(f);
-    Date modified = new Date(f.lastModified());
-    if (r instanceof Bundle) {
-      ((Bundle) r).getEntry().forEach(e -> save(e.getResource(), modified));
-    } else {
-      save(r, modified);
-    }
+  private CompletableFuture<Void> process(File f) {
+    return CompletableFuture.runAsync(() -> {
+      log.info("processing " + f);
+      Resource r = readFile(f);
+      Date modified = new Date(f.lastModified());
+      if (r instanceof Bundle) {
+        ((Bundle) r).getEntry().forEach(e -> save(e.getResource(), modified));
+      } else {
+        save(r, modified);
+      }
+    });
   }
 
   private void save(Resource r, Date fileModified) {
