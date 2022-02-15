@@ -119,9 +119,7 @@ public abstract class BaseFhirResourceServer implements FhirResourceServer {
     if (count == 0) {
       return;
     }
-    String pageUrl = ServerRequestContext.currentRequest().orElseThrow().getUri().toString();
-    pageUrl = StringUtils.removeEnd(pageUrl, req.getType());
-
+    String pageUrl = ServerRequestContext.currentRequest().orElseThrow().getPath();
     String queryString = ServerRequestContext.currentRequest().orElseThrow().getUri().getQuery();
     queryString = StringUtils.isEmpty(queryString) ? "" : RegExUtils.removePattern(queryString, "[&?]?_page=[0-9]+");
     pageUrl += StringUtils.isEmpty(queryString) ? "?_page=" : ("?" + queryString + "&_page=");
