@@ -10,6 +10,30 @@ CREATE TABLE search.base_index_string (
 CREATE INDEX ON search.base_index_string (sid, string) where active = true;
 --
 
+--changeset kefhir:base_index_number dbms:postgresql
+CREATE TABLE search.base_index_number (
+  sid bigint, -- references search.resource(sid),
+  blindex_id bigint references search.blindex(id),
+  active boolean default true,
+  number numeric(11, 4)
+) PARTITION BY LIST (blindex_id);
+CREATE INDEX ON search.base_index_number (sid, number) where active = true;
+--
+
+--changeset kefhir:base_index_quantity dbms:postgresql
+CREATE TABLE search.base_index_quantity (
+  sid bigint, -- references search.resource(sid),
+  blindex_id bigint references search.blindex(id),
+  active boolean default true,
+  number numeric(11, 4),
+  system_id bigint,
+  code text,
+  unit text
+) PARTITION BY LIST (blindex_id);
+CREATE INDEX ON search.base_index_quantity (sid, number) where active = true;
+CREATE INDEX ON search.base_index_quantity (sid, number, system_id, code) where active = true;
+--
+
 --changeset kefhir:base_index_token dbms:postgresql
 CREATE TABLE search.base_index_token (
   sid bigint, -- references search.resource(sid),

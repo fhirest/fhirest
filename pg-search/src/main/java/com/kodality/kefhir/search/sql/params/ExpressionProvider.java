@@ -16,10 +16,9 @@ import com.kodality.kefhir.core.exception.FhirServerException;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.search.repository.BlindexRepository;
-import com.kodality.kefhir.search.util.FhirPathHackUtil;
+import com.kodality.kefhir.search.util.SearchPathUtil;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.List;
-import java.util.stream.Stream;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,15 +51,8 @@ public abstract class ExpressionProvider {
 
   private static String getPath(String resourceType, String key) {
     String expr = ConformanceHolder.requireSearchParam(resourceType, key).getExpression();
-    String path = Stream.of(expr.split("\\|"))
-        .map((s) -> StringUtils.trim(s))
-        .filter(e -> e.startsWith(resourceType))
-        .findFirst()
-        .orElse(null);
-    if (StringUtils.isEmpty(path)) {
-      throw new FhirServerException(500, "config problem. path empty for param " + key);
-    }
-    path = FhirPathHackUtil.replaceAs(path);
+    String path = SearchPathUtil.parsePaths(expr).stream().filter(e -> e.startsWith(resourceType)).findFirst()
+        .orElseThrow(() -> new FhirServerException(500, "config problem. path empty for param " + key));
     return RegExUtils.removeFirst(path, resourceType + "\\.");
   }
 

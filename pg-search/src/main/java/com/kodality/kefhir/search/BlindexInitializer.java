@@ -17,7 +17,7 @@ import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
 import com.kodality.kefhir.search.model.Blindex;
 import com.kodality.kefhir.search.repository.BlindexRepository;
-import com.kodality.kefhir.search.util.FhirPathHackUtil;
+import com.kodality.kefhir.search.util.SearchPathUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,9 +50,7 @@ public class BlindexInitializer {
     }
     Set<String> create =
         ConformanceHolder.getSearchParams().stream().filter(sp -> sp.getExpression() != null).flatMap(sp -> {
-          return Stream.of(StringUtils.split(sp.getExpression(), "|"))
-              .map((s) -> StringUtils.trim(s))
-              .map(s -> FhirPathHackUtil.replaceAs(s))
+          return SearchPathUtil.parsePaths(sp.getExpression()).stream()
               .filter(s -> defined.contains(StringUtils.substringBefore(s, ".")));
         }).collect(Collectors.toSet());
 

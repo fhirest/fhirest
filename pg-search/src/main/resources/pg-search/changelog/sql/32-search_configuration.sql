@@ -27,12 +27,14 @@ with t(param_type, element_type, path) as (values
   ('token', 'boolean',         '[{"value":"{}"}]'),
 
   ('string', 'string',    '[{"value":"{}"}]'),
+  ('string', 'markdown',    '[{"value":"{}"}]'),
   ('string', 'HumanName', '[{"value":"{family}"}, {"value":"{given}"}]'),
 
   ('reference', 'Reference', '[{"value":"{reference}"}]'),
 
   ('number', 'integer', '[{"value":"{}"}]'),
   ('number', 'decimal', '[{"value":"{}"}]'),
-  ('number', 'Quantity', '[{"value":"{value}"}]')
+
+  ('quantity', 'Quantity', '[{"value":"{value}", "system":"{system}", "code":"{code}", "unit":"{unit}"}]')
 ) insert into search.search_configuration(param_type, element_type, path) select t.param_type, t.element_type, t.path::jsonb from t;
 --rollback delete from search_configuration;

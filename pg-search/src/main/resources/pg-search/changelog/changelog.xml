@@ -17,6 +17,7 @@
     <sqlFile splitStatements="false" path="functions/system_id.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/extract_date.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/extract_number.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/extract_quantity.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/extract_string.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/extract_token.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/extract_reference.sql" relativeToChangelogFile="true" />

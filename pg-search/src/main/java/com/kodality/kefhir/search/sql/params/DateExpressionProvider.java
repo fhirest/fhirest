@@ -58,8 +58,8 @@ public class DateExpressionProvider extends ExpressionProvider {
 
   @Override
   public SqlBuilder order(String resourceType, String key, String alias) {
-    String sql = String.format("SELECT range FROM " + index(resourceType, key, alias), alias);
-    return new SqlBuilder("(" + sql + ")");
+    String i = index(resourceType, key, alias);
+    return new SqlBuilder("(SELECT range FROM " + i + ")");
   }
 
   private static String rangeSql(String field, String value) {

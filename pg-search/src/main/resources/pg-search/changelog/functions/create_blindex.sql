@@ -29,6 +29,8 @@ BEGIN
                    when _param_type = 'token' then 'base_index_token'
                    when _param_type = 'reference' then 'base_index_reference'
                    when _param_type = 'date' then 'base_index_date'
+                   when _param_type = 'number' then 'base_index_number'
+                   when _param_type = 'quantity' then 'base_index_quantity'
                    else null
                  end;
   if _base_idx is null THEN

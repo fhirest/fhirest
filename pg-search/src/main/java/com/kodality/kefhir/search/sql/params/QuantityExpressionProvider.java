@@ -10,35 +10,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.search.sql.params;
+package com.kodality.kefhir.search.sql.params;
 
 import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.util.sql.SqlBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
-public class StringExpressionProvider extends ExpressionProvider {
+public class QuantityExpressionProvider extends NumberExpressionProvider {
 
   @Override
   protected SqlBuilder makeCondition(QueryParam param, String value) {
-    if (param.getModifier() == null) {
-      return new SqlBuilder("i.string ilike ?", value + "%");
+    if (!value.contains("|")) {
+      return super.makeCondition(param, value);
     }
-    if (param.getModifier().equals("contains")) {
-      return new SqlBuilder("i.string ilike ?", "%" + value + "%");
+    String[] parts = value.split("\\|");
+    if (parts.length != 3 || StringUtils.isEmpty(parts[2])) {
+      throw new FhirException(400, IssueType.INVALID, "invalud Quantity value '" + value + "'");
     }
-    if (param.getModifier().equals("exact")) {
-      return new SqlBuilder("i.string = ?", value);
+    SqlBuilder sb = super.makeCondition(param, parts[0]);
+    if (StringUtils.isEmpty(parts[1])) {
+      sb.append(" and (i.code = ? or i.unit = ?)", parts[2], parts[2]);
+    } else {
+      sb.append(" and i.system_id = search.system_id(?) and i.code = ?", parts[1], parts[2]);
     }
-
-    throw new FhirException(400, IssueType.INVALID, "modifier " + param.getModifier() + " not supported");
-  }
-
-
-  @Override
-  public SqlBuilder order(String resourceType, String key, String alias) {
-    String i = index(resourceType, key, alias);
-    return new SqlBuilder("(SELECT string FROM " + i + ")");
+    return sb;
   }
 
 }

@@ -10,15 +10,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.search.sql.params;
+package com.kodality.kefhir.search.sql.params;
 
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.search.sql.SearchPrefix;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,12 +25,11 @@ public class NumberExpressionProvider extends ExpressionProvider {
     @Override
     public BigDecimal get(Object key) {
       return computeIfAbsent((Integer) key, k -> new BigDecimal("0." + StringUtils.repeat('0', k) + "5"));
-    };
+    }
   };
-  private static final Map<String, String> operators;
 
+  private static final Map<String, String> operators = new HashMap<>();
   static {
-    operators = new HashMap<>();
     operators.put(null, "=");
     operators.put(SearchPrefix.le, "<=");
     operators.put(SearchPrefix.lt, "<");
@@ -42,40 +39,21 @@ public class NumberExpressionProvider extends ExpressionProvider {
   }
 
   @Override
-  public SqlBuilder makeExpression(QueryParam param, String alias) {
-    List<SqlBuilder> ors = new ArrayList<>();
-    for (String value : param.getValues()) {
-      if (!StringUtils.isEmpty(value)) {
-        ors.add(date(value, param, alias));
-      }
-    }
-    return new SqlBuilder().or(ors);
-  }
+  protected SqlBuilder makeCondition(QueryParam param, String value) {
+    SearchPrefix prefix = SearchPrefix.parse(value, operators.keySet());
+    String op = operators.get(prefix.getPrefix());
+    BigDecimal number = new BigDecimal(prefix.getValue());
 
-  @Override
-  protected SqlBuilder makeCondition(QueryParam param, String v) {
-    return null;
+    if (prefix.getPrefix() == null) {
+      return new SqlBuilder("i.number BETWEEN ? AND ?", lower(number), upper(number));
+    }
+    return new SqlBuilder("i.number " + op + "?", number);
   }
 
   @Override
   public SqlBuilder order(String resourceType, String key, String alias) {
-    return new SqlBuilder("1"); // TODO:
-  }
-
-  private SqlBuilder date(String value, QueryParam param, String alias) {
-    SqlBuilder sb = new SqlBuilder();
-    SearchPrefix prefix = SearchPrefix.parse(value, operators.keySet().toArray(new String[] {}));
-    String op = operators.get(prefix.getPrefix());
-    BigDecimal number = new BigDecimal(prefix.getValue());
-
-    sb.append("EXISTS (SELECT 1 FROM " + index(param, alias));
-    if (prefix.getPrefix() == null) {
-      sb.and("number BETWEEN ? AND ?", lower(number), upper(number));
-    } else {
-      sb.and("number " + op + "?", number);
-    }
-    sb.append(")");
-    return sb;
+    String i = index(resourceType, key, alias);
+    return new SqlBuilder("(SELECT number FROM " + i + ")");
   }
 
   private static BigDecimal lower(BigDecimal number) {

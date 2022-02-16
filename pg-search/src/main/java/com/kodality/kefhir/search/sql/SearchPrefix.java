@@ -12,6 +12,7 @@
  */
  package com.kodality.kefhir.search.sql;
 
+import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
 
 public class SearchPrefix {
@@ -31,6 +32,10 @@ public class SearchPrefix {
   public SearchPrefix(String prefix, String value) {
     this.prefix = prefix;
     this.value = value;
+  }
+
+  public static SearchPrefix parse(String value, Collection<String> prefixes) {
+    return parse(value, prefixes.toArray(new String[] {}));
   }
 
   public static SearchPrefix parse(String value, String... prefixes) {
