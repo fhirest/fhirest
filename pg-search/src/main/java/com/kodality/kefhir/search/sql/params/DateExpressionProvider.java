@@ -49,17 +49,16 @@ public class DateExpressionProvider extends ExpressionProvider {
     return new SqlBuilder(rangeSql("i.range", v));
   }
 
+  @Override
+  protected String getOrderField() {
+    return "range";
+  }
+
   public static SqlBuilder makeExpression(String field, QueryParam param) {
     List<SqlBuilder> ors = param.getValues().stream().filter(v -> !StringUtils.isEmpty(v))
         .map(v -> new SqlBuilder(rangeSql(field, v)))
         .collect(toList());
     return new SqlBuilder().or(ors);
-  }
-
-  @Override
-  public SqlBuilder order(String resourceType, String key, String alias) {
-    String i = index(resourceType, key, alias);
-    return new SqlBuilder("(SELECT range FROM " + i + ")");
   }
 
   private static String rangeSql(String field, String value) {

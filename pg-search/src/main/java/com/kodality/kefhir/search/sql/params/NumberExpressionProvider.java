@@ -51,9 +51,8 @@ public class NumberExpressionProvider extends ExpressionProvider {
   }
 
   @Override
-  public SqlBuilder order(String resourceType, String key, String alias) {
-    String i = index(resourceType, key, alias);
-    return new SqlBuilder("(SELECT number FROM " + i + ")");
+  protected String getOrderField() {
+    return "number";
   }
 
   private static BigDecimal lower(BigDecimal number) {

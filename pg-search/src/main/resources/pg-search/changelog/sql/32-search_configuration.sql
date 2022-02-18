@@ -10,7 +10,7 @@ create table search.search_configuration (
 );
 --rollback drop table search_configuration;
 
---changeset kefhir:search_configuration-data3 dbms:postgresql
+--changeset kefhir:search_configuration-data dbms:postgresql runOnChange:true
 delete from search.search_configuration;
 
 with t(param_type, element_type, path) as (values
@@ -35,6 +35,7 @@ with t(param_type, element_type, path) as (values
   ('number', 'integer', '[{"value":"{}"}]'),
   ('number', 'decimal', '[{"value":"{}"}]'),
 
-  ('quantity', 'Quantity', '[{"value":"{value}", "system":"{system}", "code":"{code}", "unit":"{unit}"}]')
+  ('quantity', 'Quantity', '[{"value":"{value}", "system":"{system}", "code":"{code}", "unit":"{unit}"}]'),
+  ('quantity', 'SampledData', '[{"value":"{lowerLimit}"}]') -- FIXME: temporary hack to avoid exceptions. used in Observations, however search spec claims it is not used
 ) insert into search.search_configuration(param_type, element_type, path) select t.param_type, t.element_type, t.path::jsonb from t;
 --rollback delete from search_configuration;

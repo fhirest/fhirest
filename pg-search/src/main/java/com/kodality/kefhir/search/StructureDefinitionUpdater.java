@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.search;
+package com.kodality.kefhir.search;
 
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
@@ -20,12 +20,14 @@ import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.ElementDefinition;
 import org.hl7.fhir.r4.model.StructureDefinition;
+
+import static java.util.stream.Collectors.toList;
 
 @Singleton
 @RequiredArgsConstructor
@@ -35,7 +37,8 @@ public class StructureDefinitionUpdater implements ConformanceUpdateListener {
 
   @EventListener
   public void initConformanceResources(final StartupEvent event) {
-    List.of("CapabilityStatement", "StructureDefinition", "SearchParameter", "OperationDefinition", "CompartmentDefinition", "ValueSet", "CodeSystem", "ConceptMap")
+    List.of("CapabilityStatement", "StructureDefinition", "SearchParameter", "OperationDefinition", "CompartmentDefinition", "ValueSet", "CodeSystem",
+            "ConceptMap")
         .forEach(r -> structureDefinitionRepository.defineResource(r));
     structureDefinitionRepository.refresh();
   }
@@ -47,39 +50,27 @@ public class StructureDefinitionUpdater implements ConformanceUpdateListener {
         .filter(def -> domainResource.equals(def.getBaseDefinition()) || def.getName().equals("Binary"))
         .forEach(d -> structureDefinitionRepository.defineResource(d.getName()));
 
-    // TODO: check if already up to date
-    structureDefinitionRepository.deleteAll();
-    ConformanceHolder.getDefinitions().forEach(d -> saveDefinition(d));
+    structureDefinitionRepository.save(ConformanceHolder.getDefinitions().stream().flatMap(this::findElements).distinct().collect(toList()));
     structureDefinitionRepository.refresh();
 
     blindexInitializer.execute();
   }
 
-  private void saveDefinition(StructureDefinition def) {
-    List<String> many = new ArrayList<>();
-    List<StructureElement> elements = new ArrayList<>(def.getSnapshot().getElement().size());
-    for (ElementDefinition elementDef : def.getSnapshot().getElement()) {
-      if (elementDef.getId().contains(":")) {
+  private Stream<StructureElement> findElements(StructureDefinition def) {
+    return def.getSnapshot().getElement().stream().flatMap(el -> {
+      if (el.getId().contains(":")) {
         // XXX think if we should and how should we store definitions with modifier (:). problem - they have same path
         // Quantity vs Quantity:simplequantity
-        return;
+        Stream.empty();
       }
-
-      elementDef.getType().stream().map(t -> t.getCode()).distinct().forEach(type -> {
-        String path = StringUtils.replace(elementDef.getPath(), "[x]", StringUtils.capitalize(type));
-        elements.add(new StructureElement(StringUtils.substringBefore(path, "."),
-                                          StringUtils.substringAfter(path, "."),
-                                          type));
+      return el.getType().stream().map(t -> t.getCode()).distinct().map(type -> {
+        String parent = StringUtils.substringBefore(el.getPath(), ".");
+        String name = StringUtils.substringAfter(el.getPath(), ".");
+        String child = StringUtils.replace(name, "[x]", StringUtils.capitalize(type));
+        name = StringUtils.remove(name, "[x]");
+        return new StructureElement(parent, child, name, type);
       });
-      if (isMany(elementDef)) {
-        many.add(elementDef.getPath());
-      }
-    }
-    for (StructureElement element : elements) {
-      element.setMany(CollectionUtils.containsAny(many, parents(element.getPath())));
-    }
-
-    structureDefinitionRepository.create(elements);
+    });
   }
 
   private static List<String> parents(String path) {

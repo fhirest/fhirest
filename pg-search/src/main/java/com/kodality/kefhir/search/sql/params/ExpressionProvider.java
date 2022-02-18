@@ -19,6 +19,7 @@ import com.kodality.kefhir.search.repository.BlindexRepository;
 import com.kodality.kefhir.search.util.SearchPathUtil;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,7 +29,12 @@ public abstract class ExpressionProvider {
 
   protected abstract SqlBuilder makeCondition(QueryParam param, String value);
 
-  public abstract SqlBuilder order(String resourceType, String key, String alias);
+  protected abstract String getOrderField();
+
+  public SqlBuilder order(String resourceType, String key, String alias) {
+    String i = index(resourceType, key, alias);
+    return new SqlBuilder("(SELECT " + getOrderField() + " FROM " + i + ")");
+  }
 
   public SqlBuilder makeExpression(QueryParam param, String alias) {
       List<SqlBuilder> ors = param.getValues().stream().filter(v -> !StringUtils.isEmpty(v)).map(v -> {
@@ -40,20 +46,13 @@ public abstract class ExpressionProvider {
       return new SqlBuilder().or(ors);
   }
 
-
-  protected static String path(QueryParam param) {
-    return path(param.getResourceType(), param.getKey());
-  }
-
-  protected static String path(String resourceType, String key) {
-    return "'" + getPath(resourceType, key) + "'";
-  }
-
-  private static String getPath(String resourceType, String key) {
+  private static List<String> getPaths(String resourceType, String key) {
     String expr = ConformanceHolder.requireSearchParam(resourceType, key).getExpression();
-    String path = SearchPathUtil.parsePaths(expr).stream().filter(e -> e.startsWith(resourceType)).findFirst()
-        .orElseThrow(() -> new FhirServerException(500, "config problem. path empty for param " + key));
-    return RegExUtils.removeFirst(path, resourceType + "\\.");
+    List<String> paths = SearchPathUtil.parsePaths(expr).stream().filter(e -> e.startsWith(resourceType)).map(e -> RegExUtils.removeFirst(e, resourceType + "\\.")).collect(toList());
+    if (paths.isEmpty()) {
+   throw new FhirServerException(500, "config problem. path empty for param " + key);
+    }
+    return paths;
   }
 
   protected static String index(QueryParam param, String parentAlias) {
@@ -61,8 +60,14 @@ public abstract class ExpressionProvider {
   }
 
   protected static String index(String resourceType, String key, String parentAlias) {
-    String tblName = BlindexRepository.getIndex(resourceType, getPath(resourceType, key));
-    return String.format("search.%s i WHERE i.active = true and i.sid = %s.sid ", tblName, parentAlias);
+    List<String> indexes = getPaths(resourceType, key).stream().map(p -> {
+      String index = BlindexRepository.getIndex(resourceType, p);
+      return String.format("search.%s i WHERE i.active = true and i.sid = %s.sid ", index, parentAlias);
+    }).collect(toList());
+    if (indexes.size() == 1) {
+      return indexes.get(0);
+    }
+    return "(" + indexes.stream().map(i -> "select * from " + i).collect(Collectors.joining(" UNION ALL ")) + ") i where 1=1 ";
   }
 
 }

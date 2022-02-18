@@ -39,6 +39,11 @@ public class ReferenceExpressionProvider extends ExpressionProvider {
     return null; // TODO:
   }
 
+  @Override
+  protected String getOrderField() {
+    return null; // TODO:
+  }
+
   private static SqlBuilder reference(String query) {
     String type = StringUtils.contains(query, "/") ? StringUtils.substringBefore(query, "/") : null;
     String id = StringUtils.contains(query, "/") ? StringUtils.substringAfter(query, "/") : query;

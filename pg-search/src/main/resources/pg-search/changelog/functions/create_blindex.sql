@@ -6,10 +6,10 @@ DECLARE
   _base_idx text;
   _blindex search.blindex;
 BEGIN
-  IF NOT EXISTS(SELECT 1 FROM search.resource_structure_recursive WHERE base = _resource_type and path = _path) THEN
+  IF NOT EXISTS(SELECT 1 FROM search.resource_structure_recursive r WHERE parent = _resource_type and (r.alias = _path or r.path = _path)) THEN
     RAISE EXCEPTION '% not found in resource_structure', _resource_type || '.' || _path;
   END IF;
-  FOR _struct IN (SELECT * FROM search.resource_structure_recursive WHERE base = _resource_type  and path = _path) LOOP
+  FOR _struct IN (SELECT * FROM search.resource_structure_recursive r WHERE parent = _resource_type and (r.alias = _path or r.path = _path)) LOOP
     IF NOT EXISTS (SELECT 1 FROM search.search_configuration WHERE element_type = _struct.element_type) THEN
       RAISE EXCEPTION '% not configured. (search_configuration)', _struct.element_type;
     END IF;

@@ -1,0 +1,355 @@
+{
+	"info": {
+		"_postman_id": "38829f4a-3511-487c-8489-11364292e88e",
+		"name": "48-search-Observation.value-date",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "test data valueDateTime",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"request\": {\n        \"url\": \"Observation/observation101\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"resourceType\": \"Observation\",\n        \"status\": \"final\",\n        \"effectiveDateTime\": \"2022-02-05\",\n        \"code\": {\"coding\": [{\"code\": \"x\"}]},\n        \"valueDateTime\": \"2022-02-05\"\n      }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{kefhir}}",
+					"host": [
+						"{{kefhir}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "value-date no",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(0);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Observation?_id=observation101&value-date=2022-02-04",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Observation"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "observation101"
+						},
+						{
+							"key": "value-date",
+							"value": "2022-02-04"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "value-date yes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"observation101\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Observation?_id=observation101&value-date=2022-02-05",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Observation"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "observation101"
+						},
+						{
+							"key": "value-date",
+							"value": "2022-02-05"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test data valuePeriod",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"request\": {\n        \"url\": \"Observation/observation101\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"resourceType\": \"Observation\",\n        \"status\": \"final\",\n        \"effectiveInstant\": \"2022-02-05T10:10:10Z\",\n        \"code\": {\"coding\": [{\"code\": \"x\"}]},\n        \"valuePeriod\": {\n          \"start\": \"2022-02-05T10:10:10Z\",\n          \"end\": \"2022-02-05T12:10:10Z\"\n        }\n      }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{kefhir}}",
+					"host": [
+						"{{kefhir}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "value-date no",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(0);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Observation?_id=observation101&value-date=2022-02-01",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Observation"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "observation101"
+						},
+						{
+							"key": "value-date",
+							"value": "2022-02-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "value-date yes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"observation101\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Observation?_id=observation101&value-date=2022-02-05T10:10:10Z",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Observation"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "observation101"
+						},
+						{
+							"key": "value-date",
+							"value": "2022-02-05T10:10:10Z"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

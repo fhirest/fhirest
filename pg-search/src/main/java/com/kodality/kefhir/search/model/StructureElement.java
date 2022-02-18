@@ -12,36 +12,16 @@
  */
  package com.kodality.kefhir.search.model;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+@EqualsAndHashCode
 public class StructureElement {
-  private final String base;
-  private final String path;
+  private final String parent;
+  private final String child;
+  private final String alias;
   private final String type;
-  private boolean isMany;
-
-  public StructureElement(String base, String path, String type) {
-    this.base = base;
-    this.path = path;
-    this.type = type;
-  }
-
-  public String getBase() {
-    return base;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public boolean isMany() {
-    return isMany;
-  }
-
-  public void setMany(boolean isMany) {
-    this.isMany = isMany;
-  }
-
 }

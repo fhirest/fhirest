@@ -47,4 +47,8 @@ public class TokenExpressionProvider extends ExpressionProvider {
     return new SqlBuilder("1"); // TODO:
   }
 
+  @Override
+  protected String getOrderField() {
+    return null; // TODO:
+  }
 }

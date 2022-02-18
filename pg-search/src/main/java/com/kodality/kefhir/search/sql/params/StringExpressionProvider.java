@@ -34,11 +34,8 @@ public class StringExpressionProvider extends ExpressionProvider {
     throw new FhirException(400, IssueType.INVALID, "modifier " + param.getModifier() + " not supported");
   }
 
-
   @Override
-  public SqlBuilder order(String resourceType, String key, String alias) {
-    String i = index(resourceType, key, alias);
-    return new SqlBuilder("(SELECT string FROM " + i + ")");
+  protected String getOrderField() {
+    return "string";
   }
-
 }

@@ -11,7 +11,7 @@ public final class SearchPathUtil {
     return Stream.of(expression.split("\\|"))
         .map(s -> StringUtils.trim(s))
         .map(s -> replaceAs(s))
-        .map(s -> FhirPathHackUtil.replaceAs(s))
+        .map(s -> replaceFhirpathAs(s))
         .collect(Collectors.toSet());
   }
 
@@ -22,6 +22,16 @@ public final class SearchPathUtil {
     s = StringUtils.remove(s, "(");
     s = StringUtils.remove(s, ")");
     String[] p = s.split(" as ");
+    return p[0] + StringUtils.capitalize(p[1]);
+  }
+
+  private static String replaceFhirpathAs(String s) {
+    if (!s.contains(".as(")) {
+      return s;
+    }
+    String[] p = s.split(".as");
+    p[1] = StringUtils.remove(p[1], ")");
+    p[1] = StringUtils.remove(p[1], "(");
     return p[0] + StringUtils.capitalize(p[1]);
   }
 }
