@@ -32,10 +32,12 @@ with t(param_type, element_type, path) as (values
 
   ('reference', 'Reference', '[{"value":"{reference}"}]'),
 
-  ('number', 'integer', '[{"value":"{}"}]'),
-  ('number', 'decimal', '[{"value":"{}"}]'),
+  ('number', 'integer', '[{"lower":"{}", "upper":"{}"}]'),
+  ('number', 'decimal', '[{"lower":"{}", "upper":"{}"}]'),
 
-  ('quantity', 'Quantity', '[{"value":"{value}", "system":"{system}", "code":"{code}", "unit":"{unit}"}]'),
-  ('quantity', 'SampledData', '[{"value":"{lowerLimit}"}]') -- FIXME: temporary hack to avoid exceptions. used in Observations, however search spec claims it is not used
+  ('quantity', 'Quantity', '[{"lower":"{value}", "upper":"{value}", "system":"{system}", "code":"{code}", "unit":"{unit}"}]'),
+  ('quantity', 'Age', '[{"lower":"{value}", "upper":"{value}", "system":"{system}", "code":"{code}", "unit":"{unit}"}]'),
+  ('quantity', 'SampledData', '[{"lower":"{lowerLimit}", "upper":"{upperLimit}"}]'),
+  ('quantity', 'Range', '[{"lower":"{low,value}", "upper":"{high,value}"}]')
 ) insert into search.search_configuration(param_type, element_type, path) select t.param_type, t.element_type, t.path::jsonb from t;
 --rollback delete from search_configuration;

@@ -1,0 +1,174 @@
+{
+	"info": {
+		"_postman_id": "8fb08cd9-34fd-4ef3-a195-9c84eb817c24",
+		"name": "41-search-quantity-range",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "test data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"fullUrl\": \"test-condition-100\",\n      \"request\": {\n        \"url\": \"Condition/condition100\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"resourceType\": \"Condition\",\n        \"subject\": {\n          \"reference\": \"Patient/example\"\n        },\n        \"onsetRange\": {\"low\": {\"value\": 3}, \"high\": {\"value\": 7}}\n      }\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{kefhir}}",
+					"host": [
+						"{{kefhir}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "quantity-range param no",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(0);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Condition?onset-age=1",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Condition"
+					],
+					"query": [
+						{
+							"key": "onset-age",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "quantity-range param yes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"condition100\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Condition?onset-age=5",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Condition"
+					],
+					"query": [
+						{
+							"key": "onset-age",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

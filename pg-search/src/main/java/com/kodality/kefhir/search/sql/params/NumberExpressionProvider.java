@@ -12,6 +12,7 @@
  */
 package com.kodality.kefhir.search.sql.params;
 
+import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.search.sql.SearchPrefix;
 import com.kodality.kefhir.util.sql.SqlBuilder;
@@ -19,8 +20,10 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 public class NumberExpressionProvider extends ExpressionProvider {
+  private static final String[] operators = {null, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt, SearchPrefix.ne};
   private static final Map<Integer, BigDecimal> precisions = new HashMap<>() {
     @Override
     public BigDecimal get(Object key) {
@@ -28,26 +31,31 @@ public class NumberExpressionProvider extends ExpressionProvider {
     }
   };
 
-  private static final Map<String, String> operators = new HashMap<>();
-  static {
-    operators.put(null, "=");
-    operators.put(SearchPrefix.le, "<=");
-    operators.put(SearchPrefix.lt, "<");
-    operators.put(SearchPrefix.ge, ">=");
-    operators.put(SearchPrefix.gt, ">");
-    operators.put(SearchPrefix.ne, "<>");
-  }
-
   @Override
   protected SqlBuilder makeCondition(QueryParam param, String value) {
-    SearchPrefix prefix = SearchPrefix.parse(value, operators.keySet());
-    String op = operators.get(prefix.getPrefix());
+    SearchPrefix prefix = SearchPrefix.parse(value, operators);
     BigDecimal number = new BigDecimal(prefix.getValue());
 
     if (prefix.getPrefix() == null) {
-      return new SqlBuilder("i.number BETWEEN ? AND ?", lower(number), upper(number));
+      return new SqlBuilder("i.range && numrange(?, ?, '[]')", lower(number), upper(number));
     }
-    return new SqlBuilder("i.number " + op + "?", number);
+    if (prefix.getPrefix().equals(SearchPrefix.ne)) {
+      return new SqlBuilder("not (i.range && numrange(?, ?, '[]'))", lower(number), upper(number));
+    }
+    if (prefix.getPrefix().equals(SearchPrefix.lt)) {
+      return new SqlBuilder("upper(i.range) < ? ", number);
+    }
+    if (prefix.getPrefix().equals(SearchPrefix.le)) {
+      return new SqlBuilder("lower(i.range) < ? ", number);
+    }
+    if (prefix.getPrefix().equals(SearchPrefix.gt)) {
+      return new SqlBuilder("lower(i.range) > ? ", number);
+    }
+    if (prefix.getPrefix().equals(SearchPrefix.ge)) {
+      return new SqlBuilder("upper(i.range) > ? ", number);
+    }
+
+    throw new FhirException(400, IssueType.INVALID, "prefix " + prefix.getPrefix() + " not supported");
   }
 
   @Override

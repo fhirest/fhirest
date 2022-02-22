@@ -39,17 +39,17 @@ BEGIN
         'select 1';
     WHEN _blindex.param_type = 'number' THEN
       EXECUTE
-        format('with values as (select number from search.extract_number(%L, %L, %L)),', _blindex.resource_type, _content, _blindex.path) ||
-        format('deleted as (update search.%I set active = false where sid = %L and active = true and number not in (select * from values)),', _blindex.index_name, _sid) ||
-        format('created as (insert into search.%I(sid, blindex_id, number) select %L, %L, number from values
-          where number not in (select number from search.%I where active = true and sid = %L))', _blindex.index_name, _sid, _blindex_id, _blindex.index_name, _sid) ||
+        format('with values as (select range from search.extract_number(%L, %L, %L)),', _blindex.resource_type, _content, _blindex.path) ||
+        format('deleted as (update search.%I set active = false where sid = %L and active = true and range not in (select * from values)),', _blindex.index_name, _sid) ||
+        format('created as (insert into search.%I(sid, blindex_id, range) select %L, %L, range from values
+          where range not in (select range from search.%I where active = true and sid = %L))', _blindex.index_name, _sid, _blindex_id, _blindex.index_name, _sid) ||
         'select 1';
     WHEN _blindex.param_type = 'quantity' THEN
       EXECUTE
-        format('with values as (select number, search.system_id(system) system_id, code, unit from search.extract_quantity(%L, %L, %L)),', _blindex.resource_type, _content, _blindex.path) ||
-        format('deleted as (update search.%I set active = false where sid = %L and active = true and (number, system_id, code, unit) not in (select * from values)),', _blindex.index_name, _sid) ||
-        format('created as (insert into search.%I(sid, blindex_id, number, system_id, code, unit) select %L, %L, number, system_id, code, unit from values
-          where (number, system_id, code, unit) not in (select number, system_id, code, unit from search.%I where active = true and sid = %L))', _blindex.index_name, _sid, _blindex_id, _blindex.index_name, _sid) ||
+        format('with values as (select range, search.system_id(system) system_id, code, unit from search.extract_quantity(%L, %L, %L)),', _blindex.resource_type, _content, _blindex.path) ||
+        format('deleted as (update search.%I set active = false where sid = %L and active = true and (range, system_id, code, unit) not in (select * from values)),', _blindex.index_name, _sid) ||
+        format('created as (insert into search.%I(sid, blindex_id, range, system_id, code, unit) select %L, %L, range, system_id, code, unit from values
+          where (range, system_id, code, unit) not in (select range, system_id, code, unit from search.%I where active = true and sid = %L))', _blindex.index_name, _sid, _blindex_id, _blindex.index_name, _sid) ||
         'select 1';
     ELSE
       RAISE EXCEPTION 'unknown type %', _blindex.param_type;
