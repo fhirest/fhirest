@@ -17,8 +17,7 @@
 							"});",
 							"",
 							"patientRef = postman.getResponseHeader(\"Location\");",
-							"pm.environment.set(\"patientId\", patientRef.replace(/.*Patient\\/([^\\/]*).*/, '$1'));",
-							""
+							"pm.collectionVariables.set(\"patientId\", patientRef.replace(/.*Patient\\/([^\\/]*).*/, '$1'));"
 						],
 						"type": "text/javascript"
 					}
@@ -264,69 +263,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-1",
-					"host": [
-						"{{kefhir}}"
-					],
-					"path": [
-						"Patient"
-					],
-					"query": [
-						{
-							"key": "identifier",
-							"value": "TESTPATIENT-1"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Patient search by _id",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"OK\", function () {",
-							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
-							"});",
-							"pm.test(\"validate search result\", function () {",
-							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
-							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
-							"    pm.expect(pm.response.json().total).to.eql(1);",
-							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"TESTPATIENT-1\");",
-							"});",
-							"",
-							"",
-							"",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{kefhir}}/Patient?_id={{patientId}}",
+					"raw": "{{kefhir}}/Patient?_id={{patientId}}&identifier=TESTPATIENT-1",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -337,6 +274,10 @@
 						{
 							"key": "_id",
 							"value": "{{patientId}}"
+						},
+						{
+							"key": "identifier",
+							"value": "TESTPATIENT-1"
 						}
 					]
 				}
@@ -435,7 +376,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-1",
+					"raw": "{{kefhir}}/Patient?_id={{patientId}}",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -444,8 +385,8 @@
 					],
 					"query": [
 						{
-							"key": "identifier",
-							"value": "TESTPATIENT-1"
+							"key": "_id",
+							"value": "{{patientId}}"
 						}
 					]
 				}
@@ -463,6 +404,17 @@
 							"  pm.expect(pm.response.code).to.be.oneOf([201]);",
 							"});",
 							"",
+							"",
+							"patientRef = postman.getResponseHeader(\"Location\");",
+							"pm.collectionVariables.set(\"patientId\", patientRef.replace(/.*Patient\\/([^\\/]*).*/, '$1'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
 							""
 						],
 						"type": "text/javascript"
@@ -486,13 +438,13 @@
 					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-2\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"female\",\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient/randomid",
+					"raw": "{{kefhir}}/Patient/{{$guid}}",
 					"host": [
 						"{{kefhir}}"
 					],
 					"path": [
 						"Patient",
-						"randomid"
+						"{{$guid}}"
 					]
 				}
 			},
@@ -536,13 +488,13 @@
 					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-2\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"female\",\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient/randomid",
+					"raw": "{{kefhir}}/Patient/{{patientId}}",
 					"host": [
 						"{{kefhir}}"
 					],
 					"path": [
 						"Patient",
-						"randomid"
+						"{{patientId}}"
 					]
 				}
 			},
@@ -563,6 +515,16 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var uuid = require('uuid');",
+							"pm.collectionVariables.set(\"randomIdentifier\", 'TESTPATIENT-' + uuid.v4());"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -579,10 +541,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-3\"\n        }\n    ],\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"{{randomIdentifier}}\"\n        }\n    ],\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-3",
+					"raw": "{{kefhir}}/Patient?identifier={{randomIdentifier}}",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -592,7 +554,7 @@
 					"query": [
 						{
 							"key": "identifier",
-							"value": "TESTPATIENT-3"
+							"value": "{{randomIdentifier}}"
 						}
 					]
 				}
@@ -634,10 +596,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-3\"\n        }\n    ],\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"{{randomIdentifier}}\"\n        }\n    ],\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?identifier=TESTPATIENT-3",
+					"raw": "{{kefhir}}/Patient?identifier={{randomIdentifier}}",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -647,7 +609,7 @@
 					"query": [
 						{
 							"key": "identifier",
-							"value": "TESTPATIENT-3"
+							"value": "{{randomIdentifier}}"
 						}
 					]
 				}
@@ -843,6 +805,16 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "patientId",
+			"value": ""
+		},
+		{
+			"key": "randomIdentifier",
+			"value": ""
 		}
 	]
 }
