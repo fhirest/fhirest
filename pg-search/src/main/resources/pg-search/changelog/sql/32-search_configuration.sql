@@ -38,6 +38,8 @@ with t(param_type, element_type, path) as (values
   ('quantity', 'Quantity', '[{"lower":"{value}", "upper":"{value}", "system":"{system}", "code":"{code}", "unit":"{unit}"}]'),
   ('quantity', 'Age', '[{"lower":"{value}", "upper":"{value}", "system":"{system}", "code":"{code}", "unit":"{unit}"}]'),
   ('quantity', 'SampledData', '[{"lower":"{lowerLimit}", "upper":"{upperLimit}"}]'),
-  ('quantity', 'Range', '[{"lower":"{low,value}", "upper":"{high,value}"}]')
+  ('quantity', 'Range', '[{"lower":"{low,value}", "upper":"{high,value}"}]'),
+
+  ('uri', 'uri',    '[{"value":"{}"}]')
 ) insert into search.search_configuration(param_type, element_type, path) select t.param_type, t.element_type, t.path::jsonb from t;
 --rollback delete from search_configuration;

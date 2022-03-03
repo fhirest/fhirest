@@ -70,5 +70,15 @@ CREATE TABLE search.base_index_date (
 CREATE INDEX ON search.base_index_date using gist (sid, range) where active = true;
 --
 
+--changeset kefhir:base_index_uri dbms:postgresql
+CREATE TABLE search.base_index_uri (
+  sid bigint, -- references search.resource(sid),
+  blindex_id bigint references search.blindex(id),
+  active boolean default true,
+  uri text
+) PARTITION BY LIST (blindex_id);
+CREATE INDEX ON search.base_index_uri (sid, uri) where active = true;
+--
+
 
 

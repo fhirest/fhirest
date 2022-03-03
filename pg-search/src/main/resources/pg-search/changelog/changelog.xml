@@ -21,6 +21,7 @@
     <sqlFile splitStatements="false" path="functions/extract_string.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/extract_token.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/extract_reference.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/extract_uri.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/merge_blindex.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/cleanup_indexes.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/define_resource.sql" relativeToChangelogFile="true" />

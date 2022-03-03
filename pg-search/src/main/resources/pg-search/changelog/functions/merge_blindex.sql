@@ -51,6 +51,13 @@ BEGIN
         format('created as (insert into search.%I(sid, blindex_id, range, system_id, code, unit) select %L, %L, range, system_id, code, unit from values
           where (range, system_id, code, unit) not in (select range, system_id, code, unit from search.%I where active = true and sid = %L))', _blindex.index_name, _sid, _blindex_id, _blindex.index_name, _sid) ||
         'select 1';
+    WHEN _blindex.param_type = 'uri' THEN
+      EXECUTE
+        format('with values as (select uri from search.extract_uri(%L, %L, %L)),', _blindex.resource_type, _content, _blindex.path) ||
+        format('deleted as (update search.%I set active = false where sid = %L and active = true and uri not in (select * from values)),', _blindex.index_name, _sid) ||
+        format('created as (insert into search.%I(sid, blindex_id, uri) select %L, %L, uri from values
+          where uri not in (select uri from search.%I where active = true and sid = %L))', _blindex.index_name, _sid, _blindex_id, _blindex.index_name, _sid) ||
+        'select 1';
     ELSE
       RAISE EXCEPTION 'unknown type %', _blindex.param_type;
   END CASE;

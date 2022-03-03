@@ -31,6 +31,7 @@ BEGIN
                    when _param_type = 'date' then 'base_index_date'
                    when _param_type = 'number' then 'base_index_number'
                    when _param_type = 'quantity' then 'base_index_quantity'
+                   when _param_type = 'uri' then 'base_index_uri'
                    else null
                  end;
   if _base_idx is null THEN

@@ -22,6 +22,7 @@ import com.kodality.kefhir.search.sql.params.QuantityExpressionProvider;
 import com.kodality.kefhir.search.sql.params.ReferenceExpressionProvider;
 import com.kodality.kefhir.search.sql.params.StringExpressionProvider;
 import com.kodality.kefhir.search.sql.params.TokenExpressionProvider;
+import com.kodality.kefhir.search.sql.params.UriExpressionProvider;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ public final class SearchSqlUtil {
     providers.put(SearchParamType.REFERENCE, new ReferenceExpressionProvider());
     providers.put(SearchParamType.NUMBER, new NumberExpressionProvider());
     providers.put(SearchParamType.QUANTITY, new QuantityExpressionProvider());
+    providers.put(SearchParamType.URI, new UriExpressionProvider());
   }
 
   private SearchSqlUtil() {
