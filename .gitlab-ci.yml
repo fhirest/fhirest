@@ -28,17 +28,17 @@ build-builder:
 
 build:
   stage: build
-  artifacts:
-    paths:
-      - "**/build"
-    expire_in: 1 hour
+#  artifacts:
+#    paths:
+#      - "**/build"
+#    expire_in: 1 hour
   script:
     - ./gradlew assemble
 
 test-junit:
   stage: test
-  dependencies:
-    - build
+#  dependencies:
+#    - build
   script:
     - ./gradlew test
   artifacts:
@@ -51,8 +51,8 @@ test-junit:
 test-newman:
   image: registry.gitlab.com/kodality-public/kefhir/kefhir-builder:latest
   stage: test
-  dependencies:
-    - build
+#  dependencies:
+#    - build
   script:
     - kefhir-test-app/run-tests.sh
   artifacts:
@@ -64,8 +64,8 @@ test-newman:
 
 release snapshot:
   stage: release
-  dependencies:
-    - build
+#  dependencies:
+#    - build
   script:
     - ./gradlew publish
   only:
@@ -73,8 +73,8 @@ release snapshot:
 
 release tag:
   stage: release
-  dependencies:
-    - build
+#  dependencies:
+#    - build
   script:
     - export APP_VERSION="$CI_COMMIT_REF_NAME"
     - ./gradlew publish -Pversion="$APP_VERSION"
