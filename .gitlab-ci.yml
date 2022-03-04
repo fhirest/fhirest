@@ -1,3 +1,5 @@
+image: openjdk:17-slim
+
 cache:
   key: "$CI_PROJECT_NAME"
   paths:
@@ -11,10 +13,8 @@ stages:
 - test
 - release
 
-meta-build-image:
-  image: docker:stable
-  services:
-    - docker:dind
+build-builder:
+  image: docker:dind
   stage: prepare
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -27,7 +27,6 @@ meta-build-image:
       - .gitlab-ci-Dockerfile
 
 build:
-  image: openjdk:17.0.2-slim
   stage: build
   artifacts:
     paths:
@@ -36,13 +35,25 @@ build:
   script:
     - ./gradlew assemble
 
-test:
-  image: registry.gitlab.com/kodality-public/kefhir/kefhir-builder:latest
+test-junit:
   stage: test
   dependencies:
     - build
   script:
     - ./gradlew test
+  artifacts:
+    when: always
+    name: "Test_Result"
+    expire_in: 1 day
+    reports:
+      junit: '*/build/test-results/test/TEST-*.xml'
+
+test-newman:
+  image: registry.gitlab.com/kodality-public/kefhir/kefhir-builder:latest
+  stage: test
+  dependencies:
+    - build
+  script:
     - kefhir-test-app/run-tests.sh
   artifacts:
     when: always
@@ -50,11 +61,8 @@ test:
     expire_in: 1 day
     paths:
       - "./kefhir-test-app/test-reports"
-    reports:
-      junit: '*/build/test-results/test/TEST-*.xml'
 
 release snapshot:
-  image: openjdk:17.0.2-slim
   stage: release
   dependencies:
     - build
@@ -64,7 +72,6 @@ release snapshot:
     - master
 
 release tag:
-  image: openjdk:17.0.2-slim
   stage: release
   dependencies:
     - build
