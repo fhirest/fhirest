@@ -48,7 +48,7 @@ function finish() {
 function makemeadb() {
   echo "creating database..."
   docker rm -vf $DB_DOCKER_NAME >/dev/null 2>&1
-  docker run -d -e TZ=Europe/Tallinn --restart=unless-stopped --name $DB_DOCKER_NAME -p $DB_PORT:5432 docker.kodality.com/postgres-docker:14 > test-reports/db.log
+  docker run -d -e TZ=Europe/Tallinn --restart=unless-stopped --name $DB_DOCKER_NAME -p $DB_PORT:5432 docker.kodality.com/postgres-docker:14 > test-reports/db.log || finish 1
   sleep 6
   docker exec -e "DB_NAME=kefhirdb" -e "USER_PREFIX=kefhir" $DB_DOCKER_NAME /opt/scripts/createdb.sh >> test-reports/db.log || finish 1
   echo "database created."
@@ -62,10 +62,8 @@ function startkefhir() {
   ../gradlew run 2>&1 >test-reports/server.log &
   PID=$!
 
-  if [ -d /tmp/kefhir ]; then
-    while ! grep -m1 'Startup completed' < test-reports/server.log; do sleep 1; done
-  fi
-  ../etc/download-fhir-definitions.sh "http://localhost:$APP_PORT"
+  while ! grep -m1 'Startup completed' < test-reports/server.log; do sleep 1; done
+  ../etc/download-fhir-definitions.sh "http://localhost:$APP_PORT" || finish 1
 
   while ! grep -m1 'conformance loaded' < test-reports/server.log; do sleep 1; done
   while ! grep -m1 'blindex initialization finished' < test-reports/server.log; do sleep 1; done

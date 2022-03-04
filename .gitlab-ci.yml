@@ -84,4 +84,10 @@ release tag:
   except:
     - branches
 
+build-examples:
+  stage: deploy
+  trigger:
+    project: kodality-public/kefhir-examples
+  only:
+    - master
 
