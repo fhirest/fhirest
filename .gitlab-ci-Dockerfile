@@ -1,6 +1,6 @@
 FROM openjdk:17-slim
 
-RUN apt update && apt install nodejs npm -y
+RUN apt update && apt install nodejs npm wget -y
 RUN npm install -g newman
 
 RUN apt update && apt install curl gpg lsb-release -y
