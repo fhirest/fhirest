@@ -22,7 +22,7 @@ meta-build-image:
     - docker push $CI_REGISTRY/kodality-public/kefhir/kefhir-builder:latest
   only:
     refs:
-      - main
+      - master
     changes:
       - .gitlab-ci-Dockerfile
 
