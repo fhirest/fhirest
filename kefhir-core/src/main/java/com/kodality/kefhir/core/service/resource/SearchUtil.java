@@ -18,7 +18,6 @@ import com.kodality.kefhir.core.model.search.SearchCriterion;
 import com.kodality.kefhir.core.service.conformance.CapabilitySearchConformance;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -84,9 +83,13 @@ public final class SearchUtil {
     ChainForge chainsmith = buildForge(rawKey, resourceType);
     return rawValues.stream().map(value -> {
       QueryParam param = chainsmith.forge();
-      param.setValues(Arrays.asList(StringUtils.split(value, ",")));
+      param.setValues(split(value));
       return param;
     }).collect(toList());
+  }
+
+  private static List<String> split(String param) {
+    return Stream.of(param.split("(?<!\\\\),")).map(s -> s.replaceAll("\\\\,", ",")).collect(toList());
   }
 
   private static ChainForge buildForge(String chain, String resourceType) {

@@ -105,8 +105,7 @@ public class BlindexInitializer {
           Long page = 1L;
           Integer batch = 1000;
           while (true) {
-            String[][] p = {{"_count", batch.toString()}, {"_page", page.toString()}};
-            SearchResult search = resourceSearchService.search(type, p);
+            SearchResult search = resourceSearchService.search(type, "_count", batch.toString(), "_page", page.toString());
             indexes.forEach(i -> search.getEntries().forEach(v -> blindexRepository.merge(i.getId(), v.getId(), v.getContent().getValue())));
             if (search.getEntries().size() < batch) {
               break;

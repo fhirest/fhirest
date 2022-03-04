@@ -62,8 +62,7 @@ public class ConformanceInitializationService {
   }
 
   private <T extends Resource> List<T> load(String name) {
-    String[] p = {"_count", "9999"};
-    return resourceSearchService.search(name, p).getEntries().stream().map(v -> resourceFormatService.<T>parse(v.getContent())).collect(toList());
+    return resourceSearchService.search(name, "_count", "9999").getEntries().stream().map(v -> resourceFormatService.<T>parse(v.getContent())).collect(toList());
   }
 
 }

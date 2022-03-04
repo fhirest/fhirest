@@ -21,6 +21,7 @@ import com.kodality.kefhir.core.model.search.SearchCriterion;
 import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.core.service.FhirPath;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
+import com.kodality.kefhir.core.util.MapUtil;
 import com.kodality.kefhir.core.util.ResourceUtil;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,9 +47,8 @@ public class ResourceSearchService {
   private final ResourceStorageService storageService;
   private final FhirPath fhirPath;
 
-  public SearchResult search(String resourceType, String[]... params) {
-    Map<String, List<String>> map = Stream.of(params).collect(toMap(p -> p[0], p -> Collections.singletonList(p[1])));
-    return search(new SearchCriterion(resourceType, SearchUtil.parse(map, resourceType)));
+  public SearchResult search(String resourceType, String... params) {
+    return search(resourceType, MapUtil.toMultimap(params));
   }
 
   public SearchResult search(String resourceType, Map<String, List<String>> params) {
