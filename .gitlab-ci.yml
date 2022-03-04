@@ -12,6 +12,7 @@ stages:
 - build
 - test
 - release
+- deploy
 
 build-builder:
   image: docker:dind
@@ -82,3 +83,5 @@ release tag:
     - /^\d*\.\d*\.\d*$/
   except:
     - branches
+
+

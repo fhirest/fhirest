@@ -47,6 +47,7 @@ function finish() {
 
 function makemeadb() {
   echo "creating database..."
+  docker rm -vf $DB_DOCKER_NAME >/dev/null 2>&1
   docker run -d -e TZ=Europe/Tallinn --restart=unless-stopped --name $DB_DOCKER_NAME -p $DB_PORT:5432 docker.kodality.com/postgres-docker:14 > test-reports/db.log
   sleep 6
   docker exec -e "DB_NAME=kefhirdb" -e "USER_PREFIX=kefhir" $DB_DOCKER_NAME /opt/scripts/createdb.sh >> test-reports/db.log || finish 1
