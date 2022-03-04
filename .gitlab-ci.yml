@@ -13,11 +13,17 @@ stages:
 
 build:
   stage: build
+  artifacts:
+    paths:
+      - "**/build"
+    expire_in: 1 hour
   script:
     - ./gradlew assemble
 
 test:
   stage: test
+  dependencies:
+    - build
   script:
     - ./gradlew test
     - kefhir-test-app/run-tests.sh
@@ -32,6 +38,8 @@ test:
 
 release snapshot:
   stage: release
+  dependencies:
+    - build
   variables:
     DOCKER_DRIVER: overlay2
   script:
