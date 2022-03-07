@@ -1,14 +1,14 @@
 #!/bin/bash
 fhir="$1"
 [[ -z "$fhir" ]] && fhir="http://localhost:8181"
-path=/tmp/kefhir
+temp=/tmp/kefhir
+#repo="http://www.hl7.org/fhir/definitions.json.zip"
+repo="https://kexus.kodality.com/repository/store-public/fhir/definitions.json.zip"
 
-if [ ! -d $path ]; then
-  mkdir -p $path && cd $path
+if [ ! -d $temp ]; then
+  mkdir -p $temp && cd $temp
   mkdir downloads && cd downloads
-  #wget http://www.hl7.org/fhir/definitions.json.zip &&\
-  wget https://kexus.kodality.com/repository/store-public/fhir/definitions.json.zip &&\
-    unzip definitions.json.zip
+  wget $repo && unzip definitions.json.zip
   rm -rv definitions.json.zip fhir.schema.json.zip version.info
   mv * ..
   cd .. && rm -rf downloads

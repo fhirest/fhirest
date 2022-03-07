@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-cd `dirname $0`
-
-
 CONTAINER_NAME="kefhir-postgres"
 
 docker rm -vf $CONTAINER_NAME

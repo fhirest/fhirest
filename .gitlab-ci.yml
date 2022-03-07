@@ -72,6 +72,17 @@ release tag:
   except:
     - branches
 
+release scripts:
+  image: registry.gitlab.com/kodality-public/kefhir/kefhir-builder:latest
+  stage: release
+  script:
+    - etc/publish-scripts.sh
+  only:
+    refs:
+      - master
+    changes:
+      - etc
+
 build-examples:
   stage: deploy
   trigger:
