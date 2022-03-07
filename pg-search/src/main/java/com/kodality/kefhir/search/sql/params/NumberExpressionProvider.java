@@ -22,7 +22,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
-public class NumberExpressionProvider extends ExpressionProvider {
+public class NumberExpressionProvider extends DefaultExpressionProvider {
   private static final String[] operators = {null, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt, SearchPrefix.ne};
   private static final Map<Integer, BigDecimal> precisions = new HashMap<>() {
     @Override

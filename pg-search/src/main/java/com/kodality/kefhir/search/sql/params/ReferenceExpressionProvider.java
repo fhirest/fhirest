@@ -26,7 +26,7 @@ import org.hl7.fhir.r4.model.CodeType;
 
 import static java.util.stream.Collectors.toSet;
 
-public class ReferenceExpressionProvider extends ExpressionProvider {
+public class ReferenceExpressionProvider extends DefaultExpressionProvider {
   private static ThreadLocalInteger I = new ThreadLocalInteger();
 
   @Override

@@ -47,6 +47,9 @@ public class SqlBuilder implements Serializable {
   }
 
   public SqlBuilder append(String sql, Object... params) {
+    if (!isEmpty() && !sql.startsWith(" ")) {
+      sb.append(" ");
+    }
     sb.append(sql);
     return add(params);
   }
@@ -64,7 +67,7 @@ public class SqlBuilder implements Serializable {
   }
 
   public SqlBuilder and() {
-    return append(" AND ");
+    return append("AND");
   }
 
   public SqlBuilder and(SqlBuilder sql) {
@@ -76,7 +79,7 @@ public class SqlBuilder implements Serializable {
   }
 
   public SqlBuilder or() {
-    return append(" OR ");
+    return append("OR");
   }
 
   public SqlBuilder or(SqlBuilder sql) {
@@ -84,23 +87,23 @@ public class SqlBuilder implements Serializable {
   }
 
   public SqlBuilder or(String str, Object... params) {
-    return or().append(str, params).append(" ");
+    return or().append(str, params);
   }
 
   public SqlBuilder eq(String str, Object param) {
-    append(" ").append(str);
+    append(str);
     if (param == null) {
-      return append(" IS NULL ");
+      return append("IS NULL");
     }
-    return append(" = ? ", param);
+    return append("= ?", param);
   }
 
-  public SqlBuilder or(Collection<SqlBuilder> sqls) {
+  public SqlBuilder append(Collection<SqlBuilder> sqls, String separator) {
     String delim = "";
     appendIfTrue(sqls.size() > 1, "(");
     for (SqlBuilder sb : sqls) {
       append(delim).append(sb);
-      delim = " OR ";
+      delim = separator;
     }
     appendIfTrue(sqls.size() > 1, ")");
     return this;

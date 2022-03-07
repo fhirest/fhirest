@@ -28,7 +28,7 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 import static java.util.stream.Collectors.toList;
 
-public class DateExpressionProvider extends ExpressionProvider {
+public class DateExpressionProvider extends DefaultExpressionProvider {
   private static final Map<Integer, String> intervals;
   private static final String[] operators = {null, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt};
 
@@ -58,7 +58,7 @@ public class DateExpressionProvider extends ExpressionProvider {
     List<SqlBuilder> ors = param.getValues().stream().filter(v -> !StringUtils.isEmpty(v))
         .map(v -> new SqlBuilder(rangeSql(field, v)))
         .collect(toList());
-    return new SqlBuilder().or(ors);
+    return new SqlBuilder().append(ors, "OR");
   }
 
   private static String rangeSql(String field, String value) {

@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
 import org.postgresql.util.PSQLException;
 
 @Slf4j
@@ -49,10 +50,10 @@ public class BlindexInitializer {
       return null;
     }
     Set<String> create =
-        ConformanceHolder.getSearchParams().stream().filter(sp -> sp.getExpression() != null).flatMap(sp -> {
-          return SearchPathUtil.parsePaths(sp.getExpression()).stream()
-              .filter(s -> defined.contains(StringUtils.substringBefore(s, ".")));
-        }).collect(Collectors.toSet());
+        ConformanceHolder.getSearchParams().values().stream()
+            .filter(sp -> sp.getExpression() != null && sp.getType() != SearchParamType.COMPOSITE)
+            .flatMap(sp -> SearchPathUtil.parsePaths(sp.getExpression()).stream().filter(s -> defined.contains(StringUtils.substringBefore(s, "."))))
+            .collect(Collectors.toSet());
 
     Set<String> current = blindexRepository.loadIndexes().stream().map(i -> i.getKey()).collect(Collectors.toSet());
     Set<String> drop = new HashSet<>(current);

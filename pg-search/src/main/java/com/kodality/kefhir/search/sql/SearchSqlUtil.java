@@ -15,6 +15,7 @@
 import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
+import com.kodality.kefhir.search.sql.params.CompositeExpressionProvider;
 import com.kodality.kefhir.search.sql.params.DateExpressionProvider;
 import com.kodality.kefhir.search.sql.params.ExpressionProvider;
 import com.kodality.kefhir.search.sql.params.NumberExpressionProvider;
@@ -53,6 +54,7 @@ public final class SearchSqlUtil {
     providers.put(SearchParamType.NUMBER, new NumberExpressionProvider());
     providers.put(SearchParamType.QUANTITY, new QuantityExpressionProvider());
     providers.put(SearchParamType.URI, new UriExpressionProvider());
+    providers.put(SearchParamType.COMPOSITE, new CompositeExpressionProvider());
   }
 
   private SearchSqlUtil() {

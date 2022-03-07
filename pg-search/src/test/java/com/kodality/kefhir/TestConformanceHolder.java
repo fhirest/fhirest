@@ -19,10 +19,10 @@ import org.hl7.fhir.r4.model.SearchParameter;
 public class TestConformanceHolder extends ConformanceHolder {
 
   public static void apply(SearchParameter sp) {
-    searchParams = searchParams == null ? new HashMap<>() : searchParams;
+    searchParamGroups = searchParamGroups == null ? new HashMap<>() : searchParamGroups;
     sp.getBase().forEach(ct -> {
-      searchParams.putIfAbsent(ct.getValue(), new HashMap<>());
-      searchParams.get(ct.getValue()).put(sp.getCode(), sp);
+      searchParamGroups.putIfAbsent(ct.getValue(), new HashMap<>());
+      searchParamGroups.get(ct.getValue()).put(sp.getCode(), sp);
     });
   }
 

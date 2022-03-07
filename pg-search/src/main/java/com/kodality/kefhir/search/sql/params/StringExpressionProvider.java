@@ -17,7 +17,7 @@ import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
-public class StringExpressionProvider extends ExpressionProvider {
+public class StringExpressionProvider extends DefaultExpressionProvider {
 
   @Override
   protected SqlBuilder makeCondition(QueryParam param, String value) {

@@ -24,13 +24,12 @@ import org.hl7.fhir.r4.model.SearchParameter;
 import org.hl7.fhir.r4.model.StructureDefinition;
 import org.hl7.fhir.r4.model.ValueSet;
 
-import static java.util.stream.Collectors.toList;
-
 public class ConformanceHolder {
   protected static CapabilityStatement capabilityStatement;
   protected static Map<String, StructureDefinition> definitions;
   //resource type -> code -> param
-  protected static Map<String, Map<String, SearchParameter>> searchParams;
+  protected static Map<String, Map<String, SearchParameter>> searchParamGroups;
+  protected static Map<String, SearchParameter> searchParams;
   protected static List<ValueSet> valueSets;
   protected static List<CodeSystem> codeSystems;
 
@@ -43,10 +42,13 @@ public class ConformanceHolder {
     definitions.forEach(d -> ConformanceHolder.definitions.put(d.getName(), d));
   }
 
-  protected static void setSearchParams(List<SearchParameter> searchParams) {
+  protected static void setSearchParamGroups(List<SearchParameter> searchParamGroups) {
+    ConformanceHolder.searchParamGroups = new HashMap<>();
     ConformanceHolder.searchParams = new HashMap<>();
-    searchParams.forEach(p -> p.getBase().forEach(
-        ct -> ConformanceHolder.searchParams.computeIfAbsent(ct.getValue(), x -> new HashMap<>()).put(p.getCode(), p)));
+    searchParamGroups.forEach(p -> {
+      p.getBase().forEach(ct -> ConformanceHolder.searchParamGroups.computeIfAbsent(ct.getValue(), x -> new HashMap<>()).put(p.getCode(), p));
+      searchParams.put(p.getId(), p);
+    });
   }
 
   protected static void setValueSets(List<ValueSet> valueSets) {
@@ -77,25 +79,25 @@ public class ConformanceHolder {
     return codeSystems;
   }
 
-  public static List<SearchParameter> getSearchParams() {
-    return searchParams.values().stream().flatMap(m -> m.values().stream()).collect(toList());
+  public static Map<String, SearchParameter> getSearchParams() {
+    return searchParams;
   }
 
   public static List<SearchParameter> getSearchParams(String type) {
-    if (!searchParams.containsKey(type)) {
+    if (!searchParamGroups.containsKey(type)) {
       return null;
     }
-    return new ArrayList<>(searchParams.get(type).values());
+    return new ArrayList<>(searchParamGroups.get(type).values());
   }
 
   public static SearchParameter getSearchParam(String type, String code) {
-    if (!searchParams.containsKey(type) || !searchParams.get(type).containsKey(code)) {
+    if (!searchParamGroups.containsKey(type) || !searchParamGroups.get(type).containsKey(code)) {
       if ("Resource".equals(type)) {
         return null;
       }
       return getSearchParam("Resource", code); // try root?
     }
-    return searchParams.get(type).get(code);
+    return searchParamGroups.get(type).get(code);
   }
 
   public static SearchParameter requireSearchParam(String type, String code) {

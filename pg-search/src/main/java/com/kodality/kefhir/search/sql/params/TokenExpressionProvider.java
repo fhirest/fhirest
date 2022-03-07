@@ -18,7 +18,7 @@ import com.kodality.kefhir.util.sql.SqlBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
-public class TokenExpressionProvider extends ExpressionProvider {
+public class TokenExpressionProvider extends DefaultExpressionProvider {
 
   @Override
   protected SqlBuilder makeCondition(QueryParam param, String v) {

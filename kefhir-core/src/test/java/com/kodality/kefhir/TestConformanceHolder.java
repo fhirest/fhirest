@@ -25,9 +25,9 @@ public class TestConformanceHolder extends ConformanceHolder {
   }
 
   public static void setSearchParams(List<SearchParameter> searchParams) {
-    ConformanceHolder.searchParams = new HashMap<>();
+    ConformanceHolder.searchParamGroups = new HashMap<>();
     searchParams.forEach(p -> p.getBase().forEach(
-        ct -> ConformanceHolder.searchParams.computeIfAbsent(ct.getValue(), x -> new HashMap<>()).put(p.getCode(), p)));
+        ct -> ConformanceHolder.searchParamGroups.computeIfAbsent(ct.getValue(), x -> new HashMap<>()).put(p.getCode(), p)));
   }
 
 }

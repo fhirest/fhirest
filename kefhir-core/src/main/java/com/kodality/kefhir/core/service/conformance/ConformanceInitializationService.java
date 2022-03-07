@@ -53,7 +53,7 @@ public class ConformanceInitializationService {
     CompletableFuture.allOf(
         runAsync(() -> ConformanceHolder.setCapabilityStatement(this.<CapabilityStatement>load("CapabilityStatement").stream().findFirst().orElse(null))),
         runAsync(() -> ConformanceHolder.setStructureDefinitions(load("StructureDefinition"))),
-        runAsync(() -> ConformanceHolder.setSearchParams(load("SearchParameter"))),
+        runAsync(() -> ConformanceHolder.setSearchParamGroups(load("SearchParameter"))),
         runAsync(() -> ConformanceHolder.setValueSets(load("ValueSet"))),
         runAsync(() -> ConformanceHolder.setCodeSystems(load("CodeSystem")))
     ).join();
