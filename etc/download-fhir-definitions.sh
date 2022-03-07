@@ -14,4 +14,4 @@ if [ ! -d $temp ]; then
   cd .. && rm -rf downloads
 fi
 
-curl -XPOST "$fhir/conformance-tools/import-file?file=$path"
+curl -XPOST "$fhir/conformance-tools/import-file?file=$temp"
