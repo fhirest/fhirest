@@ -47,7 +47,7 @@ public class SqlBuilder implements Serializable {
   }
 
   public SqlBuilder append(String sql, Object... params) {
-    if (!isEmpty() && !sql.startsWith(" ")) {
+    if (!isEmpty() && !sql.startsWith(" ") && !sql.startsWith(")")) {
       sb.append(" ");
     }
     sb.append(sql);
