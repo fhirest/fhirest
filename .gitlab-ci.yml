@@ -81,7 +81,7 @@ release scripts:
     refs:
       - master
     changes:
-      - etc
+      - etc/*
 
 build-examples:
   stage: deploy
