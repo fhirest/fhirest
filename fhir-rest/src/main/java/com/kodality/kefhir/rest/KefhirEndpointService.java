@@ -40,7 +40,7 @@ public class KefhirEndpointService {
     KefhirEnabledOperation op = typeOperations == null ? null : typeOperations.stream().filter(i -> matches(i, request)).findFirst().orElse(null);
     if (op == null) {
       throw new FhirException(406, IssueType.NOTSUPPORTED,
-          "could not find matching enabled interaction for: " + request.getMethod() + " " + request.getType() + "/" + request.getPath());
+          "could not find matching enabled interaction for: " + request.getMethod() + " " + StringUtils.defaultString(request.getType()) + "/" + request.getPath());
     }
     return op;
   }
@@ -53,7 +53,7 @@ public class KefhirEndpointService {
 
   public void startRoot(FhirRootServer service) {
     List<Method> methods = InteractionUtil.findAllMethods(FhirRootServer.class);
-    addOperation("", methods, service);
+    addOperation(null, methods, service);
   }
 
   public void start(String type, String interaction, FhirResourceServer service) {
