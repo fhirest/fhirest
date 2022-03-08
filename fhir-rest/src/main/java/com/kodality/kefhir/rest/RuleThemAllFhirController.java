@@ -43,9 +43,10 @@ import org.hl7.fhir.r4.model.Resource;
 
 @Consumes("*/*")
 @Produces("*/*")
-@Controller
+@Controller("/" + RuleThemAllFhirController.FHIR_ROOT)
 @RequiredArgsConstructor
-public class RuleThemAllController {
+public class RuleThemAllFhirController {
+  public static final String FHIR_ROOT = "fhir";
   private final KefhirEndpointService endpointService;
   private final ResourceFormatService resourceFormatService;
   private final List<KefhirRequestFilter> requestFilters;
@@ -113,6 +114,8 @@ public class RuleThemAllController {
     req.setMethod(request.getMethodName());
     String p = request.getPath();
     p = StringUtils.removeStart(p, "/");
+    p = StringUtils.removeStart(p, FHIR_ROOT);
+    p = StringUtils.removeStart(p, "/");
     req.setType(StringUtils.substringBefore(p, "/"));
     req.setPath(StringUtils.substringAfter(p, "/"));
     request.getHeaders().forEachValue((k, v) -> req.putHeader(k, v));
@@ -122,30 +125,27 @@ public class RuleThemAllController {
     return req;
   }
 
-  /**
-   * [A-Z].* is needed to make custom endpoints starting with lower-case letters
-   */
-  @Get(uris = {"/", "{/path:[A-Z].*}"})
+  @Get(uris = {"{path:.*}"})
   public HttpResponse<?> get(HttpRequest request) {
     return execute(request);
   }
 
-  @Post(uris = {"/", "{/path:[A-Z].*}"})
+  @Post(uris = {"{path:.*}"})
   public HttpResponse<?> post(HttpRequest request, @Body String json) {
     return execute(request);
   }
 
-  @Put(uris = {"/", "{/path:[A-Z].*}"})
+  @Put(uris = {"{path:.*}"})
   public HttpResponse<?> put(HttpRequest request, @Body String json) {
     return execute(request);
   }
 
-  @Delete(uris = {"/", "{/path:[A-Z].*}"})
+  @Delete(uris = {"{path:.*}"})
   public HttpResponse<?> delete(HttpRequest request) {
     return execute(request);
   }
 
-  @Options(uris = {"/", "{/path:[A-Z].*}"})
+  @Options(uris = {"{path:.*}"})
   public HttpResponse<?> options(HttpRequest request) {
     return execute(request);
   }

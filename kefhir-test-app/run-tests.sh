@@ -23,7 +23,7 @@ function runtests() {
     cd postman
     for t in ./*; do
       newman run $t \
-        --env-var "kefhir=http://localhost:$APP_PORT" \
+        --env-var "kefhir=http://localhost:$APP_PORT/fhir" \
         --env-var "access_token=yupi"
       r=$?
       [[ $r -ne 0 ]] && break
