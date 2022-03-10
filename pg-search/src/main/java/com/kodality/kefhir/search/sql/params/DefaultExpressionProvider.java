@@ -16,6 +16,7 @@ import com.kodality.kefhir.core.exception.FhirServerException;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.search.repository.BlindexRepository;
+import com.kodality.kefhir.search.sql.ExpressionProvider;
 import com.kodality.kefhir.search.util.SearchPathUtil;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.List;
@@ -50,9 +51,12 @@ public abstract class DefaultExpressionProvider extends ExpressionProvider {
 
   private static List<String> getPaths(String resourceType, String key) {
     String expr = ConformanceHolder.requireSearchParam(resourceType, key).getExpression();
-    List<String> paths = SearchPathUtil.parsePaths(expr).stream().filter(e -> e.startsWith(resourceType)).map(e -> RegExUtils.removeFirst(e, resourceType + "\\.")).collect(toList());
+    List<String> paths = SearchPathUtil.parsePaths(expr).stream()
+        .filter(e -> e.startsWith(resourceType))
+        .map(e -> RegExUtils.removeFirst(e, resourceType + "\\."))
+        .collect(toList());
     if (paths.isEmpty()) {
-   throw new FhirServerException(500, "config problem. path empty for param " + key);
+      throw new FhirServerException(500, "config problem. path empty for param " + key);
     }
     return paths;
   }

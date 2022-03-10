@@ -15,6 +15,7 @@ package com.kodality.kefhir.search.sql.params;
 import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
+import com.kodality.kefhir.search.sql.ExpressionProvider;
 import com.kodality.kefhir.search.sql.SearchSqlUtil;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.List;

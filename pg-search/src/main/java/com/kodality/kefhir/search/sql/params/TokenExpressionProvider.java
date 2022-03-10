@@ -43,12 +43,8 @@ public class TokenExpressionProvider extends DefaultExpressionProvider {
   }
 
   @Override
-  public SqlBuilder order(String resourceType, String key, String alias) {
-    return new SqlBuilder("1"); // TODO:
+  protected String getOrderField() {
+    return "value";
   }
 
-  @Override
-  protected String getOrderField() {
-    return null; // TODO:
-  }
 }

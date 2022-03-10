@@ -10,15 +10,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.kodality.kefhir.search.sql.params;
+package com.kodality.kefhir.search.sql;
 
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 
 public abstract class ExpressionProvider {
-
-  public abstract SqlBuilder order(String resourceType, String key, String alias);
-
   public abstract SqlBuilder makeExpression(QueryParam param, String alias);
-
+  public abstract SqlBuilder order(String resourceType, String key, String alias);
 }
