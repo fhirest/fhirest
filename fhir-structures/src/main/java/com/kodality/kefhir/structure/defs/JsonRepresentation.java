@@ -10,16 +10,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.structure.defs;
+package com.kodality.kefhir.structure.defs;
 
 import com.kodality.kefhir.structure.api.ParseException;
 import com.kodality.kefhir.structure.api.ResourceRepresentation;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.elementmodel.Manager.FhirFormat;
+import org.hl7.fhir.r4.formats.IParser;
+import org.hl7.fhir.r4.formats.IParser.OutputStyle;
 import org.hl7.fhir.r4.formats.JsonParser;
 import org.hl7.fhir.r4.model.Resource;
 
@@ -40,8 +44,9 @@ public class JsonRepresentation implements ResourceRepresentation {
   public String compose(Resource resource) {
     try {
       ByteArrayOutputStream output = new ByteArrayOutputStream();
-      new JsonParser().compose(output, resource);
-      return new String(output.toByteArray(), "UTF-8");
+      JsonParser parser = new JsonParser();
+      parser.compose(output, resource);
+      return output.toString(StandardCharsets.UTF_8);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -60,6 +65,17 @@ public class JsonRepresentation implements ResourceRepresentation {
       return (R) new JsonParser().parse(input);
     } catch (Exception e) {
       throw new ParseException(e);
+    }
+  }
+
+  @Override
+  public String prettify(String content) {
+    //TODO: ugly
+    IParser p = new JsonParser().setOutputStyle(OutputStyle.PRETTY);
+    try {
+      return p.composeString(p.parse(content));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

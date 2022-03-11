@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.core.model.search;
+package com.kodality.kefhir.core.model.search;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +29,7 @@ public class SearchCriterion {
   public static final String _ELEMENTS = "_elements";
   public static final String _CONTAINED = "_contained";
   public static final String _CONTAINEDTYPE = "_containedType";
+  public static final List<String> ignoreParamKeys = Arrays.asList("_pretty", "_format");
   public static final List<String> resultParamKeys =
       Arrays.asList(_SORT, _COUNT, _PAGE, _INCLUDE, _REVINCLUDE, _SUMMARY, _ELEMENTS, _CONTAINED, _CONTAINEDTYPE);
 

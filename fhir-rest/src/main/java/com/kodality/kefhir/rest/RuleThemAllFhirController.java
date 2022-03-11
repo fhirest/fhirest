@@ -46,6 +46,7 @@ import org.hl7.fhir.r4.model.Resource;
 @Controller("/" + RuleThemAllFhirController.FHIR_ROOT)
 @RequiredArgsConstructor
 public class RuleThemAllFhirController {
+  private static final String PRETTY = "_pretty";
   public static final String FHIR_ROOT = "fhir";
   private final KefhirEndpointService endpointService;
   private final ResourceFormatService resourceFormatService;
@@ -78,6 +79,9 @@ public class RuleThemAllFhirController {
     if (resp.getBody() != null) {
       String accept = req.getHeader("Accept");
       ResourceContent formatted = format(resp.getBody(), accept);
+      if ("true".equals(req.getParameter(PRETTY))) {
+        prettify(formatted);
+      }
       r.body(formatted.getValue());
       r.contentType(getResponseContentType(accept, formatted));
     }
@@ -103,10 +107,13 @@ public class RuleThemAllFhirController {
     }
     if (Resource.class.isAssignableFrom(body.getClass())) {
       Resource resource = (Resource) body;
-      ResourceContent content = resourceFormatService.compose(resource, contentType);
-      return content;
+      return resourceFormatService.compose(resource, contentType);
     }
     throw new FhirException(500, IssueType.PROCESSING, "cannot write " + body.getClass());
+  }
+
+  private void prettify(ResourceContent content) {
+    content.setValue(resourceFormatService.findPresenter(content.getContentType()).get().prettify(content.getValue()));
   }
 
   private KefhirRequest buildKefhirRequest(HttpRequest<String> request) {

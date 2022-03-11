@@ -26,4 +26,6 @@ public interface ResourceRepresentation {
   boolean isParsable(String input);
 
   <R extends Resource> R parse(String input);
+
+  String prettify(String content);
 }

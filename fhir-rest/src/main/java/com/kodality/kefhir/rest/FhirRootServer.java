@@ -30,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.OperationOutcome;
 
 import static com.kodality.kefhir.core.model.InteractionType.CONFORMANCE;
 import static com.kodality.kefhir.core.model.InteractionType.HISTORYSYSTEM;
@@ -76,6 +78,13 @@ public class FhirRootServer {
   @FhirInteraction(interaction = SEARCHSYSTEM, mapping = "GET /_search")
   public KefhirResponse search(KefhirRequest req) {
     throw new FhirServerException(501, "system search not implemented");
+  }
+
+  @FhirInteraction(interaction = "custom", mapping = "GET /")
+  public KefhirResponse welcome(KefhirRequest req) {
+    OperationOutcome op = new OperationOutcome();
+    op.addIssue().setDetails(new CodeableConcept().setText("Welcome to Kefhir"));
+    return new KefhirResponse(200, op);
   }
 
 }

@@ -71,8 +71,10 @@ public final class SearchUtil {
     if (params == null || params.isEmpty()) {
       return Collections.emptyList();
     }
+    params = new HashMap<>(params);
     params.remove("");
     params.remove(null);// well this is strange
+    params.keySet().removeAll(SearchCriterion.ignoreParamKeys);
 
     List<QueryParam> result = new ArrayList<>();
     params.forEach((k, v) -> result.addAll(parse(k, v, resourceType)));

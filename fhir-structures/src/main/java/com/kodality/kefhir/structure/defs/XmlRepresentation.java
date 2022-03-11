@@ -10,16 +10,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.structure.defs;
+package com.kodality.kefhir.structure.defs;
 
 import com.kodality.kefhir.structure.api.ParseException;
 import com.kodality.kefhir.structure.api.ResourceRepresentation;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.elementmodel.Manager.FhirFormat;
+import org.hl7.fhir.r4.formats.IParser;
+import org.hl7.fhir.r4.formats.IParser.OutputStyle;
 import org.hl7.fhir.r4.formats.XmlParser;
 import org.hl7.fhir.r4.model.Resource;
 
@@ -40,7 +43,8 @@ public class XmlRepresentation implements ResourceRepresentation {
   public String compose(Resource resource) {
     try {
       ByteArrayOutputStream output = new ByteArrayOutputStream();
-      new XmlParser().compose(output, resource, true);
+      XmlParser parser = new XmlParser();
+      parser.compose(output, resource, true);
       return new String(output.toByteArray(), "UTF-8");
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -60,6 +64,17 @@ public class XmlRepresentation implements ResourceRepresentation {
       return (R) new XmlParser().parse(input);
     } catch (Exception e) {
       throw new ParseException(e);
+    }
+  }
+
+  @Override
+  public String prettify(String content) {
+    //TODO: ugly
+    IParser p = new XmlParser().setOutputStyle(OutputStyle.PRETTY);
+    try {
+      return p.composeString(p.parse(content));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

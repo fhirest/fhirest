@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 public final class JsonUtil {
-  private static Gson gson = null;
+  private static Gson gson;
 
   static {
     GsonBuilder builder = new GsonBuilder();

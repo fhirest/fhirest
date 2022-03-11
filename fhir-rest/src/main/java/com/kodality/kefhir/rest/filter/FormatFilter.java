@@ -25,7 +25,7 @@ public class FormatFilter implements KefhirRequestFilter {
       req.setHeader("Content-Type", mime);
       req.getParameters().remove(FORMAT);
     }
-    if (req.getHeader("Accept") == null || req.getHeader("Accept").equals("*/*")) {
+    if (req.getHeader("Accept") == null || req.getHeader("Accept").equals("*/*") || req.getHeader("Accept").contains("text/html")) { // XXX text/html?
       req.setHeader("Accept", req.getHeader("Content-Type") == null ? "application/json" : req.getHeader("Content-Type"));
     }
   }
