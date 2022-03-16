@@ -17,8 +17,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.CodeSystem;
+import org.hl7.fhir.r4.model.CompartmentDefinition;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.SearchParameter;
 import org.hl7.fhir.r4.model.StructureDefinition;
@@ -32,6 +35,8 @@ public class ConformanceHolder {
   protected static Map<String, SearchParameter> searchParams;
   protected static List<ValueSet> valueSets;
   protected static List<CodeSystem> codeSystems;
+  protected static Map<String, CompartmentDefinition> compartmentDefinitions;
+  protected static Map<String, Map<String, List<String>>> compartmentDefinitionParams;
 
   protected static void setCapabilityStatement(CapabilityStatement capabilityStatement) {
     ConformanceHolder.capabilityStatement = capabilityStatement;
@@ -59,6 +64,20 @@ public class ConformanceHolder {
     ConformanceHolder.codeSystems = codeSystems;
   }
 
+  protected static void setCompartmentDefinitions(List<CompartmentDefinition> compartmentDefinitions) {
+    ConformanceHolder.compartmentDefinitions = new HashMap<>();
+    ConformanceHolder.compartmentDefinitionParams = new HashMap<>();
+    compartmentDefinitions.forEach(cd -> {
+      String base = cd.getCode().toCode();
+      ConformanceHolder.compartmentDefinitions.put(base, cd);
+      ConformanceHolder.compartmentDefinitionParams.put(base, new HashMap<>());
+      cd.getResource().stream().filter(r -> CollectionUtils.isNotEmpty(r.getParam())).forEach(cr -> {
+        List<String> params = cr.getParam().stream().map(s -> s.getValue()).collect(Collectors.toList());
+        compartmentDefinitionParams.get(base).put(cr.getCode(), params);
+      });
+    });
+  }
+
   public static CapabilityStatement getCapabilityStatement() {
     return capabilityStatement;
   }
@@ -77,6 +96,14 @@ public class ConformanceHolder {
 
   public static List<CodeSystem> getCodeSystems() {
     return codeSystems;
+  }
+
+  public static CompartmentDefinition getCompartmentDefinition(String resourceType) {
+    return compartmentDefinitions.get(resourceType);
+  }
+
+  public static List<String> getCompartmentParam(String resourceType, String compartment) {
+    return compartmentDefinitionParams.containsKey(resourceType) ? compartmentDefinitionParams.get(resourceType).get(compartment) : null;
   }
 
   public static Map<String, SearchParameter> getSearchParams() {

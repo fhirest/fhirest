@@ -55,7 +55,8 @@ public class ConformanceInitializationService {
         runAsync(() -> ConformanceHolder.setStructureDefinitions(load("StructureDefinition"))),
         runAsync(() -> ConformanceHolder.setSearchParamGroups(load("SearchParameter"))),
         runAsync(() -> ConformanceHolder.setValueSets(load("ValueSet"))),
-        runAsync(() -> ConformanceHolder.setCodeSystems(load("CodeSystem")))
+        runAsync(() -> ConformanceHolder.setCodeSystems(load("CodeSystem"))),
+        runAsync(() -> ConformanceHolder.setCompartmentDefinitions(load("CompartmentDefinition")))
     ).join();
     conformanceUpdateListeners.forEach(l -> l.updated());
     log.info("conformance loaded");

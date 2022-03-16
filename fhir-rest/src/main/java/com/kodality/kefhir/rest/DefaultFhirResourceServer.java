@@ -8,6 +8,7 @@ import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.model.search.HistorySearchCriterion;
 import com.kodality.kefhir.core.model.search.SearchCriterion;
 import com.kodality.kefhir.core.model.search.SearchResult;
+import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.core.service.resource.ResourceOperationService;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
 import com.kodality.kefhir.core.service.resource.ResourceService;
@@ -20,11 +21,14 @@ import com.kodality.kefhir.rest.util.BundleUtil;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
@@ -155,6 +159,29 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   public KefhirResponse search_(KefhirRequest req) {
     return search(req);
   }
+
+  @Override
+  public KefhirResponse searchCompartment(KefhirRequest req) {
+    String[] p = req.getPath().split("/");
+    String id = p[0];
+    String compartment = p[1];
+    List<String> compartmentParams = ConformanceHolder.getCompartmentParam(req.getType(), compartment);
+    if (CollectionUtils.isEmpty(compartmentParams)) {
+      throw new FhirException(400, IssueType.INVALID, "unknown compartment " + compartment + " for " + req.getType());
+    }
+    if (compartmentParams.size() > 1) {
+      throw new FhirException(400, IssueType.NOTSUPPORTED, "multiple compartment params not yet supported");
+    }
+    Map<String, List<String>> query = new HashMap<>(req.getParameters());
+    query.put(compartmentParams.get(0), List.of(id));
+
+    SearchCriterion criteria = new SearchCriterion(compartment, SearchUtil.parse(query, compartment));
+    SearchResult result = resourceSearchService.search(criteria);
+    Bundle bundle = BundleUtil.compose(result);
+    addPagingLinks(bundle, criteria.getCount(), criteria.getPage(), req);
+    return new KefhirResponse(200, bundle);
+  }
+
   @Override
   public KefhirResponse instanceOperation(KefhirRequest req) {
     String[] p = req.getPath().split("/");

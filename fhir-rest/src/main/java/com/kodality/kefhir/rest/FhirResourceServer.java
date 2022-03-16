@@ -36,6 +36,9 @@ public interface FhirResourceServer {
   @FhirInteraction(interaction = InteractionType.SEARCHTYPE, mapping = "GET /")
   KefhirResponse search(KefhirRequest req);
 
+  @FhirInteraction(interaction = InteractionType.SEARCHTYPE, mapping = "GET /{}/{}")
+  KefhirResponse searchCompartment(KefhirRequest req);
+
   @FhirInteraction(interaction = InteractionType.SEARCHTYPE, mapping = "POST /_search")
   KefhirResponse search_(KefhirRequest req);
 
