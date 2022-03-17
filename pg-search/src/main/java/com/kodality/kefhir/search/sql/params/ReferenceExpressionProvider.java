@@ -12,17 +12,21 @@
  */
 package com.kodality.kefhir.search.sql.params;
 
+import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.search.repository.ResourceStructureRepository;
 import com.kodality.kefhir.search.sql.SearchSqlUtil;
+import com.kodality.kefhir.search.util.SearchPathUtil;
 import com.kodality.kefhir.util.sql.SqlBuilder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -30,8 +34,37 @@ public class ReferenceExpressionProvider extends DefaultExpressionProvider {
   private static ThreadLocalInteger I = new ThreadLocalInteger();
 
   @Override
+  public SqlBuilder makeExpression(QueryParam param, String alias) {
+    return super.makeExpression(param, alias);
+  }
+
+  @Override
   protected SqlBuilder makeCondition(QueryParam param, String v) {
-    return reference(v);
+    String type = StringUtils.contains(v, "/") ? StringUtils.substringBefore(v, "/") : null;
+    String id = StringUtils.contains(v, "/") ? StringUtils.substringAfter(v, "/") : v;
+    if (param.getModifier() != null) {
+      if (type != null && !param.getModifier().equals(type)) {
+        throw new FhirException(400, IssueType.INVALID, "invalid reference param " + param.getKey());
+      }
+      type = param.getModifier();
+    }
+
+    String expr = ConformanceHolder.requireSearchParam(param.getResourceType(), param.getKey()).getExpression();
+    expr = Arrays.stream(expr.split("\\|")).map(e -> StringUtils.trim(e)).filter(e -> e.startsWith(param.getResourceType())).findFirst().orElse(null);
+    String fhirPathType = SearchPathUtil.getFhirpathWhereResolveType(expr);
+    if (fhirPathType != null) {
+      if (type != null && !fhirPathType.equals(type)) {
+        return new SqlBuilder("1 = 0");
+      }
+      type = fhirPathType;
+    }
+
+    SqlBuilder sb = new SqlBuilder();
+    sb.append("(");
+    sb.append("i.id = ?", id);
+    sb.appendIfNotNull(" and i.type_id = search.resource_type_id(?)", type);
+    sb.append(")");
+    return sb;
   }
 
   @Override
@@ -42,17 +75,6 @@ public class ReferenceExpressionProvider extends DefaultExpressionProvider {
   @Override
   protected String getOrderField() {
     return null; // TODO:
-  }
-
-  private static SqlBuilder reference(String query) {
-    String type = StringUtils.contains(query, "/") ? StringUtils.substringBefore(query, "/") : null;
-    String id = StringUtils.contains(query, "/") ? StringUtils.substringAfter(query, "/") : query;
-    SqlBuilder sb = new SqlBuilder();
-    sb.append("(");
-    sb.append("i.id = ?", id);
-    sb.appendIfNotNull(" and i.type_id = search.resource_type_id(?)", type);
-    sb.append(")");
-    return sb;
   }
 
   public static SqlBuilder chain(List<QueryParam> params, String parentAlias) {

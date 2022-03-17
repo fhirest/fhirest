@@ -295,6 +295,62 @@
 			"response": []
 		},
 		{
+			"name": "reference param invalid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([400]);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Observation?subject:Patient=Encounter/ps100",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Observation"
+					],
+					"query": [
+						{
+							"key": "subject:Patient",
+							"value": "Encounter/ps100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "reference param chain",
 			"event": [
 				{
