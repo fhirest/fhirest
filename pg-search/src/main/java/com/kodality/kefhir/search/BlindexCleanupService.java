@@ -14,9 +14,9 @@ public class BlindexCleanupService {
 
   @Scheduled(cron = "0 0 * * * *")
   public void execute() {
-    log.info("starting index cleanup");
+    log.debug("starting index cleanup");
     blindexRepository.cleanup();
-    log.info("index cleanup finished");
+    log.debug("index cleanup finished");
   }
 
 }

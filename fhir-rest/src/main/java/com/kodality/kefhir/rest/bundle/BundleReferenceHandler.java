@@ -79,6 +79,9 @@ public class BundleReferenceHandler {
       }
     });
 
+    // it is possible not to define 'fullUrl' in request. so we remove those 'null's, because we are too lazy to add 'if's
+    referenceIds.remove(null);
+
     bundle.getEntry().forEach(e -> {
       Resource resource = e.getResource();
       ResourcePropertyUtil.findProperties(resource, Reference.class).forEach(reference -> {

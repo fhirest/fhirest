@@ -144,6 +144,152 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "transaction conditional reference",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"transaction responses\", function () {",
+							"    pm.expect(pm.response.json().type).to.eql(\"transaction-response\");",
+							"    pm.expect(pm.response.json().entry[0].response.status).to.be.oneOf(['200', '201']);",
+							"    pm.expect(pm.response.json().entry[1].response.status).to.be.oneOf(['200', '201']);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"request\": {\n        \"method\": \"PUT\",\n        \"url\": \"Patient/ptct2\"\n      },\n      \"resource\": {\n        \"identifier\": [{\n            \"system\": \"urn:kefhir-tests\",\n            \"value\": \"TESTPATIENT-tcr-2\"\n        }],\n        \"gender\": \"male\",\n        \"active\": true,\n        \"birthDate\": \"1999-01-01\",\n        \"resourceType\": \"Patient\"\n      }\n    },\n    {\n      \"request\": {\n        \"url\": \"Encounter/enc101\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"resourceType\": \"Encounter\",\n        \"status\": \"in-progress\",\n        \"class\": { \"code\": \"IMP\" },\n        \"subject\": { \"reference\": \"Patient?identifier=TESTPATIENT-tcr-2\" }\n      }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{kefhir}}",
+					"host": [
+						"{{kefhir}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transaction conditional reference check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"transaction responses\", function () {",
+							"    pm.expect(pm.response.json().subject.reference).to.eql('Patient/ptct2');",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Encounter/enc101",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Encounter",
+						"enc101"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transaction temporary id reference",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"transaction responses\", function () {",
+							"    pm.expect(pm.response.json().type).to.eql(\"transaction-response\");",
+							"    pm.expect(pm.response.json().entry[0].response.status).to.be.oneOf(['200', '201']);",
+							"    pm.expect(pm.response.json().entry[1].response.status).to.be.oneOf(['200', '201']);",
+							"    pm.expect(pm.response.json().entry[2].response.status).to.be.oneOf(['200']);",
+							"    pm.expect(pm.response.json().entry[2].resource.subject.reference).to.contain(['Patient/']);",
+							"    pm.expect(pm.response.json().entry[0].response.location).to.contain([pm.response.json().entry[2].resource.subject.reference]);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"fullUrl\": \"urn:temporarytransactionid1\",\n      \"request\": {\n        \"method\": \"POST\"\n      },\n      \"resource\": {\n        \"gender\": \"male\",\n        \"active\": true,\n        \"birthDate\": \"1999-01-01\",\n        \"resourceType\": \"Patient\"\n      }\n    },\n    {\n      \"request\": {\n        \"url\": \"Encounter/enc102\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"resourceType\": \"Encounter\",\n        \"status\": \"in-progress\",\n        \"class\": { \"code\": \"IMP\" },\n        \"subject\": { \"reference\": \"urn:temporarytransactionid1\" }\n      }\n    },\n        {\n      \"request\": {\n        \"url\": \"Encounter/enc102\",\n        \"method\": \"GET\"\n      }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{kefhir}}",
+					"host": [
+						"{{kefhir}}"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"variable": [
