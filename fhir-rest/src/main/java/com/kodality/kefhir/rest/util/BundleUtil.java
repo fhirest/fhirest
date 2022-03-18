@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.rest.util;
+package com.kodality.kefhir.rest.util;
 
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.search.SearchResult;
@@ -45,17 +45,21 @@ public class BundleUtil {
     Bundle bundle = new Bundle();
     bundle.setTotal(total == null ? versions.size() : total);
     bundle.setType(bundleType);
-    versions.forEach(v -> bundle.addEntry(composeEntry(v)));
+    versions.forEach(v -> {
+      BundleEntryComponent entry = composeEntry(v);
+      bundle.addEntry(entry);
+      if (bundleType == BundleType.HISTORY) {
+        BundleEntryRequestComponent request = new BundleEntryRequestComponent();
+        request.setMethod(calcMethod(v));
+        entry.setRequest(request);
+      }
+    });
     return bundle;
   }
 
-  public static BundleEntryComponent composeEntry(ResourceVersion version) {
+  private static BundleEntryComponent composeEntry(ResourceVersion version) {
     BundleEntryComponent entry = new BundleEntryComponent();
     entry.setResource(ResourceFormatService.get().parse(version.getContent().getValue()));
-
-    BundleEntryRequestComponent request = new BundleEntryRequestComponent();
-    request.setMethod(calcMethod(version));
-    entry.setRequest(request);
     return entry;
   }
 
