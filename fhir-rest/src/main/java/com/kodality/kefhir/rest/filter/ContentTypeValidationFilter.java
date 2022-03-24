@@ -17,6 +17,9 @@ public class ContentTypeValidationFilter implements KefhirRequestFilter {
   @Override
   public void handleRequest(KefhirRequest req) {
     String accept = req.getHeader("Accept");
+    if(accept.contains(";charset=")){
+      accept = accept.replaceAll(";charset=[^;]*", "");
+    }
     if (accept != null && !"*/*".equals(accept) && !FhirContentType.getMediaTypes().contains(accept)) {
       throw new FhirException(406, IssueType.NOTSUPPORTED, "invalid Accept");
     }
