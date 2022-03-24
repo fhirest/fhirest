@@ -27,7 +27,7 @@ public class ContentTypeValidationFilter implements KefhirRequestFilter {
   }
 
   private String clean(String ct) {
-    if (ct.contains(";charset=")) {
+    if (ct != null && ct.contains(";charset=")) {
       return ct.replaceAll(";charset=[^;]*", "");
     }
     return ct;
