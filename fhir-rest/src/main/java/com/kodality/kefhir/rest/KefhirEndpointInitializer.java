@@ -23,6 +23,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.ResourceVersionPolicy;
 import org.hl7.fhir.r4.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r4.model.CapabilityStatement.SystemRestfulInteraction;
 import org.hl7.fhir.r4.model.StructureDefinition;
@@ -75,6 +76,9 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
     capabilityStatement.setText(null);
     capabilityStatement.getRest().forEach(rest -> {
       rest.setResource(rest.getResource().stream().filter(rr -> defined.contains(rr.getType())).collect(toList()));
+      rest.getResource().forEach(rr -> {
+        rr.setVersioning(ResourceVersionPolicy.VERSIONED);// shouldn't this be in fhirs 'full' conformance?
+      });
     });
     capabilityStatement.getRest().forEach(rest -> {
       rest.setOperation(null);

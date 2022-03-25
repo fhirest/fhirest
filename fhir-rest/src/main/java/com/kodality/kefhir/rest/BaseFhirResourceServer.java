@@ -91,12 +91,16 @@ public abstract class BaseFhirResourceServer implements FhirResourceServer {
 
 
   protected KefhirResponse created(ResourceVersion version, KefhirRequest req) {
-    return new KefhirResponse(201, preferedBody(version, req)).header("Location", uri(version, req));
+    return new KefhirResponse(201, preferedBody(version, req))
+        .header("Location", uri(version, req))
+        .header("ETag", version.getETag())
+        .header("Last-Modified", DateUtil.format(version.getModified(), DateUtil.ISO_DATETIME));
   }
 
   protected KefhirResponse updated(ResourceVersion version, KefhirRequest req) {
     return new KefhirResponse(200, preferedBody(version, req))
         .header("Content-Location", uri(version, req))
+        .header("ETag", version.getETag())
         .header("Last-Modified", DateUtil.format(version.getModified(), DateUtil.ISO_DATETIME));
   }
 

@@ -19,6 +19,7 @@ import java.util.List;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryResponseComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntrySearchComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
@@ -51,7 +52,13 @@ public class BundleUtil {
       if (bundleType == BundleType.HISTORY) {
         BundleEntryRequestComponent request = new BundleEntryRequestComponent();
         request.setMethod(calcMethod(v));
+        request.setUrl(v.getId().getResourceReference());
         entry.setRequest(request);
+
+        BundleEntryResponseComponent response = new BundleEntryResponseComponent();
+        response.setLastModified(v.getModified());
+        response.setStatus("200");//this is stupid
+        entry.setResponse(response);
       }
     });
     return bundle;
@@ -59,6 +66,7 @@ public class BundleUtil {
 
   private static BundleEntryComponent composeEntry(ResourceVersion version) {
     BundleEntryComponent entry = new BundleEntryComponent();
+    entry.setFullUrl(version.getId().getResourceReference());
     entry.setResource(ResourceFormatService.get().parse(version.getContent().getValue()));
     return entry;
   }
