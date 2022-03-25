@@ -62,7 +62,7 @@
 							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
 							"pm.test(\"body is xml\", function () {",
-							"    pm.expect(postman.getResponseHeader(\"Content-Type\")).to.eq(\"application/xml\");",
+							"    pm.expect(postman.getResponseHeader(\"Content-Type\").startsWith(\"application/xml\")).to.eq(true);",
 							"  pm.expect(pm.response.text().startsWith('<')).to.eq(true);",
 							"});"
 						],
@@ -118,7 +118,7 @@
 							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
 							"pm.test(\"body is xml\", function () {",
-							"    pm.expect(postman.getResponseHeader(\"Content-Type\")).to.eq(\"application/json\");",
+							"    pm.expect(postman.getResponseHeader(\"Content-Type\").startsWith(\"application/json\")).to.eq(true);",
 							"  pm.expect(pm.response.text().startsWith('{')).to.eq(true);",
 							"});"
 						],
@@ -225,7 +225,7 @@
 							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
 							"pm.test(\"body is xml\", function () {",
-							"    pm.expect(postman.getResponseHeader(\"Content-Type\")).to.eq(\"application/xml\");",
+							"    pm.expect(postman.getResponseHeader(\"Content-Type\").startsWith(\"application/xml\")).to.eq(true);",
 							"  pm.expect(pm.response.text().startsWith('<')).to.eq(true);",
 							"});"
 						],
@@ -281,7 +281,7 @@
 							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
 							"pm.test(\"body is xml\", function () {",
-							"    pm.expect(postman.getResponseHeader(\"Content-Type\")).to.eq(\"application/json\");",
+							"    pm.expect(postman.getResponseHeader(\"Content-Type\").startsWith(\"application/json\")).to.eq(true);",
 							"  pm.expect(pm.response.text().startsWith('{')).to.eq(true);",
 							"});"
 						],
@@ -337,7 +337,7 @@
 							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
 							"pm.test(\"body is xml\", function () {",
-							"    pm.expect(postman.getResponseHeader(\"Content-Type\")).to.eq(\"application/fhir+xml\");",
+							"    pm.expect(postman.getResponseHeader(\"Content-Type\").startsWith(\"application/fhir+xml\")).to.eq(true);",
 							"  pm.expect(pm.response.text().startsWith('<')).to.eq(true);",
 							"});"
 						],
@@ -393,7 +393,7 @@
 							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
 							"pm.test(\"body is xml\", function () {",
-							"    pm.expect(postman.getResponseHeader(\"Content-Type\")).to.eq(\"application/fhir+json\");",
+							"    pm.expect(postman.getResponseHeader(\"Content-Type\").startsWith(\"application/fhir+json\")).to.eq(true);",
 							"  pm.expect(pm.response.text().startsWith('{')).to.eq(true);",
 							"});"
 						],
@@ -449,7 +449,7 @@
 							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
 							"pm.test(\"body is xml\", function () {",
-							"    pm.expect(postman.getResponseHeader(\"Content-Type\")).to.eq(\"application/fhir+xml\");",
+							"    pm.expect(postman.getResponseHeader(\"Content-Type\").startsWith(\"application/fhir+xml\")).to.eq(true);",
 							"  pm.expect(pm.response.text().startsWith('<')).to.eq(true);",
 							"});"
 						],
@@ -507,7 +507,7 @@
 							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
 							"pm.test(\"body is xml\", function () {",
-							"    pm.expect(postman.getResponseHeader(\"Content-Type\")).to.eq(\"application/fhir+json\");",
+							"    pm.expect(postman.getResponseHeader(\"Content-Type\").startsWith(\"application/fhir+json\")).to.eq(true);",
 							"  pm.expect(pm.response.text().startsWith('{')).to.eq(true);",
 							"});"
 						],
