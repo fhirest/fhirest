@@ -40,7 +40,7 @@ public class BlindexRepository {
   //TODO: will not work on multiple nodes.
   @PostConstruct
   public void refreshCache() {
-    loadIndexes().forEach(p -> INDEXES.put(p.getKey(), p.getName()));
+    loadIndexes().forEach(p -> INDEXES.put(p.getResourceType() + "." + p.getPath(), p.getName()));
   }
 
   public static String getIndex(String resourceType, String path) {
@@ -56,8 +56,8 @@ public class BlindexRepository {
     return jdbcTemplate.query(sql, new BlindexRowMapper());
   }
 
-  public Blindex createIndex(String resourceType, String path) {
-    return adminJdbcTemplate.queryForObject("SELECT * from search.create_blindex(?,?)", new BlindexRowMapper(), resourceType, path);
+  public Blindex createIndex(String paramType, String resourceType, String path) {
+    return adminJdbcTemplate.queryForObject("SELECT * from search.create_blindex(?,?,?)", new BlindexRowMapper(), paramType, resourceType, path);
   }
 
   public void merge(Long blindexId, ResourceId id, String jsonContent) {
@@ -65,8 +65,8 @@ public class BlindexRepository {
     adminJdbcTemplate.queryForObject(sql, Object.class, blindexId, jsonContent, id.getResourceType(), id.getResourceId());
   }
 
-  public void dropIndex(String resourceType, String path) {
-    adminJdbcTemplate.queryForObject("SELECT search.drop_blindex(?,?)", String.class, resourceType, path);
+  public void dropIndex(String paramType, String resourceType, String path) {
+    adminJdbcTemplate.queryForObject("SELECT search.drop_blindex(?,?,?)", String.class, paramType, resourceType, path);
   }
 
   public void cleanup() {
@@ -82,6 +82,7 @@ public class BlindexRepository {
       p.setResourceType(rs.getString("resource_type"));
       p.setPath(rs.getString("path"));
       p.setName(rs.getString("index_name"));
+      p.setParamType(rs.getString("param_type"));
       return p;
     }
 

@@ -1,7 +1,6 @@
-CREATE OR REPLACE FUNCTION search.create_blindex(_resource_type text, _path text) RETURNS search.blindex AS $$
+CREATE OR REPLACE FUNCTION search.create_blindex(_param_type text, _resource_type text, _path text) RETURNS search.blindex AS $$
 DECLARE
   _struct search.resource_structure;
-  _param_type text;
   _idx_name text;
   _base_idx text;
   _blindex search.blindex;
@@ -13,9 +12,11 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM search.search_configuration WHERE element_type = _struct.element_type) THEN
       RAISE EXCEPTION '% not configured. (search_configuration)', _struct.element_type;
     END IF;
-    SELECT param_type into _param_type FROM search.search_configuration WHERE element_type = _struct.element_type;
-    IF EXISTS (SELECT 1 FROM search.blindex WHERE resource_type = _resource_type AND path = _path) THEN
-      SELECT * into _blindex FROM search.blindex WHERE resource_type = _resource_type AND path = _path;
+    IF NOT EXISTS(SELECT 1 FROM search.search_configuration WHERE element_type = _struct.element_type and param_type = _param_type) THEN
+      RAISE EXCEPTION '% % not found in search_configuration', _param_type, _struct.element_type;
+    END IF;
+    IF EXISTS (SELECT 1 FROM search.blindex WHERE resource_type = _resource_type AND path = _path and param_type = _param_type) THEN
+      SELECT * into _blindex FROM search.blindex WHERE resource_type = _resource_type AND path = _path and param_type = _param_type;
       return _blindex;
     END IF;
 

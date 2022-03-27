@@ -83,7 +83,7 @@ public class RuleThemAllFhirController {
         prettify(formatted);
       }
       r.body(formatted.getValue());
-      r.contentType(getResponseContentType(accept, formatted) + ";charset=utf8"); // XXX ugly charset
+      r.contentType(getResponseContentType(accept, formatted) + ";charset=utf-8"); // XXX ugly charset
     }
     return r;
   }

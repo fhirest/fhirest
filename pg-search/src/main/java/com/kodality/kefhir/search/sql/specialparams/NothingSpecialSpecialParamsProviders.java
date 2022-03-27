@@ -26,7 +26,7 @@ public class NothingSpecialSpecialParamsProviders {
 
     @Override
     public SqlBuilder makeExpression(QueryParam param, String alias) {
-      return DateExpressionProvider.makeExpression(alias + ".last_updated", param);
+      return DateExpressionProvider.makeExpression("tstzrange(" + alias + ".last_updated, " + alias + ".last_updated, '[]')" , param);
     }
 
     @Override

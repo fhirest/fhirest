@@ -69,7 +69,7 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
       return null;
     }
     List<String> defined = definitions.stream().map(d -> d.getName()).collect(toList());
-    defined.removeAll(asList("Bundle", "ImplementationGuide", "MessageDefinition", "CompartmentDefinition", "StructureMap", "GraphDefinition", "DataElement"));
+//    defined.removeAll(asList("Bundle", "ImplementationGuide", "MessageDefinition", "CompartmentDefinition", "StructureMap", "GraphDefinition", "DataElement"));
 
     // multiple capabilities. how should be handle these?
     CapabilityStatement capabilityStatement = capability.copy();

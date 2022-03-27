@@ -19,10 +19,10 @@ import com.kodality.kefhir.search.model.Blindex;
 import com.kodality.kefhir.search.repository.BlindexRepository;
 import com.kodality.kefhir.search.util.SearchPathUtil;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javax.inject.Singleton;
@@ -49,40 +49,42 @@ public class BlindexInitializer {
       log.error("blindex: will not run. definitions either empty, either definitions not yet loaded.");
       return null;
     }
-    Set<String> create =
+    Map<String, Blindex> create =
         ConformanceHolder.getSearchParams().values().stream()
             .filter(sp -> sp.getExpression() != null && sp.getType() != SearchParamType.COMPOSITE)
-            .flatMap(sp -> SearchPathUtil.parsePaths(sp.getExpression()).stream().filter(s -> defined.contains(StringUtils.substringBefore(s, "."))))
-            .collect(Collectors.toSet());
-
-    Set<String> current = blindexRepository.loadIndexes().stream().map(i -> i.getKey()).collect(Collectors.toSet());
-    Set<String> drop = new HashSet<>(current);
-    drop.removeAll(create);
-    create.removeAll(current);
+            .flatMap(sp -> SearchPathUtil.parsePaths(sp.getExpression()).stream()
+                .filter(s -> defined.contains(StringUtils.substringBefore(s, ".")))
+                .map(s -> new Blindex(sp.getType().toCode(), StringUtils.substringBefore(s, "."), StringUtils.substringAfter(s, "."))))
+            .collect(Collectors.toMap(Blindex::getKey, b -> b, (b1, b2) -> b1));
+    Map<String, Blindex> current = blindexRepository.loadIndexes().stream().collect(Collectors.toMap(Blindex::getKey, b -> b));
+    Map<String, Blindex> drop = new HashMap<>(current);
+    create.keySet().forEach(c -> drop.remove(c));
+    current.keySet().forEach(c -> create.remove(c));
     log.debug("currently indexed: " + current);
     log.debug("need to create: " + create);
     log.debug("need to remove: " + drop);
-    create(create);
-    drop(drop);
+    create(create.values());
+    drop(drop.values());
     blindexRepository.refreshCache();
     log.info("blindex initialization finished");
     return null;
   }
 
-  private void create(Set<String> create) {
+
+  private void create(Collection<Blindex> create) {
     List<String> errors = new ArrayList<>();
     List<Blindex> createdIndexed = new ArrayList<>();
-    for (String key : create) {
-      log.debug("creating index on " + key);
+    for (Blindex b : create) {
+      log.debug("creating index on " + b.getKey());
       try {
-        createdIndexed.add(blindexRepository.createIndex(StringUtils.substringBefore(key, "."), StringUtils.substringAfter(key, ".")));
+        createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), b.getPath()));
       } catch (Exception e) {
         String err = e.getMessage();
         if (e.getCause() instanceof PSQLException) {
           err = (e.getCause().getMessage().substring(0, e.getCause().getMessage().indexOf("\n")));
         }
-        log.info("failed " + key + ": " + err);
-        errors.add(key + ": " + err);
+        log.info("failed " + b.getKey() + ": " + err);
+        errors.add(b.getKey() + ": " + err);
       }
     }
     log.error("failed to create " + errors.size() + " indexes");
@@ -121,13 +123,13 @@ public class BlindexInitializer {
     });
   }
 
-  private void drop(Set<String> drop) {
-    for (String key : drop) {
+  private void drop(Collection<Blindex> drop) {
+    for (Blindex b : drop) {
       try {
-        blindexRepository.dropIndex(StringUtils.substringBefore(key, "."), StringUtils.substringAfter(key, "."));
+        blindexRepository.dropIndex(b.getParamType(), b.getResourceType(), b.getPath());
       } catch (Exception e) {
         String err = e.getCause() instanceof PSQLException ? e.getCause().getMessage() : e.getMessage();
-        log.debug("failed " + key + ": " + err);
+        log.debug("failed " + b.getKey() + ": " + err);
       }
     }
   }

@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "0817ef6a-cf41-4df9-9fe8-b22a5ab3e541",
+		"name": "45-search-_lastUpdated",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "test data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"fullUrl\": \"test-bunny-1\",\n      \"request\": {\n        \"url\": \"Patient/ps100\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"identifier\": [\n          {\n            \"system\": \"urn:kefhir-search-tests\",\n            \"value\": \"TESTPATIENT-100\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Margherita\"\n          }\n        ],\n        \"active\": true,\n        \"gender\": \"female\",\n        \"birthDate\": \"2000-02-02\",\n        \"resourceType\": \"Patient\"\n      }\n    },\n    {\n      \"fullUrl\": \"test-bunny-2\",\n      \"request\": {\n        \"url\": \"Patient/ps101\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n        \"identifier\": [\n          {\n            \"value\": \"TESTPATIENT-nosystem-101\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Marinara\"\n          }\n        ],\n        \"active\": true,\n        \"gender\": \"female\",\n        \"resourceType\": \"Patient\",\n        \"birthDate\": \"2020-02-02\"\n      }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{kefhir}}",
+					"host": [
+						"{{kefhir}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "_lastUpdated no",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(0);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?_lastUpdated=lt2020&_id=ps101",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_lastUpdated",
+							"value": "lt2020"
+						},
+						{
+							"key": "_id",
+							"value": "ps101"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "_lastUpdated ok",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps101\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?_lastUpdated=gt2020&_id=ps101",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_lastUpdated",
+							"value": "gt2020"
+						},
+						{
+							"key": "_id",
+							"value": "ps101"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

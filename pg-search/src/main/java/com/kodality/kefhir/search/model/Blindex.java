@@ -13,17 +13,27 @@
  package com.kodality.kefhir.search.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class Blindex {
   private Long id;
   private String resourceType;
   private String path;
   private String name;
+  private String paramType;
+
+  public Blindex(String paramType, String resourceType, String path) {
+    this.resourceType = resourceType;
+    this.path = path;
+    this.paramType = paramType;
+  }
 
   public String getKey() {
-    return resourceType + "." + path;
+    return paramType + "#" + resourceType + "." + path;
   }
+
 }

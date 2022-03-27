@@ -103,8 +103,9 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     String contentLocation = req.getHeader("Content-Location");
     Integer ver = contentLocation == null ? null : ResourceUtil.parseReference(contentLocation).getVersion();
     ResourceContent content = new ResourceContent(req.getBody(), req.getHeader("Content-Type"));
+    boolean exists = resourceId == null ? false : resourceSearchService.search(req.getType(), "_id", resourceId, "_count", "0").getTotal() > 0;
     ResourceVersion version = resourceService.save(new VersionId(req.getType(), resourceId, ver), content, InteractionType.UPDATE);
-    return version.getId().getVersion() == 1 ? created(version, req) : updated(version, req);
+    return exists ? updated(version, req) : created(version, req);
   }
 
   @Override

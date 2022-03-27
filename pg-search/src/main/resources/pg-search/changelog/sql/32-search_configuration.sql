@@ -1,12 +1,12 @@
 --liquibase formatted sql
 
 --changeset kefhir:search_configuration dbms:postgresql
+drop table if exists search.search_configuration;
 create table search.search_configuration (
   id 			bigserial primary key,
   param_type 	text not null,
   element_type 	text not null,
-  path 			jsonb not null,
-  constraint search_configuration_element_type_param_type_ukey unique (element_type)
+  path 			jsonb not null
 );
 --rollback drop table search_configuration;
 
@@ -25,6 +25,7 @@ with t(param_type, element_type, path) as (values
   ('token', 'Identifier',      '[{"namespace":"{system}", "value":"{value}"}]'),
   ('token', 'ContactPoint',    '[{"namespace":"{system}", "value":"{value}"}]'),
   ('token', 'boolean',         '[{"value":"{}"}]'),
+  ('token', 'string',          '[{"value":"{}"}]'),
 
   ('string', 'string',    '[{"value":"{}"}]'),
   ('string', 'markdown',    '[{"value":"{}"}]'),
