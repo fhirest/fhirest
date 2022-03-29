@@ -16,6 +16,7 @@ import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.List;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
@@ -33,12 +34,18 @@ public class BundleUtil {
 
   public static Bundle compose(SearchResult search) {
     Bundle bundle = compose(search.getTotal(), search.getEntries(), BundleType.SEARCHSET);
-    search.getIncludes().forEach(v -> {
-      BundleEntryComponent e = composeEntry(v);
-      e.setSearch(new BundleEntrySearchComponent());
-      e.getSearch().setMode(SearchEntryMode.INCLUDE);
-      bundle.addEntry(e);
-    });
+    if (CollectionUtils.isNotEmpty(search.getIncludes())) {
+      bundle.getEntry().forEach(e -> {
+        e.setSearch(new BundleEntrySearchComponent());
+        e.getSearch().setMode(SearchEntryMode.MATCH);
+      });
+      search.getIncludes().forEach(v -> {
+        BundleEntryComponent e = composeEntry(v);
+        e.setSearch(new BundleEntrySearchComponent());
+        e.getSearch().setMode(SearchEntryMode.INCLUDE);
+        bundle.addEntry(e);
+      });
+    }
     return bundle;
   }
 

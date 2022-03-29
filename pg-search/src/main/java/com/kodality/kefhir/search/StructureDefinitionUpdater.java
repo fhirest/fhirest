@@ -45,9 +45,9 @@ public class StructureDefinitionUpdater implements ConformanceUpdateListener {
 
   @Override
   public void updated() {
-    String domainResource = "http://hl7.org/fhir/StructureDefinition/DomainResource";
+    List<String> resourceTypes = List.of("http://hl7.org/fhir/StructureDefinition/DomainResource", "http://hl7.org/fhir/StructureDefinition/Resource");
     ConformanceHolder.getDefinitions().stream()
-        .filter(def -> domainResource.equals(def.getBaseDefinition()) || def.getName().equals("Binary"))
+        .filter(def -> def.getBaseDefinition() != null && resourceTypes.contains(def.getBaseDefinition()))
         .forEach(d -> structureDefinitionRepository.defineResource(d.getName()));
 
     structureDefinitionRepository.save(ConformanceHolder.getDefinitions().stream().flatMap(this::findElements).distinct().collect(toList()));

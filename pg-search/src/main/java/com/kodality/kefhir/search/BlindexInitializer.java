@@ -41,9 +41,9 @@ public class BlindexInitializer {
   private final ResourceSearchService resourceSearchService;
 
   public Object execute() {
-    String domainResource = "http://hl7.org/fhir/StructureDefinition/DomainResource";
+    List<String> resourceTypes = List.of("http://hl7.org/fhir/StructureDefinition/DomainResource", "http://hl7.org/fhir/StructureDefinition/Resource");
     List<String> defined = ConformanceHolder.getDefinitions().stream()
-        .filter(def -> domainResource.equals(def.getBaseDefinition()) || def.getName().equals("Binary"))
+        .filter(def -> def.getBaseDefinition() != null && resourceTypes.contains(def.getBaseDefinition()))
         .map(def -> def.getName()).collect(Collectors.toList());
     if (CollectionUtils.isEmpty(defined)) {
       log.error("blindex: will not run. definitions either empty, either definitions not yet loaded.");

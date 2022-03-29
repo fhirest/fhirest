@@ -70,6 +70,9 @@ public class ResourceFormatService {
 
   @SuppressWarnings("unchecked")
   public <R extends Resource> R parse(String input) {
+    if (input == null) {
+      return null;
+    }
     String key = DigestUtils.md5Hex(input);
     if (cache.get(key) == null) {
       cache.put(key,

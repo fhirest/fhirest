@@ -129,7 +129,7 @@ public class PgResourceStorage implements ResourceStorage {
   @SuppressWarnings("unchecked")
   private void decorate(ResourceVersion version) {
     // TODO: maybe rewrite this when better times come and resource will be parsed until end.
-    if (version == null) {
+    if (version == null || version.getContent().getValue() == null) {
       return;
     }
 
