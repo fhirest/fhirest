@@ -29,7 +29,7 @@ import org.hl7.fhir.r4.model.ValueSet;
 
 public class ConformanceHolder {
   protected static CapabilityStatement capabilityStatement;
-  protected static Map<String, StructureDefinition> definitions;
+  protected static List<StructureDefinition> definitions;
   //resource type -> code -> param
   protected static Map<String, Map<String, SearchParameter>> searchParamGroups;
   protected static Map<String, SearchParameter> searchParams;
@@ -43,8 +43,7 @@ public class ConformanceHolder {
   }
 
   protected static void setStructureDefinitions(List<StructureDefinition> definitions) {
-    ConformanceHolder.definitions = new HashMap<>();
-    definitions.forEach(d -> ConformanceHolder.definitions.put(d.getName(), d));
+    ConformanceHolder.definitions = new ArrayList<>(definitions);
   }
 
   protected static void setSearchParamGroups(List<SearchParameter> searchParamGroups) {
@@ -83,11 +82,7 @@ public class ConformanceHolder {
   }
 
   public static List<StructureDefinition> getDefinitions() {
-    return new ArrayList<>(definitions.values());
-  }
-
-  public static StructureDefinition getDefinition(String type) {
-    return definitions.get(type);
+    return new ArrayList<>(definitions);
   }
 
   public static List<ValueSet> getValueSets() {

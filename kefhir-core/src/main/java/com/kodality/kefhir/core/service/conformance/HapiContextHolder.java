@@ -1,7 +1,7 @@
 package com.kodality.kefhir.core.service.conformance;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
+import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.validation.FhirValidator;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import java.util.Map;
@@ -47,18 +47,18 @@ public class HapiContextHolder implements ConformanceUpdateListener {
     Map<String, IBaseResource> defs = ConformanceHolder.getDefinitions().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
     Map<String, IBaseResource> vs = ConformanceHolder.getValueSets().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
     Map<String, IBaseResource> cs = ConformanceHolder.getCodeSystems().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
-    PrePopulatedValidationSupport validationSupport = new PrePopulatedValidationSupport(context, defs, vs, cs);
+    cs.remove("http://snomed.info/sct"); // TODO; this will not validate snomed.
 
-    hapiContext = new HapiWorkerContext(context, validationSupport);
-
-    ValidationSupportChain chain = new ValidationSupportChain(
-        validationSupport,
+    IValidationSupport chain = new ValidationSupportChain(
         new InMemoryTerminologyServerValidationSupport(context),
-        new DefaultProfileValidationSupport(context)
+        new PrePopulatedValidationSupport(context, defs, vs, cs)
     );
-    FhirInstanceValidator instanceValidator = new FhirInstanceValidator(new CachingValidationSupport(chain));
+    chain = new CachingValidationSupport(chain);
+
+    hapiContext = new HapiWorkerContext(context, chain);
+
     validator = context.newValidator();
-    validator.registerValidatorModule(instanceValidator);
+    validator.registerValidatorModule(new FhirInstanceValidator(chain));
   }
 
 }

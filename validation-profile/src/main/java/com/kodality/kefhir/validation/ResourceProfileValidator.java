@@ -35,7 +35,6 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.StructureDefinition;
 
 import static java.util.stream.Collectors.toList;
 
@@ -65,8 +64,8 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
   }
 
   private void runValidation(String resourceType, ResourceContent content) {
-    StructureDefinition definition = ConformanceHolder.getDefinition(resourceType);
-    if (definition == null) {
+    boolean defined = ConformanceHolder.getDefinitions().stream().anyMatch(d -> d.getName().equals(resourceType)); //TODO: iterate every time = bad
+    if (!defined) {
       throw new FhirServerException(500, "definition for " + resourceType + " not found");
     }
     if (hapiContextHolder.getHapiContext() == null) {
