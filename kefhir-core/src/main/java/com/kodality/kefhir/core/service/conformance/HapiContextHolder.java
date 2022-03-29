@@ -1,6 +1,7 @@
 package com.kodality.kefhir.core.service.conformance;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.support.DefaultProfileValidationSupport;
 import ca.uhn.fhir.validation.FhirValidator;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import java.util.Map;
@@ -9,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.PrePopulatedValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain;
 import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
@@ -49,7 +51,11 @@ public class HapiContextHolder implements ConformanceUpdateListener {
 
     hapiContext = new HapiWorkerContext(context, validationSupport);
 
-    ValidationSupportChain chain = new ValidationSupportChain(validationSupport);
+    ValidationSupportChain chain = new ValidationSupportChain(
+        validationSupport,
+        new InMemoryTerminologyServerValidationSupport(context),
+        new DefaultProfileValidationSupport(context)
+    );
     FhirInstanceValidator instanceValidator = new FhirInstanceValidator(new CachingValidationSupport(chain));
     validator = context.newValidator();
     validator.registerValidatorModule(instanceValidator);
