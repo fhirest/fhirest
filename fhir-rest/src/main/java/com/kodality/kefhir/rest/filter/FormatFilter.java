@@ -2,6 +2,8 @@ package com.kodality.kefhir.rest.filter;
 
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
+import io.micronaut.http.MediaType;
+import java.util.List;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
@@ -21,12 +23,12 @@ public class FormatFilter implements KefhirRequestFilter {
     String format = req.getParameter(FORMAT);
     if (format != null) {
       String mime = resourceFormatService.findPresenter(format).get().getMimeTypes().get(0);
-      req.setHeader("Accept", mime);
-      req.setHeader("Content-Type", mime);
+      req.setAccept(List.of(MediaType.of(mime)));
+      req.setContentType(MediaType.of(mime));
       req.getParameters().remove(FORMAT);
     }
-    if (req.getHeader("Accept") == null || req.getHeader("Accept").equals("*/*") || req.getHeader("Accept").contains("text/html")) { // XXX text/html?
-      req.setHeader("Accept", req.getHeader("Content-Type") == null ? "application/json" : req.getHeader("Content-Type"));
+    if (req.getAccept() == null || req.getAccept().get(0).getName().equals("*/*") || req.getAccept().get(0).getName().equals("text/html")) { // XXX text/html?
+      req.setAccept(req.getContentType() == null ? MediaType.APPLICATION_JSON_TYPE : req.getContentType());
     }
   }
 }

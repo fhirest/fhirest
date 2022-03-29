@@ -3,6 +3,7 @@ package com.kodality.kefhir.rest.model;
 import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.util.ResourceUtil;
 import com.kodality.kefhir.rest.KefhirEndpointService.KefhirEnabledOperation;
+import io.micronaut.http.MediaType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -26,8 +27,22 @@ public class KefhirRequest {
   private Map<String, List<String>> headers = new LinkedHashMap<>();
   private String uri;
   private String body;
+  private List<MediaType> accept;
+  private MediaType contentType;
 
   private KefhirEnabledOperation operation;
+
+  public void setAccept(MediaType accept) {
+    this.accept = List.of(accept);
+  }
+
+  public void setAccept(List<MediaType> accept) {
+    this.accept = accept;
+  }
+
+  public String getContentTypeName() {
+    return contentType == null ? null : contentType.getName();
+  }
 
   public void setPath(String path) {
     this.path = StringUtils.removeEnd(StringUtils.removeStart(path, "/"), "/");
@@ -42,15 +57,18 @@ public class KefhirRequest {
   }
 
   public void putHeader(String name, String value) {
-    if (name != null && value != null) {
-      headers.computeIfAbsent(name, x -> new ArrayList<>()).add(value);
+    if (name == null || value == null) {
+      return;
     }
-  }
-
-  public void setHeader(String name, String value) {
-    if (name != null) {
-      headers.put(name, value == null ? null : List.of(value));
+    if (name.equals("Accept")) {
+      setAccept(List.of(MediaType.of(value.split(","))));
+      return;
     }
+    if (name.equals("Content-Type")) {
+      setContentType(MediaType.of(value));
+      return;
+    }
+    headers.computeIfAbsent(name, x -> new ArrayList<>()).add(value);
   }
 
   public String getParameter(String name) {

@@ -77,7 +77,7 @@ public class RuleThemAllFhirController {
     MutableHttpResponse<String> r = HttpResponse.status(HttpStatus.valueOf(resp.getStatus()));
     resp.getHeaders().forEach((k, vv) -> vv.forEach(v -> r.header(k, v)));
     if (resp.getBody() != null) {
-      String accept = req.getHeader("Accept");
+      String accept = req.getAccept().get(0).getName(); //FIXME .get(0)
       ResourceContent formatted = format(resp.getBody(), accept);
       if ("true".equals(req.getParameter(PRETTY))) {
         prettify(formatted);

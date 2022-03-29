@@ -24,6 +24,7 @@ import com.kodality.kefhir.rest.util.PreferredReturn;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import com.kodality.kefhir.tx.TransactionService;
+import io.micronaut.http.MediaType;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
@@ -171,7 +172,7 @@ public class BundleService {
     req.setUri(uri.toString());
     req.putQuery(uri.getQuery());
     req.putHeader("If-None-Exist", entry.getRequest().getIfNoneExist());
-    req.setHeader("Content-Type", "application/json");
+    req.setContentType(MediaType.APPLICATION_JSON_TYPE);
     if (entry.getResource() != null) {
       req.setBody(resourceFormatService.compose(entry.getResource(), "json").getValue());
     }

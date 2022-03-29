@@ -92,7 +92,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
       }
     }
 
-    ResourceContent content = new ResourceContent(req.getBody(), req.getHeader("Content-Type"));
+    ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
     ResourceVersion version = resourceService.save(new ResourceId(req.getType()), content, InteractionType.CREATE);
     return created(version, req);
   }
@@ -102,7 +102,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     String resourceId = req.getPath();
     String contentLocation = req.getHeader("Content-Location");
     Integer ver = contentLocation == null ? null : ResourceUtil.parseReference(contentLocation).getVersion();
-    ResourceContent content = new ResourceContent(req.getBody(), req.getHeader("Content-Type"));
+    ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
     boolean exists = resourceId == null ? false : resourceSearchService.search(req.getType(), "_id", resourceId, "_count", "0").getTotal() > 0;
     ResourceVersion version = resourceService.save(new VersionId(req.getType(), resourceId, ver), content, InteractionType.UPDATE);
     return exists ? updated(version, req) : created(version, req);
@@ -192,7 +192,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
       throw new FhirException(400, IssueType.INVALID, "operation must start with $");
     }
     ResourceId id = new ResourceId(req.getType(), resourceId);
-    ResourceContent content = new ResourceContent(req.getBody(), req.getHeader("Content-Type"));
+    ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
     ResourceContent response = resourceOperationService.runInstanceOperation(operation, id, content);
     return new KefhirResponse(200, response);
   }
@@ -203,7 +203,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     if (!operation.startsWith("$")) {
       throw new FhirException(400, IssueType.INVALID, "operation must start with $");
     }
-    ResourceContent content = new ResourceContent(req.getBody(), req.getHeader("Content-Type"));
+    ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
     ResourceContent response = resourceOperationService.runTypeOperation(operation, req.getType(), content);
     return new KefhirResponse(200, response);
   }
