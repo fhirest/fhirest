@@ -1,10 +1,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-
-  <include file="store-init.sql" relativeToChangelogFile="true" />
-  <include file="store-schema.xml" relativeToChangelogFile="true" />
-
+  <include file="store-schema.sql" relativeToChangelogFile="true" />
 
   <changeSet dbms="PostgreSQL" id="store-funcs-1" runOnChange="true" author="kefhir">
     <sqlFile splitStatements="false" path="functions/define_resource.sql" relativeToChangelogFile="true" />
