@@ -6,8 +6,9 @@
   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
   <include file="liquibase-databasechangelog-extension.xml" relativeToChangelogFile="true" />
-  <include file="core-schema.xml" relativeToChangelogFile="true" /> 
-  <include file="core-functions.xml" relativeToChangelogFile="true" /> 
+  <include file="extensions.xml" relativeToChangelogFile="true" />
+  <include file="core-schema.xml" relativeToChangelogFile="true" />
+  <include file="core-functions.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
 
