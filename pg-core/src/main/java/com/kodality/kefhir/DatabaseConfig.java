@@ -9,8 +9,8 @@ import javax.sql.DataSource;
 @Factory
 public class DatabaseConfig {
 
-  @Requires(property = "datasources.default")
   @Bean
+  @Requires(property = "datasources.default")
   public PgTransactionManager transactionManager(@Named("default") DataSource dataSource) {
     return new PgTransactionManager(dataSource);
   }

@@ -37,7 +37,6 @@ public class SchedulerJobRunner {
               String log = runner.run(job.getIdentifier());
               jobRepository.finish(job.getId(), log);
             });
-        //TODO: think what to do if no runners found. they might be on other node!
       } catch (Throwable e) {
         jobRepository.fail(job.getId(), ExceptionUtils.getStackTrace(e));
         log.error("error during job " + job.getId() + "execution: ", e);

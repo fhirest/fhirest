@@ -10,3 +10,7 @@ create table search.blindex (
   constraint blindex_ukey unique (resource_type,path,param_type)
 );
 --rollback drop table blindex;
+
+--changeset kefhir:blindex-notifier
+select core.add_object_notifier('search.blindex');
+--

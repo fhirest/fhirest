@@ -6,6 +6,7 @@
     <sqlFile splitStatements="false" path="functions/column_exists.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/create_table_metadata.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/footprint.sql" relativeToChangelogFile="true" />
+    <sqlFile splitStatements="false" path="functions/object_notify.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/session_terminate.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/session_user.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/set_user.sql" relativeToChangelogFile="true" />

@@ -12,6 +12,7 @@
  */
 package com.kodality.kefhir.search.repository;
 
+import com.kodality.kefhir.PostgresListener.PostgresChangeListener;
 import com.kodality.kefhir.core.exception.FhirServerException;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.search.model.Blindex;
@@ -37,8 +38,8 @@ public class BlindexRepository {
   @Named("searchAdminJdbcTemplate")
   private JdbcTemplate adminJdbcTemplate;
 
-  //TODO: will not work on multiple nodes.
   @PostConstruct
+  @PostgresChangeListener(table="search.blindex")
   public void refreshCache() {
     loadIndexes().forEach(p -> INDEXES.put(p.getResourceType() + "." + p.getPath(), p.getName()));
   }
