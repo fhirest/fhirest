@@ -18,7 +18,6 @@ import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.model.search.HistorySearchCriterion;
-import com.kodality.kefhir.core.service.cache.CacheManager;
 import com.kodality.kefhir.core.util.DateUtil;
 import com.kodality.kefhir.core.util.JsonUtil;
 import com.kodality.kefhir.store.repository.ResourceRepository;
@@ -29,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.hl7.fhir.r4.model.Resource;
@@ -40,18 +38,11 @@ public class PgResourceStorage implements ResourceStorage {
   @Inject
   private ClientIdentity clientIdentity;
   @Inject
-  private CacheManager cache;
-  @Inject
   private ResourceFormatService resourceFormatService;
   private final ResourceRepository resourceRepository;
 
   public PgResourceStorage(ResourceRepository resourceRepository) {
     this.resourceRepository = resourceRepository;
-  }
-
-  @PostConstruct
-  private void init() {
-    cache.registerCache("pgCache-" + getResourceType(), 2000, 64);
   }
 
   @Override
@@ -72,7 +63,6 @@ public class PgResourceStorage implements ResourceStorage {
       version.setAuthor(clientIdentity.get().getClaims());
     }
     resourceRepository.create(version);
-    cache.removeKeys("pgCache-" + getResourceType(), version.getId().getResourceReference());
     return load(version.getId());
   }
 
@@ -100,13 +90,10 @@ public class PgResourceStorage implements ResourceStorage {
       version.setAuthor(clientIdentity.get().getClaims());
     }
     resourceRepository.create(version);
-    cache.removeKeys("pgCache-" + getResourceType(), version.getId().getResourceReference());
   }
 
   @Override
   public ResourceVersion load(VersionId id) {
-    //FIXME: when transaction is rolled back this cache breaks everything
-    //    ResourceVersion version = cache.get("pgCache-" + getResourceType(), id.getReference(), () -> resourceDao.load(id));
     ResourceVersion version = resourceRepository.load(id);
     decorate(version);
     return version;

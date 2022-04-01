@@ -36,7 +36,7 @@ import org.hl7.fhir.r4.model.Resource;
 @Singleton
 public class ResourceFormatService {
   private final List<ResourceRepresentation> representations;
-  private final FhirContentType justForBeanInit;
+  private final FhirContentType justForBeanInit; //needed
   private Cache<String, ? extends Resource> cache;
   private static ResourceFormatService instance;
 
