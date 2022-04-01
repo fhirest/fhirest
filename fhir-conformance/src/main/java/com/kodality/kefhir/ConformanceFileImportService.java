@@ -54,7 +54,7 @@ public class ConformanceFileImportService {
       Set<String> removeDuplicates = new HashSet<>(); // any why are there any?
       b.getEntry().stream()
           .filter(e -> removeDuplicates.add(r.getResourceType().name() + "/" + e.getResource().getId()))
-          .parallel().forEach(e -> save(e.getResource(), modified));
+          /*.parallel()*/.forEach(e -> save(e.getResource(), modified));
     } else {
       save(r, modified);
     }
