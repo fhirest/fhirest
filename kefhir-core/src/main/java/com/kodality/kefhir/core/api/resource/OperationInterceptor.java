@@ -14,7 +14,7 @@
 
 import com.kodality.kefhir.structure.api.ResourceContent;
 
-public abstract interface OperationInterceptor {
+public interface OperationInterceptor {
   /**
    * @param level instance | type | ...
    */

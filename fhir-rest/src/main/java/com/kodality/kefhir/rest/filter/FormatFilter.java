@@ -27,7 +27,8 @@ public class FormatFilter implements KefhirRequestFilter {
       req.setContentType(MediaType.of(mime));
       req.getParameters().remove(FORMAT);
     }
-    if (req.getAccept() == null || req.getAccept().get(0).getName().equals("*/*") || req.getAccept().get(0).getName().equals("text/html")) { // XXX text/html?
+    // XXX text/html? added this to open urls directly on browser
+    if (req.getAccept() == null || req.getAccept().get(0).getName().equals("*/*") || req.getAccept().get(0).getName().equals("text/html")) {
       req.setAccept(req.getContentType() == null ? MediaType.APPLICATION_JSON_TYPE : req.getContentType());
     }
   }

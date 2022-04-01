@@ -63,15 +63,13 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
     endpointService.getEnabledOperations().clear();
   }
 
-  // XXX: unimplemented stuff
   private CapabilityStatement prepareCapability(CapabilityStatement capability, List<StructureDefinition> definitions) {
     if (capability == null || CollectionUtils.isEmpty(definitions)) {
       return null;
     }
     List<String> defined = definitions.stream().map(d -> d.getName()).collect(toList());
-//    defined.removeAll(asList("Bundle", "ImplementationGuide", "MessageDefinition", "CompartmentDefinition", "StructureMap", "GraphDefinition", "DataElement"));
 
-    // multiple capabilities. how should be handle these?
+    // multiple capabilities. how should we handle these?
     CapabilityStatement capabilityStatement = capability.copy();
     capabilityStatement.setText(null);
     capabilityStatement.getRest().forEach(rest -> {
@@ -82,15 +80,12 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
     });
     capabilityStatement.getRest().forEach(rest -> {
       rest.setOperation(null);
-      List<String> interactions =
-          asList("transaction", "batch", SystemRestfulInteraction.HISTORYSYSTEM.toCode());
+      List<String> interactions = asList("transaction", "batch", SystemRestfulInteraction.HISTORYSYSTEM.toCode());
       rest.setInteraction(rest.getInteraction()
           .stream()
           .filter(i -> interactions.contains(i.getCode().toCode()))
           .collect(toList()));
-      rest.getResource().forEach(rr -> {
-        rr.setReferencePolicy(Collections.emptyList());
-      });
+      rest.getResource().forEach(rr -> rr.setReferencePolicy(Collections.emptyList()));
     });
 
     return capabilityStatement;

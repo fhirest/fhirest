@@ -19,7 +19,6 @@ import com.kodality.kefhir.core.api.resource.ResourceBeforeSaveInterceptor;
 import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.exception.FhirServerException;
 import com.kodality.kefhir.core.model.ResourceId;
-import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.core.service.conformance.HapiContextHolder;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
@@ -27,8 +26,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
-import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
@@ -64,52 +61,50 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
   }
 
   private void runValidation(String resourceType, ResourceContent content) {
-    boolean defined = ConformanceHolder.getDefinitions().stream().anyMatch(d -> d.getName().equals(resourceType)); //TODO: iterate every time = bad
-    if (!defined) {
-      throw new FhirServerException(500, "definition for " + resourceType + " not found");
+    Resource resource = validateParse(content);
+    validateType(resourceType, resource);
+    validateProfile(resource);
+  }
+
+  private Resource validateParse(ResourceContent content) {
+    try {
+      return resourceFormatService.parse(content);
+    } catch (Exception e) {
+      throw new FhirException(400, IssueType.STRUCTURE, "error during resource parse: " + e.getMessage());
     }
+  }
+
+  private void validateType(String resourceType, Resource resource) {
+    if (!resource.getResourceType().name().equals(resourceType)) {
+      String msg = "was expecting " + resourceType + " but found " + resource.getResourceType().name();
+      throw new FhirException(400, IssueType.INVALID, msg);
+    }
+  }
+
+  private void validateProfile(Resource resource) {
     if (hapiContextHolder.getHapiContext() == null) {
       throw new FhirServerException(500, "fhir context initialization error");
     }
-    List<SingleValidationMessage> errors = validate(resourceType, content);
-    errors = errors.stream().filter(m -> isError(m.getSeverity())).collect(toList());
-    if (!errors.isEmpty()) {
-      throw new FhirException(400, errors.stream().map(msg -> {
-        OperationOutcomeIssueComponent issue = new OperationOutcomeIssueComponent();
-        issue.setCode(IssueType.INVALID);
-        issue.setSeverity(severity(msg.getSeverity()));
-        issue.setDetails(new CodeableConcept().setText(msg.getMessage()));
-        issue.addLocation(msg.getLocationString());
-        return issue;
-      }).collect(toList()));
+    try {
+      List<SingleValidationMessage> errors = hapiContextHolder.getValidator().validateWithResult(resource).getMessages();
+      errors = errors.stream().filter(m -> isError(m.getSeverity())).collect(toList());
+      if (!errors.isEmpty()) {
+        throw new FhirException(400, errors.stream().map(msg -> {
+          OperationOutcomeIssueComponent issue = new OperationOutcomeIssueComponent();
+          issue.setCode(IssueType.INVALID);
+          issue.setSeverity(IssueSeverity.fromCode(msg.getSeverity().getCode()));
+          issue.setDetails(new CodeableConcept().setText(msg.getMessage()));
+          issue.addLocation(msg.getLocationString());
+          return issue;
+        }).collect(toList()));
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(":/", e);
     }
   }
 
   private boolean isError(ResultSeverityEnum level) {
     return level == ResultSeverityEnum.ERROR || level == ResultSeverityEnum.FATAL;
-  }
-
-  private IssueSeverity severity(ResultSeverityEnum msg) {
-    try {
-      return IssueSeverity.fromCode(msg.getCode());
-    } catch (FHIRException e) {
-      throw new RuntimeException("спасибо вам.", e);
-    }
-  }
-
-  private FhirInstanceValidator x;
-
-  private List<SingleValidationMessage> validate(String resourceType, ResourceContent content) {
-    Resource resource = resourceFormatService.parse(content);
-    if (!resource.getResourceType().name().equals(resourceType)) {
-      String msg = "was expecting " + resourceType + " but found " + resource.getResourceType().name();
-      throw new FhirException(400, IssueType.INVALID, msg);
-    }
-    try {
-      return hapiContextHolder.getValidator().validateWithResult(resource).getMessages();
-    } catch (Exception e) {
-      throw new RuntimeException(":/", e);
-    }
   }
 
 }
