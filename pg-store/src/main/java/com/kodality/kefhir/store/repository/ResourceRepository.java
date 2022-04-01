@@ -12,6 +12,7 @@
  */
 package com.kodality.kefhir.store.repository;
 
+import com.google.common.collect.Lists;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
@@ -23,6 +24,7 @@ import com.kodality.kefhir.util.sql.SqlBuilder;
 import io.micronaut.context.annotation.Primary;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -71,11 +73,13 @@ public class ResourceRepository {
     if (CollectionUtils.isEmpty(ids)) {
       return List.of();
     }
-    SqlBuilder sb = new SqlBuilder();
-    sb.append("SELECT * FROM store.resource r WHERE sys_status = 'A'");
-    sb.append(" and (type, id) in (").append(ids.stream().map(id -> "(?,?)").collect(joining(","))).append(")");
-    ids.forEach(id -> sb.add(id.getResourceType(), id.getResourceId()));
-    return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
+    return Lists.partition(ids, 100).stream().flatMap(pids -> {
+      SqlBuilder sb = new SqlBuilder();
+      sb.append("SELECT * FROM store.resource r WHERE sys_status = 'A'");
+      sb.append(" and (type, id) in (").append(pids.stream().map(id -> "(?,?)").collect(joining(","))).append(")");
+      pids.forEach(id -> sb.add(id.getResourceType(), id.getResourceId()));
+      return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams()).stream();
+    }).collect(Collectors.toList());
   }
 
   public ResourceVersion load(VersionId id) {
