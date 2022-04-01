@@ -94,12 +94,13 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
   private void start(CapabilityStatementRestComponent rest) {
     endpointService.startRoot(rootServer);
     rest.getResource().forEach(this::start);
+    log.info("Started " + (rest.getResource().size() + 1) + " rest services.");
   }
 
   private void start(CapabilityStatementRestResourceComponent resourceRest) {
     String type = resourceRest.getType();
     List<String> interactions = resourceRest.getInteraction().stream().filter(i -> i.getCode() != null).map(i -> i.getCode().toCode()).collect(toList());
-    log.info("Starting: " + type + ": " + String.join(", ", interactions));
+    log.debug("Starting: " + type + ": " + String.join(", ", interactions));
     FhirResourceServer service = resourceServers.stream().filter(s -> s.getTargetType().equals(type)).findFirst().orElse(defaultResourceServer);
     interactions.forEach(i -> endpointService.start(type, i, service));
   }

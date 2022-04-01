@@ -13,9 +13,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
+import java.util.Set;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,30 +33,31 @@ public class ConformanceFileImportService {
   private final ConformanceInitializationService conformanceService;
 
   public void importFromFile(String path) {
-    CompletableFuture.allOf(readDir(new File(path)).toArray(CompletableFuture[]::new)).join();
+    readDir(new File(path));
     conformanceService.refresh();
   }
 
-  private Stream<CompletableFuture> readDir(File dir) {
-    return Arrays.stream(dir.listFiles()).flatMap(f -> {
+  private void readDir(File dir) {
+    Arrays.stream(dir.listFiles()).parallel().forEach(f -> {
       if (f.isDirectory()) {
-        return readDir(f);
+        readDir(f);
       }
-      return Stream.of(process(f));
+      process(f);
     });
   }
 
-  private CompletableFuture<Void> process(File f) {
-    return CompletableFuture.runAsync(() -> {
-      log.info("processing " + f);
-      Resource r = readFile(f);
-      Date modified = new Date(f.lastModified());
-      if (r instanceof Bundle) {
-        ((Bundle) r).getEntry().forEach(e -> save(e.getResource(), modified));
-      } else {
-        save(r, modified);
-      }
-    });
+  private void process(File f) {
+    log.info("processing " + f);
+    Resource r = readFile(f);
+    Date modified = new Date(f.lastModified());
+    if (r instanceof Bundle b) {
+      Set<String> removeDuplicates = new HashSet<>(); // any why are there any?
+      b.getEntry().stream()
+          .filter(e -> removeDuplicates.add(r.getResourceType().name() + "/" + e.getResource().getId()))
+          .parallel().forEach(e -> save(e.getResource(), modified));
+    } else {
+      save(r, modified);
+    }
   }
 
   private void save(Resource r, Date fileModified) {

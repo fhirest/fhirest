@@ -74,7 +74,7 @@ public class BlindexInitializer {
   private void create(Collection<Blindex> create) {
     List<String> errors = new ArrayList<>();
     List<Blindex> createdIndexed = new ArrayList<>();
-    for (Blindex b : create) {
+    create.forEach(b -> {
       log.debug("creating index on " + b.getKey());
       try {
         createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), b.getPath()));
@@ -83,11 +83,11 @@ public class BlindexInitializer {
         if (e.getCause() instanceof PSQLException) {
           err = (e.getCause().getMessage().substring(0, e.getCause().getMessage().indexOf("\n")));
         }
-        log.info("failed " + b.getKey() + ": " + err);
+        log.debug("failed " + b.getKey() + ": " + err);
         errors.add(b.getKey() + ": " + err);
       }
-    }
-    log.error("failed to create " + errors.size() + " indexes");
+    });
+    log.info("failed to create " + errors.size() + " indexes");
     recalculate(createdIndexed);
   }
 
