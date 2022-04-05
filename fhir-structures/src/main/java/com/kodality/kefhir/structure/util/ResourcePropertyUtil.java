@@ -34,7 +34,7 @@ public final class ResourcePropertyUtil {
   }
 
   public static <T> Stream<T> findProperties(Object object, Class<T> fieldClazz) {
-    return findProperties(object, new HashSet<>(), fieldClazz).collect(Collectors.toList()).stream();
+    return findProperties(object, new HashSet<>(), fieldClazz);
   }
 
   @SuppressWarnings("unchecked")
