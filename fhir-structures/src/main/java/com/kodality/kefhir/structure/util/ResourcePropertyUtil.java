@@ -10,24 +10,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.structure.util;
+package com.kodality.kefhir.structure.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 public final class ResourcePropertyUtil {
+  private static Map<Class<?>, List<Field>> fieldsCache = new HashMap<>();
+
   private ResourcePropertyUtil() {
     //
   }
 
   public static <T> Stream<T> findProperties(Object object, Class<T> fieldClazz) {
-    return findProperties(object, new HashSet<>(), fieldClazz);
+    return findProperties(object, new HashSet<>(), fieldClazz).collect(Collectors.toList()).stream();
   }
 
   @SuppressWarnings("unchecked")
@@ -38,13 +45,7 @@ public final class ResourcePropertyUtil {
     if (fieldClazz.equals(object.getClass())) {
       return Stream.of((T) object);
     }
-    Field[] fields = FieldUtils.getAllFields(object.getClass());
-    return Stream.of(fields).flatMap(field -> {
-      try {
-        field.setAccessible(true);
-      } catch (InaccessibleObjectException e) {
-        return Stream.empty();
-      }
+    return getAccessibleFields(object).stream().flatMap(field -> {
       Object obj = getFieldValue(field, object);
       if (obj == null) {
         return Stream.empty();
@@ -66,6 +67,19 @@ public final class ResourcePropertyUtil {
         return Stream.empty();
       }
       return findProperties(obj, exclude, fieldClazz);
+    });
+  }
+
+  private static List<Field> getAccessibleFields(Object object) {
+    return fieldsCache.computeIfAbsent(object.getClass(), c -> {
+      return Stream.of(FieldUtils.getAllFields(c)).map(field -> {
+        try {
+          field.setAccessible(true);
+          return field;
+        } catch (InaccessibleObjectException e) {
+          return null;
+        }
+      }).filter(Objects::nonNull).collect(Collectors.toList());
     });
   }
 

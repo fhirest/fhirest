@@ -114,7 +114,7 @@ public class BundleService {
   private Bundle transaction(Bundle bundle, String prefer) {
     return tx.transaction(() -> {
       Bundle responseBundle = new Bundle();
-      bundle.getEntry().forEach(entry -> {
+      bundle.getEntry().stream().parallel().forEach(entry -> {
         try {
           responseBundle.addEntry(perform(entry, prefer));
         } catch (Exception e) {

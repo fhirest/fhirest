@@ -35,7 +35,6 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.UriType;
 
 @Singleton
@@ -81,20 +80,16 @@ public class BundleReferenceHandler {
 
     // it is possible not to define 'fullUrl' in request. so we remove those 'null's, because we are too lazy to add 'if's
     referenceIds.remove(null);
-
-    bundle.getEntry().forEach(e -> {
-      Resource resource = e.getResource();
-      ResourcePropertyUtil.findProperties(resource, Reference.class).forEach(reference -> {
-        if (referenceIds.containsKey(reference.getReference())) {
-          reference.setReference(referenceIds.get(reference.getReference()));
-        }
-      });
-      ResourcePropertyUtil.findProperties(resource, UriType.class).forEach(uri -> {
-        // url, oid, uuid
-        if (referenceIds.containsKey(uri.getValue())) {
-          uri.setValue(referenceIds.get(uri.getValue()));
-        }
-      });
+    ResourcePropertyUtil.findProperties(bundle, Reference.class).forEach(reference -> {
+      if (referenceIds.containsKey(reference.getReference())) {
+        reference.setReference(referenceIds.get(reference.getReference()));
+      }
+    });
+    ResourcePropertyUtil.findProperties(bundle, UriType.class).forEach(uri -> {
+      // url, oid, uuid
+      if (referenceIds.containsKey(uri.getValue())) {
+        uri.setValue(referenceIds.get(uri.getValue()));
+      }
     });
   }
 

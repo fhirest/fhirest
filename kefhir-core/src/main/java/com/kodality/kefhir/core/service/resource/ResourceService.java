@@ -27,6 +27,7 @@ import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
 import static com.kodality.kefhir.core.api.resource.ResourceAfterSaveInterceptor.FINALIZATION;
+import static com.kodality.kefhir.core.api.resource.ResourceAfterSaveInterceptor.TRANSACTION;
 import static com.kodality.kefhir.core.api.resource.ResourceBeforeSaveInterceptor.BUSINESS_VALIDATION;
 import static com.kodality.kefhir.core.api.resource.ResourceBeforeSaveInterceptor.INPUT_VALIDATION;
 import static com.kodality.kefhir.core.api.resource.ResourceBeforeSaveInterceptor.NORMALIZATION;
@@ -49,7 +50,7 @@ public class ResourceService {
     ResourceVersion version = tx.transaction(() -> {
       interceptBeforeSave(ResourceBeforeSaveInterceptor.TRANSACTION, id, content, interaction);
       ResourceVersion ver = storageService.store(id, content);
-      interceptAfterSave(ResourceAfterSaveInterceptor.TRANSACTION, ver);
+      interceptAfterSave(TRANSACTION, ver);
       return ver;
     });
     interceptAfterSave(FINALIZATION, version);
