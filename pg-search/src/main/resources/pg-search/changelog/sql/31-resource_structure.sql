@@ -13,7 +13,7 @@ create index on search.resource_structure(parent, child);
 create index on search.resource_structure(parent, alias);
 --rollback drop table resource_structure;
 
---changeset kefhir:resource_structure_recursive dbms:postgresql runOnChange:true
+--changeset kefhir:resource_structure_recursive runOnChange:true
 drop MATERIALIZED view if exists search.resource_structure_recursive;
 create materialized view search.resource_structure_recursive(parent, alias, path, element_type) as
 WITH RECURSIVE struct(parent, alias, path, element_type) AS (
@@ -24,6 +24,8 @@ WITH RECURSIVE struct(parent, alias, path, element_type) AS (
     WHERE rs.parent = struct.element_type
     and struct.element_type not in ('Extension', 'Id', 'Coding', 'Identifier', 'string')
   )
-SELECT * from struct;
-create index on search.resource_structure_recursive(parent, path);
+SELECT parent, (case when alias = path then null else alias end) alias, path, element_type from struct;
+create index on search.resource_structure_recursive(parent);
+create index on search.resource_structure_recursive(path);
+create index on search.resource_structure_recursive(alias);
 --

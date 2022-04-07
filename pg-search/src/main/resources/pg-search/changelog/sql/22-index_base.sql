@@ -7,7 +7,8 @@ CREATE TABLE search.base_index_string (
   active boolean default true,
   string text
 ) PARTITION BY LIST (blindex_id);
-CREATE INDEX ON search.base_index_string (sid, string) where active = true;
+CREATE INDEX ON search.base_index_string (sid) where active = true;
+CREATE INDEX ON search.base_index_string (string) where active = true;
 --
 
 --changeset kefhir:base_index_number dbms:postgresql
@@ -17,7 +18,8 @@ CREATE TABLE search.base_index_number (
   active boolean default true,
   range numrange
 ) PARTITION BY LIST (blindex_id);
-CREATE INDEX ON search.base_index_number using gist (sid, range) where active = true;
+CREATE INDEX ON search.base_index_number (sid) where active = true;
+CREATE INDEX ON search.base_index_number using gist (range) where active = true;
 CREATE INDEX ON search.base_index_number (lower(range)) where active = true;
 CREATE INDEX ON search.base_index_number (upper(range)) where active = true;
 --
@@ -32,10 +34,11 @@ CREATE TABLE search.base_index_quantity (
   code text,
   unit text
 ) PARTITION BY LIST (blindex_id);
-CREATE INDEX ON search.base_index_quantity using gist (sid, range) where active = true;
+CREATE INDEX ON search.base_index_quantity (sid) where active = true;
+CREATE INDEX ON search.base_index_quantity using gist (range) where active = true;
 CREATE INDEX ON search.base_index_quantity (lower(range)) where active = true;
 CREATE INDEX ON search.base_index_quantity (upper(range)) where active = true;
-CREATE INDEX ON search.base_index_quantity using gist (sid, range, system_id, code) where active = true;
+CREATE INDEX ON search.base_index_quantity using gist (range, system_id, code) where active = true;
 --
 
 --changeset kefhir:base_index_token dbms:postgresql
@@ -46,7 +49,9 @@ CREATE TABLE search.base_index_token (
   system_id bigint references search.system(id),
   value text
 ) PARTITION BY LIST (blindex_id);
-CREATE INDEX ON search.base_index_token (sid, system_id, value) where active = true;
+CREATE INDEX ON search.base_index_token (sid) where active = true;
+CREATE INDEX ON search.base_index_token (system_id) where active = true;
+CREATE INDEX ON search.base_index_token (value) where active = true;
 --
 
 --changeset kefhir:base_index_reference dbms:postgresql
@@ -57,7 +62,8 @@ CREATE TABLE search.base_index_reference (
   type_id bigint references search.resource_type(id),
   id text
 ) PARTITION BY LIST (blindex_id);
-CREATE INDEX ON search.base_index_reference (sid, type_id, id) where active = true;
+CREATE INDEX ON search.base_index_reference (sid) where active = true;
+CREATE INDEX ON search.base_index_reference (type_id, id) where active = true;
 --
 
 --changeset kefhir:base_index_date dbms:postgresql
@@ -67,7 +73,8 @@ CREATE TABLE search.base_index_date (
   active boolean default true,
   range tstzrange
 ) PARTITION BY LIST (blindex_id);
-CREATE INDEX ON search.base_index_date using gist (sid, range) where active = true;
+CREATE INDEX ON search.base_index_date (sid) where active = true;
+CREATE INDEX ON search.base_index_date using gist (range) where active = true;
 --
 
 --changeset kefhir:base_index_uri dbms:postgresql
@@ -77,7 +84,8 @@ CREATE TABLE search.base_index_uri (
   active boolean default true,
   uri text
 ) PARTITION BY LIST (blindex_id);
-CREATE INDEX ON search.base_index_uri (sid, uri) where active = true;
+CREATE INDEX ON search.base_index_uri (sid) where active = true;
+CREATE INDEX ON search.base_index_uri (uri) where active = true;
 --
 
 

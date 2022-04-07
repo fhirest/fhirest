@@ -9,5 +9,6 @@ create table search.resource (
   active boolean default true,
   constraint search_resource_pk primary key (resource_type, sid)
 ) PARTITION BY LIST (resource_type);
+create index on search.resource(resource_id, resource_type);
 --
 
