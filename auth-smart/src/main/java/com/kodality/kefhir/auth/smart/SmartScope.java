@@ -36,7 +36,7 @@ public class SmartScope {
 
     this.context = scope.substring(0, s);
     this.resourceType = scope.substring(s + 1, d);
-    this.rights = scope.substring(d + 1, scope.length());
+    this.rights = scope.substring(d + 1);
   }
 
 }

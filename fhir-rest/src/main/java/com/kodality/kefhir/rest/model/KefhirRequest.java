@@ -60,11 +60,11 @@ public class KefhirRequest {
     if (name == null || value == null) {
       return;
     }
-    if (name.equals("Accept")) {
+    if (name.equalsIgnoreCase("Accept")) {
       setAccept(List.of(MediaType.of(value.split(","))));
       return;
     }
-    if (name.equals("Content-Type")) {
+    if (name.equalsIgnoreCase("Content-Type")) {
       setContentType(MediaType.of(value));
       return;
     }
