@@ -32,6 +32,7 @@ with t(param_type, element_type, path) as (values
   ('string', 'HumanName', '[{"value":"{family}"}, {"value":"{given}"}]'),
 
   ('reference', 'Reference', '[{"value":"{reference}"}]'),
+  ('reference', 'Attachment', '[]'), -- do nothing
 
   ('number', 'integer', '[{"lower":"{}", "upper":"{}"}]'),
   ('number', 'decimal', '[{"lower":"{}", "upper":"{}"}]'),
