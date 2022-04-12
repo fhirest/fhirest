@@ -16,18 +16,18 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 public final class ResourcePropertyUtil {
-  private static Map<Class<?>, List<Field>> fieldsCache = new HashMap<>();
+  private static Map<Class<?>, List<Field>> fieldsCache = new ConcurrentHashMap<>();
 
   private ResourcePropertyUtil() {
     //

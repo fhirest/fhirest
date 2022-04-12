@@ -59,6 +59,15 @@ public class HapiContextHolder implements ConformanceUpdateListener {
 
     validator = context.newValidator();
     validator.registerValidatorModule(new FhirInstanceValidator(chain));
+    prepareHapi();
+  }
+
+  private void prepareHapi() {
+    try {
+      validator.validateWithResult("{}");
+    } catch (Exception e) {
+      //ignore
+    }
   }
 
 }
