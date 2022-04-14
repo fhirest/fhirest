@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javax.inject.Singleton;
@@ -30,7 +31,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r4.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r4.model.SearchParameter;
 import org.postgresql.util.PSQLException;
 
 @Slf4j
@@ -41,19 +44,16 @@ public class BlindexInitializer {
   private final ResourceSearchService resourceSearchService;
 
   public Object execute() {
-    List<String> resourceTypes = List.of("http://hl7.org/fhir/StructureDefinition/DomainResource", "http://hl7.org/fhir/StructureDefinition/Resource");
-    List<String> defined = ConformanceHolder.getDefinitions().stream()
-        .filter(def -> def.getBaseDefinition() != null && resourceTypes.contains(def.getBaseDefinition()))
-        .map(def -> def.getName()).collect(Collectors.toList());
-    if (CollectionUtils.isEmpty(defined)) {
-      log.error("blindex: will not run. definitions either empty, either definitions not yet loaded.");
+    if (CollectionUtils.isEmpty(ConformanceHolder.getDefinitions())) {
+      log.error("blindex: will not run. definitions either empty, either not yet loaded.");
       return null;
     }
+
+    List<SearchParameter> searchParameters = findCapabilityDefinedParameters();
     Map<String, Blindex> create =
-        ConformanceHolder.getSearchParams().values().stream()
+        searchParameters.stream()
             .filter(sp -> sp.getExpression() != null && sp.getType() != SearchParamType.COMPOSITE)
             .flatMap(sp -> SearchPathUtil.parsePaths(sp.getExpression()).stream()
-                .filter(s -> defined.contains(StringUtils.substringBefore(s, ".")))
                 .map(s -> new Blindex(sp.getType().toCode(), StringUtils.substringBefore(s, "."), StringUtils.substringAfter(s, "."))))
             .collect(Collectors.toMap(Blindex::getKey, b -> b, (b1, b2) -> b1));
     Map<String, Blindex> current = blindexRepository.loadIndexes().stream().collect(Collectors.toMap(Blindex::getKey, b -> b));
@@ -68,6 +68,26 @@ public class BlindexInitializer {
     blindexRepository.refreshCache();
     log.info("blindex initialization finished");
     return null;
+  }
+
+  private List<SearchParameter> findCapabilityDefinedParameters() {
+    List<String> resourceTypes = List.of("http://hl7.org/fhir/StructureDefinition/DomainResource", "http://hl7.org/fhir/StructureDefinition/Resource");
+    List<String> defined = ConformanceHolder.getDefinitions().stream()
+        .filter(def -> def.getBaseDefinition() != null && resourceTypes.contains(def.getBaseDefinition()))
+        .map(def -> def.getName()).collect(Collectors.toList());
+    Map<String, SearchParameter> spDefinitions = ConformanceHolder.getSearchParams().values().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
+
+    return ConformanceHolder.getCapabilityStatement().getRest().stream().filter(r -> r.getMode() == RestfulCapabilityMode.SERVER).flatMap(rest -> {
+      return rest.getResource().stream().filter(res -> defined.contains(res.getType())).flatMap(res -> {
+        return res.getSearchParam().stream().map(sp -> {
+          if (!spDefinitions.containsKey(sp.getDefinition())) {
+            log.error("could not init index: " + res.getType() + "." + sp.getName() + "@" + sp.getDefinition() + ", definition of search parameter not found");
+            return null;
+          }
+          return spDefinitions.get(sp.getDefinition());
+        }).filter(Objects::nonNull);
+      });
+    }).collect(Collectors.toList());
   }
 
 
@@ -87,7 +107,9 @@ public class BlindexInitializer {
         errors.add(b.getKey() + ": " + err);
       }
     });
-    log.info("failed to create " + errors.size() + " indexes");
+    if (!errors.isEmpty()) {
+      log.info("failed to create " + errors.size() + " indexes");
+    }
     recalculate(createdIndexed);
   }
 

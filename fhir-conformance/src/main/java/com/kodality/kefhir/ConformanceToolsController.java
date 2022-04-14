@@ -12,6 +12,7 @@
  */
 package com.kodality.kefhir;
 
+import com.kodality.kefhir.core.service.conformance.ConformanceInitializationService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Post;
@@ -21,12 +22,19 @@ import lombok.RequiredArgsConstructor;
 //TODO: auth. check resource types?
 @Controller("/conformance-tools")
 @RequiredArgsConstructor
-public class ConformanceImportController {
+public class ConformanceToolsController {
   private final ConformanceFileImportService conformanceFileImportService;
+  private final ConformanceInitializationService conformanceInitializationService;
 
   @Post("/import-file")
   public HttpResponse<?> importFile(@QueryValue String file) {
     conformanceFileImportService.importFromFile(file);
+    return HttpResponse.ok();
+  }
+
+  @Post("/refresh")
+  public HttpResponse<?> refreshConformance() {
+    conformanceInitializationService.refresh();
     return HttpResponse.ok();
   }
 }
