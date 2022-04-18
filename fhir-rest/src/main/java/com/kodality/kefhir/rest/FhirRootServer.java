@@ -71,6 +71,7 @@ public class FhirRootServer {
   public KefhirResponse history(KefhirRequest req) {
     HistorySearchCriterion criteria = new HistorySearchCriterion();
     criteria.setSince(req.getParameter(HistorySearchCriterion._SINCE));
+    criteria.setCount(req.getParameter(HistorySearchCriterion._COUNT));
     List<ResourceVersion> versions = resourceService.loadHistory(criteria);
     return new KefhirResponse(200, BundleUtil.compose(null, versions, BundleType.HISTORY));
   }

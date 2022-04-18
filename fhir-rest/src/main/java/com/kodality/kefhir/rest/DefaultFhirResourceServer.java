@@ -135,6 +135,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     }
     HistorySearchCriterion criteria = new HistorySearchCriterion(id.getResourceType(), id.getResourceId());
     criteria.setSince(req.getParameter(HistorySearchCriterion._SINCE));
+    criteria.setCount(req.getParameter(HistorySearchCriterion._COUNT));
     List<ResourceVersion> versions = resourceService.loadHistory(criteria);
     return new KefhirResponse(200, BundleUtil.compose(null, versions, BundleType.HISTORY));
   }
@@ -143,6 +144,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   public KefhirResponse historyType(KefhirRequest req) {
     HistorySearchCriterion criteria = new HistorySearchCriterion(req.getType());
     criteria.setSince(req.getParameter(HistorySearchCriterion._SINCE));
+    criteria.setCount(req.getParameter(HistorySearchCriterion._COUNT));
     List<ResourceVersion> versions = resourceService.loadHistory(criteria);
     return new KefhirResponse(200, BundleUtil.compose(null, versions, BundleType.HISTORY));
   }

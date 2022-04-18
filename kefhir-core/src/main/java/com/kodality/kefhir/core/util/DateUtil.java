@@ -36,6 +36,9 @@ public class DateUtil {
   }
 
   public static Date parse(String date) {
+    if (date == null) {
+      return null;
+    }
     return parse(date, TIMESTAMP_PG, ISO_DATETIME_MILLIS, ISO_DATETIME, FHIR_DATETIME, DATE)
         .orElseThrow(() -> new IllegalArgumentException("Cannot parse date: " + date));
   }

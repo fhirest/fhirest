@@ -17,7 +17,6 @@ import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.model.search.HistorySearchCriterion;
-import com.kodality.kefhir.core.util.DateUtil;
 import com.kodality.kefhir.core.util.JsonUtil;
 import com.kodality.kefhir.store.api.PgResourceFilter;
 import com.kodality.kefhir.util.sql.SqlBuilder;
@@ -107,11 +106,21 @@ public class ResourceRepository {
     sb.appendIfNotNull(" AND type = ?", criteria.getResourceType());
     sb.appendIfNotNull(" AND id = ?", criteria.getResourceId());
     if (criteria.getSince() != null) {
-      sb.append(" AND updated >= ?", DateUtil.parse(criteria.getSince()));
+      sb.append(" AND updated >= ?", criteria.getSince());
     }
     pgResourceFilter.ifPresent(f -> f.filter(sb, "r"));
     sb.append(" ORDER BY updated desc");
+    sb.append(limit(criteria));
     return jdbcTemplate.query(sb.getSql(), new ResourceRowMapper(), sb.getParams());
+  }
+
+  private SqlBuilder limit(HistorySearchCriterion criteria) {
+    SqlBuilder sb = new SqlBuilder();
+    Integer limit = criteria.getCount();
+//    Integer page = criteria.getPage();
+//    Integer offset = limit * (page - 1);
+    Integer offset = 0;
+    return sb.append(" LIMIT ? OFFSET ?", limit, offset);
   }
 
 }

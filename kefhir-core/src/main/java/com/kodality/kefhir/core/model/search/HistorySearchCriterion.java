@@ -10,16 +10,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.core.model.search;
+package com.kodality.kefhir.core.model.search;
+
+import com.kodality.kefhir.core.util.DateUtil;
+import java.util.Date;
 
 public class HistorySearchCriterion {
-  //  public static final String _COUNT = "_count";
+  public static final String _COUNT = "_count";
   public static final String _SINCE = "_since";
 
   private String resourceType;
   private String resourceId;
-  //  private Integer count = 100;
-  private String since;
+  private Integer count = 100;
+  private Date since;
 
   public HistorySearchCriterion() {
     //
@@ -50,20 +53,28 @@ public class HistorySearchCriterion {
     this.resourceId = resourceId;
   }
 
-  public String getSince() {
+  public Date getSince() {
     return since;
   }
 
-  public void setSince(String since) {
+  public void setSince(Date since) {
     this.since = since;
   }
 
-  //  public Integer getCount() {
-  //    return count;
-  //  }
-  //
-  //  public void setCount(Integer count) {
-  //    this.count = count;
-  //  }
+  public void setSince(String since) {
+    setSince(DateUtil.parse(since));
+  }
+
+  public Integer getCount() {
+    return count;
+  }
+
+  public void setCount(Integer count) {
+    this.count = count == null ? 100 : count;
+  }
+
+  public void setCount(String count) {
+    setCount(count == null ? null : Integer.valueOf(count));
+  }
 
 }
