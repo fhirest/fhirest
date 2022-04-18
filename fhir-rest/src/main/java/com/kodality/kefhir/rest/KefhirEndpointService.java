@@ -9,6 +9,7 @@ import com.kodality.kefhir.rest.model.KefhirResponse;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,9 @@ public class KefhirEndpointService {
 
   public KefhirEnabledOperation findOperation(KefhirRequest request) {
     List<KefhirEnabledOperation> typeOperations = operations.get(request.getType());
-    KefhirEnabledOperation op = typeOperations == null ? null : typeOperations.stream().filter(i -> matches(i, request)).findFirst().orElse(null);
+    KefhirEnabledOperation op = typeOperations == null ? null : typeOperations.stream().filter(i -> matches(i, request)).sorted(
+        Comparator.comparingInt(o -> StringUtils.countMatches(o.getPath(), "{}")) // a little bit ugly, need a way to prefer Patient/_history over Patient/123 somehow.
+    ).findFirst().orElse(null);
     if (op == null) {
       throw new FhirException(406, IssueType.NOTSUPPORTED,
           "could not find matching enabled interaction for: " + request.getMethod() + " " + StringUtils.defaultString(request.getType()) + "/" + request.getPath());
