@@ -200,6 +200,11 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   }
 
   @Override
+  public KefhirResponse instanceOperation_(KefhirRequest req) {
+    return instanceOperation(req);
+  }
+
+  @Override
   public KefhirResponse typeOperation(KefhirRequest req) {
     String operation = req.getPath();
     if (!operation.startsWith("$")) {
@@ -208,6 +213,11 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
     ResourceContent response = resourceOperationService.runTypeOperation(operation, req.getType(), content);
     return new KefhirResponse(200, response);
+  }
+
+  @Override
+  public KefhirResponse typeOperation_(KefhirRequest req) {
+    return typeOperation(req);
   }
 }
 

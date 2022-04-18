@@ -13,7 +13,11 @@
 package com.kodality.kefhir.rest;
 
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
+import com.kodality.kefhir.core.api.resource.InstanceOperationDefinition;
+import com.kodality.kefhir.core.api.resource.TypeOperationDefinition;
+import com.kodality.kefhir.core.model.InteractionType;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Singleton;
@@ -23,6 +27,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceOperationComponent;
 import org.hl7.fhir.r4.model.CapabilityStatement.ResourceVersionPolicy;
 import org.hl7.fhir.r4.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r4.model.CapabilityStatement.SystemRestfulInteraction;
@@ -39,6 +44,9 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
   private final List<FhirResourceServer> resourceServers;
   private final DefaultFhirResourceServer defaultResourceServer;
   private final FhirRootServer rootServer;
+
+  private final List<InstanceOperationDefinition> instanceOperations;
+  private final List<TypeOperationDefinition> typeOperations;
 
   private CapabilityStatement capability;
 
@@ -79,7 +87,7 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
       });
     });
     capabilityStatement.getRest().forEach(rest -> {
-      rest.setOperation(null);
+      prepareOperations(rest);
       List<String> interactions = asList("transaction", "batch", SystemRestfulInteraction.HISTORYSYSTEM.toCode());
       rest.setInteraction(rest.getInteraction()
           .stream()
@@ -91,6 +99,24 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
     return capabilityStatement;
   }
 
+  /**
+   * currenty rewrites capability operations with system operations.
+   * this doesn't see to be very correct
+   * propaply should either leave as is, either filter capability operations with system operations.
+   * and this url thingy looks like a hack
+   */
+  private void prepareOperations(CapabilityStatementRestComponent rest) {
+    rest.getResource().forEach( r-> {
+      r.setOperation(new ArrayList<>());
+    instanceOperations.stream().filter(io -> io.getResourceType().equals(r.getType()))
+        .forEach(io -> r.getOperation().add(new CapabilityStatementRestResourceOperationComponent().setName(io.getOperationName())
+        .setDefinition("http://hl7.org/fhir/OperationDefinition/" + io.getResourceType() + "-" + io.getOperationName())));
+    typeOperations.stream().filter(io -> io.getResourceType().equals(r.getType()))
+        .forEach(to -> r.getOperation().add(new CapabilityStatementRestResourceOperationComponent().setName(to.getOperationName())
+        .setDefinition("http://hl7.org/fhir/OperationDefinition/" + to.getResourceType() + "-" + to.getOperationName())));
+    });
+  }
+
   private void start(CapabilityStatementRestComponent rest) {
     endpointService.startRoot(rootServer);
     rest.getResource().forEach(this::start);
@@ -100,6 +126,9 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
   private void start(CapabilityStatementRestResourceComponent resourceRest) {
     String type = resourceRest.getType();
     List<String> interactions = resourceRest.getInteraction().stream().filter(i -> i.getCode() != null).map(i -> i.getCode().toCode()).collect(toList());
+    if (CollectionUtils.isNotEmpty(resourceRest.getOperation())) {
+      interactions.add(InteractionType.OPERATION); // XXX for some reason operation is not in default fhir capability statement. need to add it.
+    }
     log.debug("Starting: " + type + ": " + String.join(", ", interactions));
     FhirResourceServer service = resourceServers.stream().filter(s -> s.getTargetType().equals(type)).findFirst().orElse(defaultResourceServer);
     interactions.forEach(i -> endpointService.start(type, i, service));

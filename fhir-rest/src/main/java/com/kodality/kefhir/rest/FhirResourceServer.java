@@ -46,7 +46,7 @@ public interface FhirResourceServer {
   KefhirResponse instanceOperation(KefhirRequest req);
 
   @FhirInteraction(interaction = InteractionType.OPERATION, mapping = "GET /{}/${}")
-  KefhirResponse instanceOperation_(String resourceId, String operation);
+  KefhirResponse instanceOperation_(KefhirRequest req);
 
   @FhirInteraction(interaction = InteractionType.OPERATION, mapping = "POST /${}")
   KefhirResponse typeOperation(KefhirRequest req);

@@ -44,8 +44,8 @@ public class BlindexInitializer {
   private final ResourceSearchService resourceSearchService;
 
   public Object execute() {
-    if (CollectionUtils.isEmpty(ConformanceHolder.getDefinitions())) {
-      log.error("blindex: will not run. definitions either empty, either not yet loaded.");
+    if (CollectionUtils.isEmpty(ConformanceHolder.getDefinitions()) || ConformanceHolder.getCapabilityStatement() == null) {
+      log.error("blindex: will not run. conformance not yet initialized");
       return null;
     }
 

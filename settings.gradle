@@ -17,3 +17,5 @@ include 'kefhir-blockchain'
 include 'kefhir-scheduler'
 
 include 'kefhir-test-app'
+include 'operation-patient-everything'
+

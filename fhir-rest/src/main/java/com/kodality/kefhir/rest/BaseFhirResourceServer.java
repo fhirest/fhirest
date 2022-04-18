@@ -75,7 +75,7 @@ public abstract class BaseFhirResourceServer implements FhirResourceServer {
   }
 
   @Override
-  public KefhirResponse instanceOperation_(String resourceId, String operation) {
+  public KefhirResponse instanceOperation_(KefhirRequest req) {
     throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
   }
 

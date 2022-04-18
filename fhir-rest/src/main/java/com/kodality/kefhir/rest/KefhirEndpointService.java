@@ -39,7 +39,9 @@ public class KefhirEndpointService {
   public KefhirEnabledOperation findOperation(KefhirRequest request) {
     List<KefhirEnabledOperation> typeOperations = operations.get(request.getType());
     KefhirEnabledOperation op = typeOperations == null ? null : typeOperations.stream().filter(i -> matches(i, request)).sorted(
-        Comparator.comparingInt(o -> StringUtils.countMatches(o.getPath(), "{}")) // a little bit ugly, need a way to prefer Patient/_history over Patient/123 somehow.
+        Comparator.<KefhirEnabledOperation>comparingInt(o -> StringUtils.countMatches(o.getPath(), "{}")).thenComparingInt(o -> -o.getPath().length())
+        // quick solution. need to think of a way to choose more precise match when multiple operations match.
+        // example: Patient/_history vs Patient/123, operations vs compartments
     ).findFirst().orElse(null);
     if (op == null) {
       throw new FhirException(406, IssueType.NOTSUPPORTED,
@@ -99,8 +101,7 @@ public class KefhirEndpointService {
       String[] p = bi.mapping().split(" ");
       this.verb = p[0];
       this.path = StringUtils.removeStart(p[1], "/");
-      this.pathMatcher = Pattern.compile(path.replaceAll("\\{\\}", "[^/]+"));
+      this.pathMatcher = Pattern.compile(path.replaceAll("\\$", "\\\\\\$").replaceAll("\\{\\}", "[^/]+"));
     }
   }
-
 }

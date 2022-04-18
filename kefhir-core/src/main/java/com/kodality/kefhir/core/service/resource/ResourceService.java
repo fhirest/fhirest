@@ -64,6 +64,10 @@ public class ResourceService {
     return load(ResourceUtil.parseReference(reference));
   }
 
+  public ResourceVersion load(ResourceId id) {
+    return load(new VersionId(id));
+  }
+
   public ResourceVersion load(VersionId id) {
     return storageService.load(id);
   }

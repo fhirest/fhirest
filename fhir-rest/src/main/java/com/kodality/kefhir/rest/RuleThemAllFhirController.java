@@ -35,6 +35,7 @@ import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.Put;
 import java.util.Comparator;
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -142,12 +143,12 @@ public class RuleThemAllFhirController {
   }
 
   @Post(uris = {"{path:.*}"})
-  public HttpResponse<?> post(HttpRequest request, @Body String json) {
+  public HttpResponse<?> post(HttpRequest request, @Nullable @Body String json) {
     return execute(request);
   }
 
   @Put(uris = {"{path:.*}"})
-  public HttpResponse<?> put(HttpRequest request, @Body String json) {
+  public HttpResponse<?> put(HttpRequest request, @Nullable @Body String json) {
     return execute(request);
   }
 
