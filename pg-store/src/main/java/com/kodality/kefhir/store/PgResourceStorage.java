@@ -18,6 +18,7 @@ import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.model.search.HistorySearchCriterion;
+import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.core.util.DateUtil;
 import com.kodality.kefhir.core.util.JsonUtil;
 import com.kodality.kefhir.store.repository.ResourceRepository;
@@ -28,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.hl7.fhir.r4.model.Resource;
@@ -62,7 +65,7 @@ public class PgResourceStorage implements ResourceStorage {
     if (clientIdentity.get() != null) {
       version.setAuthor(clientIdentity.get().getClaims());
     }
-    resourceRepository.create(version);
+    resourceRepository.create(version, findProfiles(version));
     return load(version.getId());
   }
 
@@ -89,7 +92,7 @@ public class PgResourceStorage implements ResourceStorage {
     if (clientIdentity.get() != null) {
       version.setAuthor(clientIdentity.get().getClaims());
     }
-    resourceRepository.create(version);
+    resourceRepository.create(version, null);
   }
 
   @Override
@@ -130,6 +133,18 @@ public class PgResourceStorage implements ResourceStorage {
     resource.put("meta", meta);
 
     version.getContent().setValue(JsonUtil.toJson(resource));
+  }
+
+  private List<VersionId> findProfiles(ResourceVersion version) {
+    Resource resource = resourceFormatService.parse(version.getContent());
+    if (resource.getMeta() == null || resource.getMeta().getProfile() == null) {
+      return null;
+    }
+    return resource.getMeta().getProfile().stream()
+        .map(p -> ConformanceHolder.getDefinitions().stream().filter(def -> def.getUrl().equals(p.getValue())).findFirst().orElse(null))
+        .filter(Objects::nonNull)
+        .map(def -> new VersionId(def.getResourceType().name(), def.getId(), Integer.valueOf(def.getMeta().getVersionId())))
+        .collect(Collectors.toList());
   }
 
 }

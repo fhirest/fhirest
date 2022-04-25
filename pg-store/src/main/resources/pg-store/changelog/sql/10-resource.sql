@@ -16,7 +16,6 @@ create table store.resource (
 ) PARTITION BY LIST (type);
 --
 
-
 --changeset kefhir:resource_key_seq  dbms:postgresql
 CREATE SEQUENCE store.resource_id_seq INCREMENT 1 MINVALUE 1;
 SELECT setval('store.resource_id_seq', nextval('store.resource_key_seq'));
@@ -24,4 +23,8 @@ SELECT setval('store.resource_id_seq', nextval('store.resource_key_seq'));
 
 --changeset kefhir:resource_updated_index
 create index on store.resource(updated);
+--
+
+--changeset kefhir:add-profile
+alter table store.resource add column profiles bigint[]; --references store.resource(uid)
 --

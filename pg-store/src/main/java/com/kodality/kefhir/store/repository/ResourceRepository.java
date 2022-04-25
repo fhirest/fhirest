@@ -49,18 +49,31 @@ public class ResourceRepository {
     return String.valueOf(jdbcTemplate.queryForObject("select nextval('store.resource_id_seq')", Long.class));
   }
 
-  public void create(ResourceVersion version) {
+  public void create(ResourceVersion version, List<VersionId> profiles) {
     if (version.getId().getResourceId() == null) {
       version.getId().setResourceId(getNextResourceId());
     }
-    String sql = "INSERT INTO store.resource (type, id, version, author, content, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb,?)";
+    List<Long> profileUids = getUids(profiles);
+    String sql = "INSERT INTO store.resource (type, id, version, author, content, profiles, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb, ?::bigint[], ?)";
     jdbcTemplate.update(sql,
         version.getId().getResourceType(),
         version.getId().getResourceId(),
         version.getId().getVersion(),
         JsonUtil.toJson(version.getAuthor()),
         version.getContent() == null ? null : version.getContent().getValue(),
+        CollectionUtils.isEmpty(profileUids) ? null : "{" + profileUids.stream().map(Object::toString).collect(joining(",")) + "}",
         version.isDeleted() ? "C" : "A");
+  }
+
+  public List<Long> getUids(List<VersionId> ids) {
+    if (CollectionUtils.isEmpty(ids)) {
+      return List.of();
+    }
+    SqlBuilder sb = new SqlBuilder();
+    sb.append("SELECT uid FROM store.resource r WHERE sys_status = 'A'");
+    sb.append(" and (type, id, version) in (").append(ids.stream().map(id -> "(?,?,?)").collect(joining(","))).append(")");
+    ids.forEach(id -> sb.add(id.getResourceType(), id.getResourceId(), id.getVersion()));
+    return jdbcTemplate.queryForList(sb.getSql(), Long.class, sb.getParams());
   }
 
   public Integer getLastVersion(ResourceId id) {
