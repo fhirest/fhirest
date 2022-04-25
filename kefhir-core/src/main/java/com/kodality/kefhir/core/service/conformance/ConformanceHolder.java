@@ -82,7 +82,7 @@ public class ConformanceHolder {
   }
 
   public static List<StructureDefinition> getDefinitions() {
-    return new ArrayList<>(definitions);
+    return definitions == null ? new ArrayList<>() : new ArrayList<>(definitions);
   }
 
   public static List<ValueSet> getValueSets() {
