@@ -62,7 +62,7 @@ public class BlindexRepository {
   }
 
   public void merge(Long blindexId, ResourceId id, String jsonContent) {
-    String sql = "select search.merge_blindex(?, sid, ?::jsonb) from search.resource where resource_type = search.resource_type_id(?) and resource_id = ?";
+    String sql = "select search.merge_blindex(?, sid, ?::jsonb) from search.resource where resource_type = search.rt_id(?) and resource_id = ?";
     adminJdbcTemplate.queryForObject(sql, Object.class, blindexId, jsonContent, id.getResourceType(), id.getResourceId());
   }
 

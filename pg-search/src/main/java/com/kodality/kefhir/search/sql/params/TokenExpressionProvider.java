@@ -29,7 +29,7 @@ public class TokenExpressionProvider extends DefaultExpressionProvider {
     sb.append("(");
     sb.appendIfNotNull("i.value = ?", value);
     sb.appendIfTrue(value != null && system != null, " and ");
-    sb.appendIfNotNull("i.system_id = search.system_id(?)", system);
+    sb.appendIfNotNull("i.system_id = search.sys_id(?)", system);
     sb.append(")");
     return sb;
   }

@@ -62,7 +62,7 @@ public class ReferenceExpressionProvider extends DefaultExpressionProvider {
     SqlBuilder sb = new SqlBuilder();
     sb.append("(");
     sb.append("i.id = ?", id);
-    sb.appendIfNotNull(" and i.type_id = search.resource_type_id(?)", type);
+    sb.appendIfNotNull(" and i.type_id = search.rt_id(?)", type);
     sb.append(")");
     return sb;
   }

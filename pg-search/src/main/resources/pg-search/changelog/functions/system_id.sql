@@ -1,3 +1,7 @@
+CREATE OR REPLACE FUNCTION search.sys_id(_system text) RETURNS bigint AS $$
+    select id from search.system where system.system = coalesce(_system, '')
+$$ LANGUAGE SQL IMMUTABLE;
+
 CREATE OR REPLACE FUNCTION search.system_id(_system text) RETURNS bigint AS $$
     with t as (select id from search.system where system.system = coalesce(_system, '')),
          i as (insert into search.system(system) select coalesce(_system, '') where not exists (select 1 from t) returning id)

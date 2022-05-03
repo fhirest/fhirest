@@ -4,7 +4,7 @@ DECLARE
   _type_id bigint;
   _blindex_id bigint;
 BEGIN
-  update search.resource r set active = false where resource_type = (select search.resource_type_id(_type)) and resource_id = _id returning sid into _sid;
+  update search.resource r set active = false where resource_type = (select search.rt_id(_type)) and resource_id = _id returning sid into _sid;
   if _sid is null then
     return;
   end if;

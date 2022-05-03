@@ -33,7 +33,7 @@ public class QuantityExpressionProvider extends NumberExpressionProvider {
     if (StringUtils.isEmpty(parts[1])) {
       sb.append(" and (i.code = ? or i.unit = ?)", parts[2], parts[2]);
     } else {
-      sb.append(" and i.system_id = search.system_id(?) and i.code = ?", parts[1], parts[2]);
+      sb.append(" and i.system_id = search.sys_id(?) and i.code = ?", parts[1], parts[2]);
     }
     return sb;
   }
