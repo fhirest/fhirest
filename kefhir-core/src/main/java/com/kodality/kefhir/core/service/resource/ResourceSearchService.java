@@ -12,6 +12,7 @@
  */
 package com.kodality.kefhir.core.service.resource;
 
+import com.kodality.kefhir.core.api.resource.ResourceBeforeSearchInterceptor;
 import com.kodality.kefhir.core.api.resource.ResourceSearchHandler;
 import com.kodality.kefhir.core.exception.FhirServerException;
 import com.kodality.kefhir.core.model.ResourceId;
@@ -44,6 +45,7 @@ import static java.util.stream.Collectors.toMap;
 public class ResourceSearchService {
   private static final String INCLUDE_ALL = "*";
   private final Optional<ResourceSearchHandler> searchHandler;
+  private final List<ResourceBeforeSearchInterceptor> beforeSearchInterceptors;
   private final ResourceStorageService storageService;
   private final FhirPath fhirPath;
 
@@ -59,6 +61,7 @@ public class ResourceSearchService {
     if (searchHandler.isEmpty()) {
       throw new FhirServerException(500, "search module not installed");
     }
+    beforeSearchInterceptors.forEach(i -> i.handle(criteria));
     SearchResult result = searchHandler.get().search(criteria);
     List<ResourceId> loadIds = result.getEntries().stream().filter(e -> e.getContent() == null).map(e -> (ResourceId) e.getId()).collect(toList());
     Map<String, ResourceVersion> versions = storageService.load(loadIds).stream().collect(toMap(v -> v.getId().getResourceReference(), v -> v));
