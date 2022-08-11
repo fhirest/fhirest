@@ -13,7 +13,7 @@
 package com.kodality.kefhir.auth.http.oidc;
 
 import com.kodality.kefhir.auth.User;
-import com.kodality.kefhir.auth.http.AuthHeaderAuthenticator;
+import com.kodality.kefhir.auth.http.AuthenticationProvider;
 import com.kodality.kefhir.auth.http.HttpAuthorization;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import java.util.List;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 //TODO: .well-known
 @Singleton
 @RequiredArgsConstructor
-public class OidcAuthenticator implements AuthHeaderAuthenticator {
+public class OidcAuthenticator implements AuthenticationProvider {
   private OidcUserProvider oidcUserProvider;
 
   @Override

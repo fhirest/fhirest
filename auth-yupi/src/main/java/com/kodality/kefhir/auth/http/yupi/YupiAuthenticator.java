@@ -13,7 +13,7 @@
 package com.kodality.kefhir.auth.http.yupi;
 
 import com.kodality.kefhir.auth.User;
-import com.kodality.kefhir.auth.http.AuthHeaderAuthenticator;
+import com.kodality.kefhir.auth.http.AuthenticationProvider;
 import com.kodality.kefhir.auth.http.HttpAuthorization;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import java.util.Collections;
@@ -23,7 +23,7 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 @Singleton
-public class YupiAuthenticator implements AuthHeaderAuthenticator {
+public class YupiAuthenticator implements AuthenticationProvider {
   private static final Map<String, String> yupiOrgs = Map.of(
       "yupi", "yupland",
       "ipuy", "dnalpuy"

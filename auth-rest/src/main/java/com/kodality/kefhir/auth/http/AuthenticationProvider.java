@@ -15,6 +15,6 @@
 import com.kodality.kefhir.auth.User;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 
-public interface AuthHeaderAuthenticator {
+public interface AuthenticationProvider {
   User autheticate(KefhirRequest request);
 }

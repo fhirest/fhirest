@@ -31,7 +31,7 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 @Slf4j
 public class HttpAuthInterceptor implements KefhirRequestFilter, KefhirResponseFilter {
   private final ClientIdentity clientIdentity;
-  private final List<AuthHeaderAuthenticator> authenticators;
+  private final List<AuthenticationProvider> authenticators;
 
   @Override
   public Integer getOrder() {
