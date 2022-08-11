@@ -37,17 +37,6 @@ public class ConformanceInitializationService {
   private final ResourceFormatService resourceFormatService;
   private final List<ConformanceUpdateListener> conformanceUpdateListeners;
 
-  @EventListener
-  @Async
-  public void init(final StartupEvent event) {
-    try {
-      Thread.sleep(3000);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-    refresh();
-  }
-
   public void refresh() {
     log.info("refreshing conformance...");
     CompletableFuture.allOf(
