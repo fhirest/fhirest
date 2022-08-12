@@ -13,6 +13,7 @@
 package com.kodality.kefhir.rest;
 
 import com.kodality.kefhir.core.exception.FhirException;
+import com.kodality.kefhir.rest.exception.FhirExceptionHandler;
 import com.kodality.kefhir.rest.filter.KefhirRequestFilter;
 import com.kodality.kefhir.rest.filter.KefhirResponseFilter;
 import com.kodality.kefhir.rest.model.KefhirRequest;
@@ -53,6 +54,7 @@ public class RuleThemAllFhirController {
   private final ResourceFormatService resourceFormatService;
   private final List<KefhirRequestFilter> requestFilters;
   private final List<KefhirResponseFilter> responseFilters;
+  private final FhirExceptionHandler fhirExceptionHandler;
 
   @PostConstruct
   public void init() {
@@ -60,17 +62,21 @@ public class RuleThemAllFhirController {
     responseFilters.sort(Comparator.comparing(KefhirResponseFilter::getOrder));
   }
 
-  private HttpResponse<String> execute(HttpRequest request) {
-    KefhirRequest req = buildKefhirRequest(request);
-    req.setOperation(endpointService.findOperation(req));
+  private HttpResponse<?> execute(HttpRequest request) {
     try {
-      requestFilters.forEach(f -> f.handleRequest(req));
-      KefhirResponse resp = endpointService.execute(req);
-      responseFilters.forEach(f -> f.handleResponse(resp, req));
-      return readKefhirResponse(resp, req);
-    } catch (Throwable ex) {
-      responseFilters.forEach(f -> f.handleException(ex, req));
-      throw ex;
+      KefhirRequest req = buildKefhirRequest(request);
+      req.setOperation(endpointService.findOperation(req));
+      try {
+        requestFilters.forEach(f -> f.handleRequest(req));
+        KefhirResponse resp = endpointService.execute(req);
+        responseFilters.forEach(f -> f.handleResponse(resp, req));
+        return readKefhirResponse(resp, req);
+      } catch (Exception ex) {
+        responseFilters.forEach(f -> f.handleException(ex, req));
+        throw ex;
+      }
+    } catch (Exception ex) {
+      return fhirExceptionHandler.handle(request, ex);
     }
   }
 

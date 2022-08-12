@@ -26,6 +26,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
@@ -99,6 +100,9 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
         }).collect(toList()));
       }
     } catch (Exception e) {
+      if (e instanceof FHIRException) {
+        throw new FhirException(500, IssueType.INVALID, e.getMessage());
+      }
       throw new RuntimeException(":/", e);
     }
   }
