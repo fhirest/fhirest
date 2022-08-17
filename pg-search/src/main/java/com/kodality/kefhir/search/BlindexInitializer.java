@@ -49,6 +49,7 @@ public class BlindexInitializer {
       return null;
     }
 
+    log.info("refreshing search indexes...");
     List<SearchParameter> searchParameters = findCapabilityDefinedParameters();
     Map<String, Blindex> create =
         searchParameters.stream()
