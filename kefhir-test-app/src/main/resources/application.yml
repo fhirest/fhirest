@@ -31,3 +31,4 @@ endpoints:
     details-visible: ANONYMOUS
     sensitive: false
 
+kefhir.conformance.definitions-url: https://kexus.kodality.com/repository/store-public/kefhir/definitions.json.zip

@@ -24,11 +24,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ConformanceToolsController {
   private final ConformanceFileImportService conformanceFileImportService;
+  private final ConformanceDownloadService conformanceDownloadService;
   private final ConformanceInitializationService conformanceInitializationService;
 
   @Post("/import-file")
   public HttpResponse<?> importFile(@QueryValue String file) {
     conformanceFileImportService.importFromFile(file);
+    return HttpResponse.ok();
+  }
+
+  @Post("/import-url")
+  public HttpResponse<?> importUrl(@QueryValue String url) {
+    conformanceDownloadService.importFromUrl(url);
+    return HttpResponse.ok();
+  }
+
+  @Post("/download-fhir")
+  public HttpResponse<?> downloadFhir() {
+//    conformanceDownloadService.importFromUrl("http://www.hl7.org/fhir/definitions.json.zip");
+    conformanceDownloadService.importFromUrl("https://kexus.kodality.com/repository/store-public/kefhir/definitions.json.zip");
     return HttpResponse.ok();
   }
 

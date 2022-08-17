@@ -60,8 +60,8 @@ function startkefhir() {
   ../gradlew run 2>&1 >test-reports/server.log &
   PID=$!
 
-  while ! grep -m1 'Startup completed' < test-reports/server.log; do sleep 1; done
-  ../etc/download-fhir-definitions.sh "http://localhost:$APP_PORT" || finish 1
+#  while ! grep -m1 'Startup completed' < test-reports/server.log; do sleep 1; done
+#  ../etc/download-fhir-definitions.sh "http://localhost:$APP_PORT" || finish 1
 
   while ! grep -m1 'conformance loaded' < test-reports/server.log; do sleep 1; done
   while ! grep -m1 'blindex initialization finished' < test-reports/server.log; do sleep 1; done

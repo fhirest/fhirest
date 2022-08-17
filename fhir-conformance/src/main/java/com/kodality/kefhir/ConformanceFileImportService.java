@@ -33,6 +33,7 @@ public class ConformanceFileImportService {
   private final ConformanceInitializationService conformanceService;
 
   public void importFromFile(String path) {
+    log.info("Loading initial conformance data. This may take several minutes.");
     readDir(new File(path));
     conformanceService.refresh();
   }
@@ -40,6 +41,9 @@ public class ConformanceFileImportService {
   private void readDir(File dir) {
     Arrays.stream(dir.listFiles()).parallel().forEach(f -> {
       if (f.isDirectory()) {
+        if (f.getName().equals("__MACOSX")) {
+          return;
+        }
         readDir(f);
       }
       process(f);
@@ -47,6 +51,9 @@ public class ConformanceFileImportService {
   }
 
   private void process(File f) {
+    if (!f.getName().endsWith(".json")) {
+      return;
+    }
     log.info("processing " + f);
     Resource r = readFile(f);
     Date modified = new Date(f.lastModified());

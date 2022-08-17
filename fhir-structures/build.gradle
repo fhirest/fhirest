@@ -1,8 +1,8 @@
 dependencies {
-  api 'ca.uhn.hapi.fhir:hapi-fhir-base:5.7.1'
-  api 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:5.7.1'
-  api 'ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r4:5.7.1'
-  api 'ca.uhn.hapi.fhir:hapi-fhir-validation:5.7.1'
+  api 'ca.uhn.hapi.fhir:hapi-fhir-base:6.0.4'
+  api 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.0.4'
+  api 'ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r4:6.0.4'
+  api 'ca.uhn.hapi.fhir:hapi-fhir-validation:6.0.4'
 
   implementation 'org.ehcache:ehcache:3.9.9'
 

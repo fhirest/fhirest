@@ -15,9 +15,6 @@ package com.kodality.kefhir.core.service.conformance;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
-import io.micronaut.context.event.StartupEvent;
-import io.micronaut.runtime.event.annotation.EventListener;
-import io.micronaut.scheduling.annotation.Async;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import javax.inject.Singleton;
@@ -48,7 +45,11 @@ public class ConformanceInitializationService {
         runAsync(() -> ConformanceHolder.setCompartmentDefinitions(load("CompartmentDefinition")))
     ).join();
     conformanceUpdateListeners.forEach(l -> l.updated());
-    log.info("conformance loaded");
+    if (ConformanceHolder.getCapabilityStatement() != null) {
+      log.info("conformance loaded");
+    } else {
+      log.info("conformance not initialized");
+    }
   }
 
   protected <T extends Resource> List<T> load(String name) {
