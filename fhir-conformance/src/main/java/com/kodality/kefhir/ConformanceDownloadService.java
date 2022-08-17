@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 @Singleton
@@ -33,6 +34,9 @@ public class ConformanceDownloadService implements ConformanceUpdateListener {
 
   @Override
   public void updated() {
+    if (StringUtils.isEmpty(url)) {
+      return;
+    }
     if (singleShot) {
       return;
     }
@@ -54,7 +58,7 @@ public class ConformanceDownloadService implements ConformanceUpdateListener {
 
   private File downloadZip(String url, File output) {
     try {
-      log.info("downloading " + url);
+      log.info("downloading '" + url + "'");
       Path dest = Paths.get(output.getAbsolutePath() + "/download.zip");
       Files.copy(new URL(url).openStream(), dest, StandardCopyOption.REPLACE_EXISTING);
       return dest.toFile();
