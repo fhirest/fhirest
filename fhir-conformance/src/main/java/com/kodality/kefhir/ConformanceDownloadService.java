@@ -34,7 +34,7 @@ public class ConformanceDownloadService implements ConformanceUpdateListener {
 
   @Override
   public void updated() {
-    if (StringUtils.isEmpty(url)) {
+    if (StringUtils.isBlank(url)) {
       return;
     }
     if (singleShot) {
