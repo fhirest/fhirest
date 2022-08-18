@@ -18,8 +18,8 @@ import com.kodality.kefhir.rest.filter.KefhirRequestFilter;
 import com.kodality.kefhir.rest.filter.KefhirResponseFilter;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.rest.model.KefhirResponse;
-import com.kodality.kefhir.structure.api.FhirContentType;
 import com.kodality.kefhir.structure.api.ResourceContent;
+import com.kodality.kefhir.structure.service.ContentTypeService;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
@@ -52,6 +52,7 @@ public class RuleThemAllFhirController {
   public static final String FHIR_ROOT = "fhir";
   private final KefhirEndpointService endpointService;
   private final ResourceFormatService resourceFormatService;
+  private final ContentTypeService contentTypeService;
   private final List<KefhirRequestFilter> requestFilters;
   private final List<KefhirResponseFilter> responseFilters;
   private final FhirExceptionHandler fhirExceptionHandler;
@@ -106,7 +107,7 @@ public class RuleThemAllFhirController {
   private ResourceContent format(Object body, String contentType) {
     if (ResourceContent.class.isAssignableFrom(body.getClass())) {
       ResourceContent content = (ResourceContent) body;
-      if (contentType == null || FhirContentType.isSameType(contentType, content.getContentType())) {
+      if (contentType == null || contentTypeService.isSameType(contentType, content.getContentType())) {
         return content;
       }
       Resource resource = resourceFormatService.parse(content.getValue());

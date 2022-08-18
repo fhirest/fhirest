@@ -10,8 +10,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.kodality.kefhir.structure.api;
+package com.kodality.kefhir.structure.service;
 
+import com.kodality.kefhir.structure.api.ResourceRepresentation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +21,13 @@ import java.util.Objects;
 import javax.inject.Singleton;
 
 @Singleton
-public class FhirContentType {
-  private static final Map<String, String> mimes = new HashMap<>();
-  private static final List<String> mediaTypes = new ArrayList<>();
+public class ContentTypeService {
+  private final Map<String, String> mimes;
+  private final List<String> mediaTypes;
 
-  public FhirContentType(List<ResourceRepresentation> representations) {
+  public ContentTypeService(List<ResourceRepresentation> representations) {
+    mimes = new HashMap<>();
+    mediaTypes = new ArrayList<>();
     representations.forEach(presenter -> {
       String main = presenter.getMimeTypes().get(0);
       presenter.getMimeTypes().forEach(mime -> {
@@ -39,15 +42,15 @@ public class FhirContentType {
     });
   }
 
-  public static List<String> getMediaTypes() {
+  public List<String> getMediaTypes() {
     return mediaTypes;
   }
 
-  public static String getMimeType(String type) {
+  public String getMimeType(String type) {
     return mimes.get(type);
   }
 
-  public static boolean isSameType(String t1, String t2) {
+  public boolean isSameType(String t1, String t2) {
     return Objects.equals(t1, t2) || getMimeType(t1).equals(getMimeType(t2));
   }
 

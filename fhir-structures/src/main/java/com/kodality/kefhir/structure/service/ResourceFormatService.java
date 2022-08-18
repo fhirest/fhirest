@@ -12,7 +12,6 @@
  */
 package com.kodality.kefhir.structure.service;
 
-import com.kodality.kefhir.structure.api.FhirContentType;
 import com.kodality.kefhir.structure.api.ParseException;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.api.ResourceRepresentation;
@@ -36,7 +35,7 @@ import org.hl7.fhir.r4.model.Resource;
 @Singleton
 public class ResourceFormatService {
   private final List<ResourceRepresentation> representations;
-  private final FhirContentType justForBeanInit; //needed
+  private final ContentTypeService justForBeanInit; //needed
   private Cache<String, ? extends Resource> cache;
   private static ResourceFormatService instance;
 
