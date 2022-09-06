@@ -15,6 +15,7 @@ package com.kodality.kefhir.search;
 import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
+import com.kodality.kefhir.search.index.IndexService;
 import com.kodality.kefhir.search.model.Blindex;
 import com.kodality.kefhir.search.repository.BlindexRepository;
 import com.kodality.kefhir.search.util.SearchPathUtil;
@@ -42,6 +43,8 @@ import org.postgresql.util.PSQLException;
 public class BlindexInitializer {
   private final BlindexRepository blindexRepository;
   private final ResourceSearchService resourceSearchService;
+  private final IndexService indexService;
+  private final StructureDefinitionHolder structureDefinitionHolder;
 
   public Object execute() {
     if (CollectionUtils.isEmpty(ConformanceHolder.getDefinitions()) || ConformanceHolder.getCapabilityStatement() == null) {
@@ -98,6 +101,21 @@ public class BlindexInitializer {
     create.forEach(b -> {
       log.debug("creating index on " + b.getKey());
       try {
+        if (!structureDefinitionHolder.getStructureElements().containsKey(b.getResourceType()) ||
+            !structureDefinitionHolder.getStructureElements().get(b.getResourceType()).containsKey(b.getPath())) {
+          log.debug("failed " + b.getKey() + ": " + " unknown yet");
+          errors.add(b.getKey() + ": " + " unknown yet");
+          return;
+        }
+        if (structureDefinitionHolder.getStructureElements().get(b.getResourceType()).get(b.getPath()).stream()
+            .anyMatch(el -> {
+              return List.of("canonical", "id", "Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType())
+                  || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri")); //TODO
+            })) {
+          log.debug("failed " + b.getKey() + ": " + " not configures");
+          errors.add(b.getKey() + ": " + " not configures");
+          return;
+        }
         createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), b.getPath()));
       } catch (Exception e) {
         String err = e.getMessage();
@@ -132,7 +150,7 @@ public class BlindexInitializer {
           Integer batch = 1000;
           while (true) {
             SearchResult search = resourceSearchService.search(type, "_count", batch.toString(), "_page", page.toString());
-            indexes.forEach(i -> search.getEntries().forEach(v -> blindexRepository.merge(i.getId(), v.getId(), v.getContent().getValue())));
+            indexes.forEach(i -> search.getEntries().forEach(v -> indexService.saveIndex(v, i)));
             if (search.getEntries().size() < batch) {
               break;
             }

@@ -14,10 +14,10 @@ package com.kodality.kefhir.search.repository;
 
 import com.kodality.kefhir.PostgresListener.PostgresChangeListener;
 import com.kodality.kefhir.core.exception.FhirServerException;
-import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.search.model.Blindex;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 @Singleton
 public class BlindexRepository {
-  private static final Map<String, String> INDEXES = new HashMap<>();
+  private static final Map<String, Map<String, Blindex>> INDEXES = new HashMap<>();
   @Inject
   @Named("searchAppJdbcTemplate")
   private JdbcTemplate jdbcTemplate;
@@ -39,17 +39,20 @@ public class BlindexRepository {
   private JdbcTemplate adminJdbcTemplate;
 
   @PostConstruct
-  @PostgresChangeListener(table="search.blindex")
+  @PostgresChangeListener(table = "search.blindex")
   public void refreshCache() {
-    loadIndexes().forEach(p -> INDEXES.put(p.getResourceType() + "." + p.getPath(), p.getName()));
+    loadIndexes().forEach(p -> INDEXES.computeIfAbsent(p.getResourceType(), x -> new HashMap<>()).put(p.getPath(), p));
+  }
+
+  public static List<Blindex> getIndexes(String resourceType) {
+    return INDEXES.containsKey(resourceType) ? new ArrayList<>(INDEXES.get(resourceType).values()) : List.of();
   }
 
   public static String getIndex(String resourceType, String path) {
-    String key = resourceType + "." + path;
-    if (!INDEXES.containsKey(key)) {
-      throw new FhirServerException(500, key + " not indexed");
+    if (!INDEXES.containsKey(resourceType) || !INDEXES.get(resourceType).containsKey(path)) {
+      throw new FhirServerException(500, resourceType + "." + path + " not indexed");
     }
-    return INDEXES.get(key);
+    return INDEXES.get(resourceType).get(path).getName();
   }
 
   public List<Blindex> loadIndexes() {
@@ -59,11 +62,6 @@ public class BlindexRepository {
 
   public Blindex createIndex(String paramType, String resourceType, String path) {
     return adminJdbcTemplate.queryForObject("SELECT * from search.create_blindex(?,?,?)", new BlindexRowMapper(), paramType, resourceType, path);
-  }
-
-  public void merge(Long blindexId, ResourceId id, String jsonContent) {
-    String sql = "select search.merge_blindex(?, sid, ?::jsonb) from search.resource where resource_type = search.rt_id(?) and resource_id = ?";
-    adminJdbcTemplate.queryForObject(sql, Object.class, blindexId, jsonContent, id.getResourceType(), id.getResourceId());
   }
 
   public void dropIndex(String paramType, String resourceType, String path) {

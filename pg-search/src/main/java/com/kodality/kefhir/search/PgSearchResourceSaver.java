@@ -16,25 +16,26 @@ import com.kodality.kefhir.core.api.resource.ResourceAfterDeleteInterceptor;
 import com.kodality.kefhir.core.api.resource.ResourceAfterSaveInterceptor;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
-import com.kodality.kefhir.search.repository.PgSearchRepository;
+import com.kodality.kefhir.search.index.IndexService;
 import javax.inject.Singleton;
 
 @Singleton
 public class PgSearchResourceSaver extends ResourceAfterSaveInterceptor implements ResourceAfterDeleteInterceptor {
-  private final PgSearchRepository pgSearchRepository;
+  private IndexService indexService;
 
-  public PgSearchResourceSaver(PgSearchRepository pgSearchRepository) {
+  public PgSearchResourceSaver(IndexService indexService) {
     super(ResourceAfterSaveInterceptor.TRANSACTION);
-    this.pgSearchRepository = pgSearchRepository;
+    this.indexService = indexService;
   }
 
   @Override
   public void handle(ResourceVersion version) {
-    pgSearchRepository.saveResource(version);
+    indexService.saveIndexes(version);
   }
 
   @Override
   public void delete(ResourceId id) {
-    pgSearchRepository.deleteResource(id);
+    indexService.deleteResource(id);
   }
+
 }

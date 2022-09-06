@@ -8,27 +8,15 @@
   <changeSet dbms="PostgreSQL" id="search-funcs" runOnChange="true" author="kefhir">
     <sqlFile splitStatements="false" path="functions/range_instant.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/range.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/jsonpath1.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/jsonpath2.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/jsonpath3.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/subpaths.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/resource_type_id.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/system_id.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/extract_date.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/extract_number.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/extract_quantity.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/extract_string.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/extract_token.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/extract_reference.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/extract_uri.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/merge_blindex.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/cleanup_indexes.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/define_resource.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/save_resource.sql" relativeToChangelogFile="true" />
-    <sqlFile splitStatements="false" path="functions/delete_resource.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/create_blindex.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/drop_blindex.sql" relativeToChangelogFile="true" />
   </changeSet>
+
+  <include file="migra/drop-old-functions.sql" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
 

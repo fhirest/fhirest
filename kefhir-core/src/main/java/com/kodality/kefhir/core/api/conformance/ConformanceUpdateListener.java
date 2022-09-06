@@ -10,8 +10,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.core.api.conformance;
+package com.kodality.kefhir.core.api.conformance;
 
 public interface ConformanceUpdateListener {
+  default Integer getOrder() {
+    return 100;
+  }
+
   void updated();
 }

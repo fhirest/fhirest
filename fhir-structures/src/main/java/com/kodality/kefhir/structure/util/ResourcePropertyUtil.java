@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 public final class ResourcePropertyUtil {
-  private static Map<Class<?>, List<Field>> fieldsCache = new ConcurrentHashMap<>();
+  private static final Map<Class<?>, List<Field>> fieldsCache = new ConcurrentHashMap<>();
 
   private ResourcePropertyUtil() {
     //
@@ -63,7 +63,7 @@ public final class ResourcePropertyUtil {
       if (obj instanceof Collection) {
         return ((Collection<?>) obj).stream().flatMap(o -> findProperties(o, exclude, fieldClazz));
       }
-      if (obj.getClass().getName().startsWith("java")) {
+      if (!obj.getClass().getName().startsWith("org.hl7")) {
         return Stream.empty();
       }
       return findProperties(obj, exclude, fieldClazz);

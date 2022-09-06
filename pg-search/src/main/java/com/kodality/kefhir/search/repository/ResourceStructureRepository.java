@@ -12,18 +12,12 @@
  */
 package com.kodality.kefhir.search.repository;
 
-import com.kodality.kefhir.search.model.StructureElement;
-import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import static java.util.stream.Collectors.joining;
 
 @Singleton
 public class ResourceStructureRepository {
@@ -39,33 +33,6 @@ public class ResourceStructureRepository {
     return RESOURCE_TYPES.get(type);
   }
 
-  public void save(List<StructureElement> elements) {
-    if (elements == null || elements.isEmpty()) {
-      return;
-    }
-
-    // group by is just to avoid too many parameters
-    Map<String, List<StructureElement>> groups = elements.stream().collect(Collectors.groupingBy(e -> e.getParent()));
-
-    SqlBuilder dsb = new SqlBuilder("delete from search.resource_structure rs where not ").in("rs.parent", groups.keySet());
-    adminJdbcTemplate.update(dsb.getSql(), dsb.getParams());
-
-    groups.forEach((parent, el) -> {
-      SqlBuilder sb = new SqlBuilder();
-      sb.append("with t(child, alias, element_type) as (values ");
-      sb.append(el.stream().map(e -> "(?,?,?)").collect(joining(",")));
-      el.forEach(e -> sb.add(e.getChild(), e.getAlias(), e.getType()));
-      sb.append(")");
-      sb.append(", deleted as (delete from search.resource_structure rs where rs.parent = ? and (rs.child, rs.alias, rs.element_type) not in (select * from t))", parent);
-      sb.append(", inserted as (insert into search.resource_structure (parent, child, alias, element_type) "
-          + " select ?, t.* from t where (t.child, t.alias, t.element_type)"
-          + " not in (select child, alias, element_type from search.resource_structure where parent = ?))", parent, parent);
-      sb.append(" select 1");
-      adminJdbcTemplate.queryForObject(sb.getSql(), Long.class, sb.getParams());
-    });
-  }
-
-
   public void refresh() {
     RESOURCE_TYPES = adminJdbcTemplate.query("select * from search.resource_type", rs -> {
       Map<String, Long> map = new HashMap<>();
@@ -74,7 +41,6 @@ public class ResourceStructureRepository {
       }
       return map;
     });
-    adminJdbcTemplate.update("refresh materialized view search.resource_structure_recursive");
   }
 
   public void defineResource(String type) {
