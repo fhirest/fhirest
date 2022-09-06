@@ -49,11 +49,15 @@ public class ConformanceDownloadService implements ConformanceUpdateListener {
   }
 
   public void importFromUrl(String url) {
-    File output = new File("/tmp/kefhir-conformance");
-    output.mkdirs();
-    File zip = downloadZip(url, output);
-    unzip(zip, output);
-    conformanceFileImportService.get().importFromFile(output.getPath());
+    try {
+      File output = new File("/tmp/kefhir-conformance");
+      output.mkdirs();
+      File zip = downloadZip(url, output);
+      unzip(zip, output);
+      conformanceFileImportService.get().importFromFile(output.getPath());
+    } catch (Exception e) {
+      log.error("", e);
+    }
   }
 
   private File downloadZip(String url, File output) {

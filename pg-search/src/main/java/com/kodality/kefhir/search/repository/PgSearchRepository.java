@@ -13,7 +13,6 @@
 package com.kodality.kefhir.search.repository;
 
 import com.kodality.kefhir.core.model.ResourceId;
-import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.core.model.search.SearchCriterion;
 import com.kodality.kefhir.search.api.PgResourceSearchFilter;
@@ -35,17 +34,6 @@ public class PgSearchRepository {
   private JdbcTemplate jdbcTemplate;
   @Inject
   private Optional<PgResourceSearchFilter> pgResourceSearchFilter;
-
-  public void saveResource(ResourceVersion version) {
-    String sql = "select search.save_resource(?,?,?,?::jsonb)";
-    jdbcTemplate.queryForObject(sql, Object.class, version.getId().getResourceId(), version.getId().getResourceType(), version.getModified(),
-        version.getContent().getValue());
-  }
-
-  public void deleteResource(ResourceId resourceId) {
-    String sql = "select search.delete_resource(?,?)";
-    jdbcTemplate.queryForObject(sql, Object.class, resourceId.getResourceId(), resourceId.getResourceType());
-  }
 
   public Integer count(SearchCriterion criteria) {
     SqlBuilder sb = new SqlBuilder("SELECT count(1) FROM search.resource base ");

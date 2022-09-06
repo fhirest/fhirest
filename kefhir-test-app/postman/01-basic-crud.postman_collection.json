@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "cd5f1f07-0603-48d4-9f9c-2e7199430b32",
 		"name": "01-basic-crud",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2623563"
 	},
 	"item": [
 		{
@@ -81,7 +82,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
+						"value": "{{auth}}"
 					},
 					{
 						"key": "Content-Type",
@@ -137,7 +138,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
+						"value": "{{auth}}"
 					},
 					{
 						"key": "Content-Type",
@@ -192,7 +193,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
+						"value": "{{auth}}"
 					},
 					{
 						"key": "Content-Type",
@@ -251,7 +252,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
+						"value": "{{auth}}"
 					},
 					{
 						"key": "Content-Type",
@@ -308,7 +309,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
+						"value": "{{auth}}"
 					},
 					{
 						"key": "Content-Type",
@@ -327,6 +328,54 @@
 					"path": [
 						"Patient",
 						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete unexistant",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([204]);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient/doesnotexist123",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient",
+						"doesnotexist123"
 					]
 				}
 			},
@@ -364,7 +413,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
+						"value": "{{auth}}"
 					},
 					{
 						"key": "Content-Type",
@@ -426,7 +475,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
+						"value": "{{auth}}"
 					},
 					{
 						"key": "Content-Type",
@@ -476,7 +525,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
+						"value": "{{auth}}"
 					},
 					{
 						"key": "Content-Type",
@@ -532,7 +581,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
+						"value": "{{auth}}"
 					},
 					{
 						"key": "Content-Type",
@@ -587,7 +636,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer {{access_token}}"
+						"value": "{{auth}}"
 					},
 					{
 						"key": "Content-Type",

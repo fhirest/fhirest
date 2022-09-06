@@ -112,7 +112,7 @@ public class BundleService {
   }
 
   private Bundle transaction(Bundle bundle, String prefer) {
-    return tx.transaction(() -> {
+    return  tx.transaction(() -> {
       Bundle responseBundle = new Bundle();
       bundle.getEntry().stream().forEach(entry -> {
         try {

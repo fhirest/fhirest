@@ -15,6 +15,7 @@ package com.kodality.kefhir.core.service.conformance;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import javax.inject.Singleton;
@@ -44,7 +45,7 @@ public class ConformanceInitializationService {
         runAsync(() -> ConformanceHolder.setCodeSystems(load("CodeSystem"))),
         runAsync(() -> ConformanceHolder.setCompartmentDefinitions(load("CompartmentDefinition")))
     ).join();
-    conformanceUpdateListeners.forEach(l -> l.updated());
+    conformanceUpdateListeners.stream().sorted(Comparator.comparing(ConformanceUpdateListener::getOrder)).forEach(l -> l.updated());
     if (ConformanceHolder.getCapabilityStatement() != null) {
       log.info("conformance loaded");
     } else {
@@ -53,7 +54,8 @@ public class ConformanceInitializationService {
   }
 
   protected <T extends Resource> List<T> load(String name) {
-    return resourceSearchService.search(name, "_count", "9999").getEntries().stream().map(v -> resourceFormatService.<T>parse(v.getContent())).collect(toList());
+    return resourceSearchService.search(name, "_count", "9999").getEntries().stream().map(v -> resourceFormatService.<T>parse(v.getContent()))
+        .collect(toList());
   }
 
 }

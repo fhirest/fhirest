@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.core.util;
+package com.kodality.kefhir.core.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,7 +20,10 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 
 public final class JsonUtil {
   private static Gson gson;
@@ -50,6 +53,32 @@ public final class JsonUtil {
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static Stream<Object> fhirpathSimple(String json, String path) {
+    return read(fromJson(json), path);
+  }
+
+  public static Stream<Object> fhirpathSimple(Object jsonObject, String path) {
+    return jsonObject == null ? Stream.empty() : read(jsonObject, path);
+  }
+
+  private static Stream<Object> read(Object jsonObject, String path) {
+    if (jsonObject == null) {
+      return Stream.empty();
+    }
+    Stream<Object> stream = jsonObject instanceof List ? ((List<Object>) jsonObject).stream() : Stream.of(jsonObject);
+    if (StringUtils.isEmpty(path)) {
+      return stream;
+    }
+    String child = StringUtils.substringBefore(path, ".");
+    String chain = StringUtils.substringAfter(path, ".");
+    return stream.flatMap(el -> {
+      if (!(el instanceof Map)) {
+        throw new RuntimeException("incorrect path " + path);
+      }
+      return read(((Map<String, Object>) el).get(child), chain);
+    });
   }
 
   private static class WriteDoubleAsInt implements JsonSerializer<Double> {

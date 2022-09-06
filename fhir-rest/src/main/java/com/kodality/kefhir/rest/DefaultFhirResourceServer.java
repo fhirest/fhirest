@@ -91,7 +91,6 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
         throw new FhirException(412, IssueType.PROCESSING, er);
       }
     }
-
     ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
     ResourceVersion version = resourceService.save(new ResourceId(req.getType()), content, InteractionType.CREATE);
     return created(version, req);
