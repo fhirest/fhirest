@@ -15,11 +15,9 @@ package com.kodality.kefhir.core.service.conformance;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
-import io.micronaut.context.annotation.Context;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +28,6 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-@Context
 @Singleton
 @RequiredArgsConstructor
 public class ConformanceInitializationService {
@@ -38,7 +35,6 @@ public class ConformanceInitializationService {
   private final ResourceFormatService resourceFormatService;
   private final List<ConformanceUpdateListener> conformanceUpdateListeners;
 
-  @PostConstruct
   public void refresh() {
     log.info("refreshing conformance...");
     CompletableFuture.allOf(
