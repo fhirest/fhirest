@@ -15,8 +15,6 @@ package com.kodality.kefhir.store;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.store.repository.ResourceFunctionsRepository;
-import io.micronaut.context.event.StartupEvent;
-import io.micronaut.runtime.event.annotation.EventListener;
 import java.util.List;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +23,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ResourceInitializer implements ConformanceUpdateListener {
   private final ResourceFunctionsRepository resourceFunctionsRepository;
-
-  @EventListener
-  public void initConformanceResources(final StartupEvent event) {
-    List.of("CapabilityStatement", "StructureDefinition", "SearchParameter", "OperationDefinition", "CompartmentDefinition", "ValueSet", "CodeSystem", "ConceptMap")
-        .forEach(r -> resourceFunctionsRepository.defineResource(r));
-  }
 
   @Override
   public void updated() {

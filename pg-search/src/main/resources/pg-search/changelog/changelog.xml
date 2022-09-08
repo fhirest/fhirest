@@ -16,6 +16,8 @@
     <sqlFile splitStatements="false" path="functions/drop_blindex.sql" relativeToChangelogFile="true" />
   </changeSet>
 
+  <include file="init.sql" relativeToChangelogFile="true" />
+
   <include file="migra/drop-old-functions.sql" relativeToChangelogFile="true" />
 
 </databaseChangeLog>

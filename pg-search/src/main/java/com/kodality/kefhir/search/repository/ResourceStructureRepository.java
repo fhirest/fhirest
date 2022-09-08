@@ -44,7 +44,9 @@ public class ResourceStructureRepository {
   }
 
   public void defineResource(String type) {
-    adminJdbcTemplate.queryForObject("select search.define_resource(?)", String.class, type);
+    if (!RESOURCE_TYPES.containsKey(type)) {
+      adminJdbcTemplate.queryForObject("select search.define_resource(?)", String.class, type);
+    }
   }
 
 }

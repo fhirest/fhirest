@@ -10,4 +10,6 @@
   
   <include file="sql/10-resource.sql" relativeToChangelogFile="true" />
 
+  <include file="init.sql" relativeToChangelogFile="true" />
+
 </databaseChangeLog>

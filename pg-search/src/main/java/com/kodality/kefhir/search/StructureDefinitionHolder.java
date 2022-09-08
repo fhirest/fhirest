@@ -15,8 +15,6 @@ package com.kodality.kefhir.search;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.search.model.StructureElement;
-import io.micronaut.context.event.StartupEvent;
-import io.micronaut.runtime.event.annotation.EventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,10 +30,6 @@ import org.hl7.fhir.r4.model.StructureDefinition;
 @RequiredArgsConstructor
 public class StructureDefinitionHolder implements ConformanceUpdateListener {
   private Map<String, Map<String, List<StructureElement>>> structures;
-
-  @EventListener
-  public void initConformanceResources(final StartupEvent event) {
-  }
 
   public Map<String, Map<String, List<StructureElement>>> getStructureElements() {
     return structures;
