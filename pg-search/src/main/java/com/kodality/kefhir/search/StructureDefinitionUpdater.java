@@ -15,9 +15,8 @@ package com.kodality.kefhir.search;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.search.repository.ResourceStructureRepository;
-import io.micronaut.context.event.StartupEvent;
-import io.micronaut.runtime.event.annotation.EventListener;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
@@ -27,10 +26,8 @@ public class StructureDefinitionUpdater implements ConformanceUpdateListener {
   private final ResourceStructureRepository structureDefinitionRepository;
   private final BlindexInitializer blindexInitializer;
 
-  @EventListener
-  public void initConformanceResources(final StartupEvent event) {
-    List.of("CapabilityStatement", "StructureDefinition", "SearchParameter", "OperationDefinition", "CompartmentDefinition", "ValueSet", "CodeSystem",
-        "ConceptMap").forEach(r -> structureDefinitionRepository.defineResource(r));
+  @PostConstruct
+  public void initConformanceResources() {
     structureDefinitionRepository.refresh();
   }
 
