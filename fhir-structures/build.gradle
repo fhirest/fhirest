@@ -1,10 +1,12 @@
 dependencies {
-  api 'ca.uhn.hapi.fhir:hapi-fhir-base:6.0.4'
-  api 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.0.4'
-  api 'ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r4:6.0.4'
-  api 'ca.uhn.hapi.fhir:hapi-fhir-validation:6.0.4'
+  api 'ca.uhn.hapi.fhir:hapi-fhir-base:6.1.1'
+  api 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.1.1'
+  api 'ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r4:6.1.1'
+  api('ca.uhn.hapi.fhir:hapi-fhir-validation:6.1.1') {
+    exclude group: 'org.apache.commons', module: 'commons-compress'
+  }
 
-  implementation 'org.ehcache:ehcache:3.9.9'
+  implementation 'org.ehcache:ehcache:3.10.1'
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
