@@ -17,7 +17,7 @@ import com.kodality.kefhir.search.model.Blindex;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.jdbc.core.JdbcTemplate;

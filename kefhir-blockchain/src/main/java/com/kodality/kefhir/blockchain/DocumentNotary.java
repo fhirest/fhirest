@@ -24,7 +24,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.concurrent.CompletableFuture;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.inject.Singleton;
 import org.hl7.fhir.r4.model.Resource;
 

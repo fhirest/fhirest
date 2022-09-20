@@ -15,7 +15,7 @@ package com.kodality.kefhir.search.index;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.util.sql.SqlBuilder;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;

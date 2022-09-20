@@ -23,7 +23,7 @@ import com.kodality.kefhir.core.service.resource.SearchUtil;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import com.kodality.kefhir.structure.util.ResourcePropertyUtil;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;

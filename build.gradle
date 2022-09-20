@@ -34,6 +34,7 @@ allprojects {
     api "io.micronaut:micronaut-inject"
     api "io.micronaut:micronaut-runtime"
     api "javax.inject:javax.inject:1"
+    api 'org.glassfish.hk2.external:jakarta.inject:2.6.1'
 
     api "org.apache.commons:commons-collections4:4.4"
     api "org.apache.commons:commons-lang3:3.12.0"

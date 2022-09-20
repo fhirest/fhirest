@@ -1,4 +1,5 @@
 dependencies {
+<<<<<<< Updated upstream
   api 'ca.uhn.hapi.fhir:hapi-fhir-base:6.1.1'
   api 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.1.1'
   api 'ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r4:6.1.1'
@@ -7,9 +8,17 @@ dependencies {
   }
 
   implementation 'org.ehcache:ehcache:3.10.1'
+=======
+  api "ca.uhn.hapi.fhir:hapi-fhir-base:$hapiVersion"
+  api "ca.uhn.hapi.fhir:hapi-fhir-structures-r4:$hapiVersion"
+  api "ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r4:$hapiVersion"
+  api "ca.uhn.hapi.fhir:hapi-fhir-validation:$hapiVersion"
 
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
+  implementation "org.ehcache:ehcache:3.9.9"
+>>>>>>> Stashed changes
+
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
 }
 
 test { useJUnitPlatform() }
