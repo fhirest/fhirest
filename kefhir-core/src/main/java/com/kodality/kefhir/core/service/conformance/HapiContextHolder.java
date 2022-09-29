@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.PrePopulatedValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.SnapshotGeneratingValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain;
 import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -51,7 +52,8 @@ public class HapiContextHolder implements ConformanceUpdateListener {
 
     IValidationSupport chain = new ValidationSupportChain(
         new InMemoryTerminologyServerValidationSupport(context),
-        new PrePopulatedValidationSupport(context, defs, vs, cs)
+        new PrePopulatedValidationSupport(context, defs, vs, cs),
+        new SnapshotGeneratingValidationSupport(context)
     );
     chain = new CachingValidationSupport(chain);
 
