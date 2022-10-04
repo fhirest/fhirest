@@ -63,7 +63,7 @@ public class FhirExceptionHandler {
     return toResponse(request, outcome, e.getStatusCode());
   }
 
-  private MutableHttpResponse<?> toResponse(HttpRequest<?> request, OperationOutcome outcome, int statusCode) {
+  protected MutableHttpResponse<?> toResponse(HttpRequest<?> request, OperationOutcome outcome, int statusCode) {
     String ct = request.getHeaders().get("Accept") == null ? "application/json" : request.getHeaders().get("Accept");
     ResourceContent c = resourceFormatService.compose(outcome, ct);
 
