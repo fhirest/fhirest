@@ -20,7 +20,7 @@ import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 public class SmartScope {
   private final String context; //patient, user...
   private final String resourceType;
-  private final String rights;
+  private final String permissions;
 
   public SmartScope(String scope) {
     if (scope == null) {
@@ -36,7 +36,7 @@ public class SmartScope {
 
     this.context = scope.substring(0, s);
     this.resourceType = scope.substring(s + 1, d);
-    this.rights = scope.substring(d + 1);
+    this.permissions = scope.substring(d + 1);
   }
 
 }

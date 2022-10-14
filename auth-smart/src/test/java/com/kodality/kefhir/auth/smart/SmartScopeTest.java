@@ -47,6 +47,6 @@ public class SmartScopeTest {
     SmartScope s = new SmartScope(input);
     Assertions.assertEquals(s.getContext(), a);
     Assertions.assertEquals(s.getResourceType(), b);
-    Assertions.assertEquals(s.getRights(), c);
+    Assertions.assertEquals(s.getPermissions(), c);
   }
 }

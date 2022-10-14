@@ -14,46 +14,17 @@ package com.kodality.kefhir.auth.smart;
 
 import com.kodality.kefhir.auth.ClientIdentity;
 import com.kodality.kefhir.core.exception.FhirException;
-import com.kodality.kefhir.core.model.InteractionType;
 import com.kodality.kefhir.rest.filter.KefhirRequestExecutionInterceptor;
 import com.kodality.kefhir.rest.model.KefhirRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
-import static com.kodality.kefhir.core.model.InteractionType.CREATE;
-import static com.kodality.kefhir.core.model.InteractionType.DELETE;
-import static com.kodality.kefhir.core.model.InteractionType.HISTORYINSTANCE;
-import static com.kodality.kefhir.core.model.InteractionType.HISTORYTYPE;
-import static com.kodality.kefhir.core.model.InteractionType.OPERATION;
-import static com.kodality.kefhir.core.model.InteractionType.SEARCHTYPE;
-import static com.kodality.kefhir.core.model.InteractionType.UPDATE;
-import static com.kodality.kefhir.core.model.InteractionType.VREAD;
-import static java.util.Arrays.asList;
-
 @RequiredArgsConstructor
 @Singleton
 public class SmartAuthHttpInterceptor implements KefhirRequestExecutionInterceptor {
   private final ClientIdentity clientIdentity;
-  private final Map<String, Map<String, List<String>>> contexts = new HashMap<>();
-  {
-    HashMap<String, List<String>> patient = new HashMap<>();
-    patient.put(Right.read, asList(InteractionType.READ, VREAD, HISTORYINSTANCE, SEARCHTYPE));
-    patient.put(Right.write, asList(UPDATE, DELETE, OPERATION));
-    patient.put(Right.all, asList(InteractionType.READ, VREAD, HISTORYINSTANCE, SEARCHTYPE, UPDATE, DELETE, OPERATION));
-    contexts.put(Context.patient, patient);
-
-    HashMap<String, List<String>> user = new HashMap<>();
-    user.put(Right.read, asList(InteractionType.READ, VREAD, HISTORYINSTANCE, SEARCHTYPE, HISTORYTYPE));
-    user.put(Right.write, asList(UPDATE, DELETE, CREATE, InteractionType.VALIDATE, OPERATION));
-    user.put(Right.all,
-        asList(InteractionType.READ, VREAD, HISTORYINSTANCE, SEARCHTYPE, HISTORYTYPE, UPDATE, DELETE, CREATE, InteractionType.VALIDATE, OPERATION));
-    contexts.put(Context.user, user);
-  }
 
   @Override
   public void beforeExecute(KefhirRequest request) {
@@ -78,15 +49,14 @@ public class SmartAuthHttpInterceptor implements KefhirRequestExecutionIntercept
     if (!resourceTypeAllowed) {
       return false;
     }
-    if (!contexts.containsKey(scope.getContext())) {
+    if (!SmartContext.contexts.contains(scope.getContext())) {
       throw new FhirException(403, IssueType.FORBIDDEN, "unknown context");
     }
-    Map<String, List<String>> contextPermissions = contexts.get(scope.getContext());
-    if (!contextPermissions.containsKey(scope.getRights())) {
-      throw new FhirException(403, IssueType.FORBIDDEN, "unknown right");
+    if (!SmartPermission.interactions.containsKey(scope.getPermissions())) {
+      throw new FhirException(403, IssueType.FORBIDDEN, "unknown permission");
     }
 
-    return contextPermissions.get(scope.getRights()).contains(interaction);
+    return SmartPermission.interactions.get(scope.getPermissions()).contains(interaction);
   }
 
 }

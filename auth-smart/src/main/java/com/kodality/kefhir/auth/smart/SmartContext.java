@@ -10,10 +10,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir.auth.smart;
+package com.kodality.kefhir.auth.smart;
 
-public final class Right {
-  public static final String read = "read";
-  public static final String write = "write";
-  public static final String all = "*";
+import java.util.List;
+
+public final class SmartContext {
+  public static final String patient = "patient";
+  public static final String user = "user";
+  public static final String system = "system";
+
+  public static final List<String> contexts = List.of(patient, user, system);
 }
