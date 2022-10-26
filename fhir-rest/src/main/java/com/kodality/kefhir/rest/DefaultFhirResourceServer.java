@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 
 @Slf4j
@@ -103,11 +104,17 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     Integer ver = contentLocation == null ? null : ResourceUtil.parseReference(contentLocation).getVersion();
     ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
     boolean exists = resourceId != null && resourceSearchService.search(req.getType(), "_id", resourceId, "_count", "0").getTotal() > 0;
-    if (!exists && !ConformanceHolder.getCapabilityResource(req.getType()).getUpdateCreate()) {
+    if (!exists && !isUpdateCreateAllowed(req.getType())) {
       throw new FhirException(400, IssueType.NOTSUPPORTED, "create on update is disabled by conformance");
     }
     ResourceVersion version = resourceService.save(new VersionId(req.getType(), resourceId, ver), content, InteractionType.UPDATE);
     return exists ? updated(version, req) : created(version, req);
+  }
+
+  private boolean isUpdateCreateAllowed(String type) {
+    CapabilityStatementRestResourceComponent res = ConformanceHolder.getCapabilityResource(type);
+    return !res.hasUpdateCreate() || res.getUpdateCreate();
+    // empty updateCreate = allowed. should remove this at some point. added for backwards compatilibility, when this setting did not exists
   }
 
   @Override
