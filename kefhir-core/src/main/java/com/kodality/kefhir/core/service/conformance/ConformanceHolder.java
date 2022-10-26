@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r4.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.CompartmentDefinition;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
@@ -79,6 +81,14 @@ public class ConformanceHolder {
 
   public static CapabilityStatement getCapabilityStatement() {
     return capabilityStatement;
+  }
+
+  public static CapabilityStatementRestResourceComponent getCapabilityResource(String type) {
+    return getCapabilityStatement().getRest().stream().filter(r -> r.getMode() == RestfulCapabilityMode.SERVER)
+        .map(r -> r.getResource().stream().filter(rr -> rr.getType().equals(type)).findFirst().orElse(null))
+        .filter(r -> r != null)
+        .findFirst()
+        .orElse(null);
   }
 
   public static List<StructureDefinition> getDefinitions() {

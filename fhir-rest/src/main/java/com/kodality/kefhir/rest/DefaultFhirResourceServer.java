@@ -20,11 +20,11 @@ import com.kodality.kefhir.rest.model.KefhirResponse;
 import com.kodality.kefhir.rest.util.BundleUtil;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
+import jakarta.inject.Inject;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
@@ -103,6 +103,9 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     Integer ver = contentLocation == null ? null : ResourceUtil.parseReference(contentLocation).getVersion();
     ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
     boolean exists = resourceId != null && resourceSearchService.search(req.getType(), "_id", resourceId, "_count", "0").getTotal() > 0;
+    if (exists && !ConformanceHolder.getCapabilityResource(req.getType()).getUpdateCreate()) {
+      throw new FhirException(400, IssueType.NOTSUPPORTED, "create on update is disabled by conformance");
+    }
     ResourceVersion version = resourceService.save(new VersionId(req.getType(), resourceId, ver), content, InteractionType.UPDATE);
     return exists ? updated(version, req) : created(version, req);
   }
