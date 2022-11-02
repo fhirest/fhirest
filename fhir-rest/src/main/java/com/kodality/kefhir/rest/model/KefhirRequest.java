@@ -30,6 +30,7 @@ public class KefhirRequest {
   private List<MediaType> accept;
   private MediaType contentType;
 
+  private String transactionMethod;
   private KefhirEnabledOperation operation;
 
   public void setAccept(MediaType accept) {

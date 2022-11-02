@@ -40,6 +40,7 @@ import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.UriType;
 
 @Singleton
 @RequiredArgsConstructor
@@ -112,7 +113,7 @@ public class BundleService {
   }
 
   private Bundle transaction(Bundle bundle, String prefer) {
-    return  tx.transaction(() -> {
+    return tx.transaction(() -> {
       Bundle responseBundle = new Bundle();
       bundle.getEntry().stream().forEach(entry -> {
         try {
@@ -165,8 +166,16 @@ public class BundleService {
 
   private KefhirRequest buildRequest(BundleEntryComponent entry) {
     KefhirRequest req = new KefhirRequest();
-    req.setMethod(entry.getRequest().getMethod().toCode());
-    URI uri = URI.create(entry.getRequest().getUrl());
+    String method = entry.getRequest().getMethod().toCode();
+    req.setTransactionMethod(method);
+    URI uri;
+    if (method.equals("POST") && entry.getRequest().getExtensionByUrl("urn:kefhir-transaction-generated-id") != null) {
+      req.setMethod("PUT");
+      uri = URI.create(((UriType) entry.getRequest().getExtensionByUrl("urn:kefhir-transaction-generated-id").getValue()).getValue());
+    } else {
+      req.setMethod(method);
+      uri = URI.create(entry.getRequest().getUrl());
+    }
     req.setType(StringUtils.substringBefore(uri.getPath(), "/"));
     req.setPath(StringUtils.removeStart(uri.getPath(), req.getType()));
     req.setUri(uri.toString());

@@ -71,10 +71,7 @@ public class BundleReferenceHandler {
       if (request.getMethod() == HTTPVerb.POST) {
         String ref = generateNewId(entry.getResource().getResourceType().name());
         referenceIds.put(entry.getFullUrl(), ref);
-
-        //XXX not sure if it is good idea to replace method, but how to get id before i save in this case?
-        request.setUrl(ref);
-        request.setMethod(HTTPVerb.PUT);
+        request.addExtension("urn:kefhir-transaction-generated-id", new UriType(ref));
         return;
       }
     });
