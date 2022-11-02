@@ -37,6 +37,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryResponseComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r4.model.Resource;
@@ -169,9 +170,10 @@ public class BundleService {
     String method = entry.getRequest().getMethod().toCode();
     req.setTransactionMethod(method);
     URI uri;
-    if (method.equals("POST") && entry.getRequest().getExtensionByUrl("urn:kefhir-transaction-generated-id") != null) {
+    Extension transactionGeneratedId = entry.getRequest().getExtensionByUrl("urn:kefhir-transaction-generated-id");
+    if (method.equals("POST") && transactionGeneratedId != null) {
       req.setMethod("PUT");
-      uri = URI.create(((UriType) entry.getRequest().getExtensionByUrl("urn:kefhir-transaction-generated-id").getValue()).getValue());
+      uri = URI.create(((UriType) transactionGeneratedId.getValue()).getValue());
     } else {
       req.setMethod(method);
       uri = URI.create(entry.getRequest().getUrl());

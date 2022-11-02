@@ -104,7 +104,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     Integer ver = contentLocation == null ? null : ResourceUtil.parseReference(contentLocation).getVersion();
     ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
     boolean exists = resourceId != null && resourceSearchService.search(req.getType(), "_id", resourceId, "_count", "0").getTotal() > 0;
-    if (!exists && !isUpdateCreateAllowed(req.getType())) {
+    if (!exists && !isUpdateCreateAllowed(req.getType()) && !"POST".equals(req.getTransactionMethod())) {
       throw new FhirException(400, IssueType.NOTSUPPORTED, "create on update is disabled by conformance");
     }
     ResourceVersion version = resourceService.save(new VersionId(req.getType(), resourceId, ver), content, InteractionType.UPDATE);
