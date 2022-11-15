@@ -58,6 +58,7 @@ public class HapiContextHolder implements ConformanceUpdateListener {
     chain = new CachingValidationSupport(chain);
 
     hapiContext = new HapiWorkerContext(context, chain);
+    context.setValidationSupport(chain);
 
     validator = context.newValidator();
     validator.registerValidatorModule(new FhirInstanceValidator(chain));
