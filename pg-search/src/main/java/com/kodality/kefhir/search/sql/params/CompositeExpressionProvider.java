@@ -53,7 +53,7 @@ public class CompositeExpressionProvider extends ExpressionProvider {
   }
 
   @Override
-  public SqlBuilder order(String resourceType, String key, String alias) {
+  public SqlBuilder order(String resourceType, String key, String alias, String direction) {
     throw new FhirException(400, IssueType.NOTSUPPORTED, "order by composite param not implemented");
   }
 }

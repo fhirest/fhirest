@@ -84,13 +84,13 @@ public final class SearchSqlUtil {
     }
     SearchParamType type = ConformanceHolder.requireSearchParam(param.getResourceType(), value).getType();
     if (specialParams.containsKey(value)) {
-      return specialParams.get(value).order(param.getResourceType(), value, alias);
+      return specialParams.get(value).order(param.getResourceType(), value, alias, direction);
     }
     if (!providers.containsKey(type)) {
       String details = String.format("'%s' search parameter type not implemented", param.getType());
       throw new FhirException(400, IssueType.NOTSUPPORTED, details);
     }
-    return providers.get(type).order(param.getResourceType(), value, alias).append(direction);
+    return providers.get(type).order(param.getResourceType(), value, alias, direction).append(direction);
   }
 
 }

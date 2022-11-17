@@ -33,9 +33,9 @@ public abstract class DefaultExpressionProvider extends ExpressionProvider {
   protected abstract String getOrderField();
 
   @Override
-  public SqlBuilder order(String resourceType, String key, String alias) {
+  public SqlBuilder order(String resourceType, String key, String alias, String direction) {
     String i = index(resourceType, key, alias);
-    return new SqlBuilder("(SELECT " + getOrderField() + " FROM " + i + ")");
+    return new SqlBuilder("(SELECT " + getOrderField() + " FROM " + i + " order by 1 " + direction + " limit 1)");
   }
 
   @Override

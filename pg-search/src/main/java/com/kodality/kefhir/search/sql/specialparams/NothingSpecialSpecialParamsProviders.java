@@ -17,7 +17,7 @@ public class NothingSpecialSpecialParamsProviders {
     }
 
     @Override
-    public SqlBuilder order(String resourceType, String key, String alias) {
+    public SqlBuilder order(String resourceType, String key, String alias, String direction) {
       return new SqlBuilder(alias + ".resource_id");
     }
   }
@@ -30,7 +30,7 @@ public class NothingSpecialSpecialParamsProviders {
     }
 
     @Override
-    public SqlBuilder order(String resourceType, String key, String alias) {
+    public SqlBuilder order(String resourceType, String key, String alias, String direction) {
       return new SqlBuilder(alias + ".last_updated");
     }
   }
@@ -43,7 +43,7 @@ public class NothingSpecialSpecialParamsProviders {
     }
 
     @Override
-    public SqlBuilder order(String resourceType, String key, String alias) {
+    public SqlBuilder order(String resourceType, String key, String alias, String direction) {
       throw new FhirException(400, IssueType.NOTSUPPORTED, key + " search param not implemented");
     }
   }

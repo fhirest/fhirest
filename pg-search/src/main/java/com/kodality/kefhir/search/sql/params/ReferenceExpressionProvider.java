@@ -68,7 +68,7 @@ public class ReferenceExpressionProvider extends DefaultExpressionProvider {
   }
 
   @Override
-  public SqlBuilder order(String resourceType, String key, String alias) {
+  public SqlBuilder order(String resourceType, String key, String alias, String direction) {
     return null; // TODO:
   }
 

@@ -17,5 +17,5 @@ import com.kodality.kefhir.util.sql.SqlBuilder;
 
 public abstract class ExpressionProvider {
   public abstract SqlBuilder makeExpression(QueryParam param, String alias);
-  public abstract SqlBuilder order(String resourceType, String key, String alias);
+  public abstract SqlBuilder order(String resourceType, String key, String alias, String direction);
 }
