@@ -28,7 +28,7 @@ public class DateUtil {
   public static final String TIMESTAMP_PG = "yyyy-MM-dd HH:mm:ssX";
 
   public static String format(Date date, String pattern) {
-    return new SimpleDateFormat(pattern).format(date);
+    return date == null ? null : new SimpleDateFormat(pattern).format(date);
   }
 
   public static String reformat(String dateString, String pattern) {

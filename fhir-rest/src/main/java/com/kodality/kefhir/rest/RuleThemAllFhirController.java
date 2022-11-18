@@ -36,6 +36,7 @@ import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.Put;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -83,7 +84,7 @@ public class RuleThemAllFhirController {
 
   private HttpResponse<String> readKefhirResponse(KefhirResponse resp, KefhirRequest req) {
     MutableHttpResponse<String> r = HttpResponse.status(HttpStatus.valueOf(resp.getStatus()));
-    resp.getHeaders().forEach((k, vv) -> vv.forEach(v -> r.header(k, v)));
+    resp.getHeaders().forEach((k, vv) -> vv.stream().filter(Objects::nonNull).forEach(v -> r.header(k, v)));
     if (resp.getBody() != null) {
       String accept = req.getAccept().get(0).getName(); //FIXME .get(0)
       ResourceContent formatted = format(resp.getBody(), accept);
