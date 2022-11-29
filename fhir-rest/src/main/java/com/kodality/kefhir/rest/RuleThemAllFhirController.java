@@ -18,6 +18,7 @@ import com.kodality.kefhir.rest.filter.KefhirRequestFilter;
 import com.kodality.kefhir.rest.filter.KefhirResponseFilter;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.rest.model.KefhirResponse;
+import com.kodality.kefhir.rest.util.ServerUtil;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ContentTypeService;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
@@ -58,7 +59,6 @@ public class RuleThemAllFhirController {
   private final List<KefhirRequestFilter> requestFilters;
   private final List<KefhirResponseFilter> responseFilters;
   private final FhirExceptionHandler fhirExceptionHandler;
-  private final EmbeddedServer embeddedServer;
 
   @PostConstruct
   public void init() {
@@ -129,7 +129,7 @@ public class RuleThemAllFhirController {
 
   private KefhirRequest buildKefhirRequest(HttpRequest<String> request) {
     KefhirRequest req = new KefhirRequest();
-    req.setServerUri(embeddedServer.getURI());
+    req.setServerUri(ServerUtil.getServerUri(request));
     req.setMethod(request.getMethodName());
     String p = request.getPath();
     p = StringUtils.removeStart(p, "/");
