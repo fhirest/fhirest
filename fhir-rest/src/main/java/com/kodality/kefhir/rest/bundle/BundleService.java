@@ -25,6 +25,7 @@ import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import com.kodality.kefhir.tx.TransactionService;
 import io.micronaut.http.MediaType;
+import io.micronaut.runtime.server.EmbeddedServer;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
@@ -51,6 +52,7 @@ public class BundleService {
   private final KefhirEndpointService endpointService;
   private final ResourceFormatService resourceFormatService;
   private final TransactionService tx;
+  private final EmbeddedServer embeddedServer;
 
   public Bundle save(Bundle bundle, String prefer) {
     if (bundle.getEntry().stream().anyMatch(e -> !e.hasRequest())) {
@@ -167,6 +169,7 @@ public class BundleService {
 
   private KefhirRequest buildRequest(BundleEntryComponent entry) {
     KefhirRequest req = new KefhirRequest();
+    req.setServerUri(embeddedServer.getURI());
     String method = entry.getRequest().getMethod().toCode();
     req.setTransactionMethod(method);
     URI uri;

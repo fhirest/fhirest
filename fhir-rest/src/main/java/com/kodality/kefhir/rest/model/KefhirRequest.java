@@ -4,6 +4,7 @@ import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.util.ResourceUtil;
 import com.kodality.kefhir.rest.KefhirEndpointService.KefhirEnabledOperation;
 import io.micronaut.http.MediaType;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -26,6 +27,7 @@ public class KefhirRequest {
   private Map<String, List<String>> parameters = new LinkedHashMap<>();
   private Map<String, List<String>> headers = new LinkedHashMap<>();
   private String uri;
+  private URI serverUri;
   private String body;
   private List<MediaType> accept;
   private MediaType contentType;

@@ -116,14 +116,15 @@ public abstract class BaseFhirResourceServer implements FhirResourceServer {
   }
 
   protected String uri(ResourceVersion version, KefhirRequest req) {
-    return version.getReference();
+    //don't like the import
+    return req.getServerUri().toString() + "/" + RuleThemAllFhirController.FHIR_ROOT + "/" + version.getReference();
   }
 
   protected void addPagingLinks(Bundle bundle, Integer count, Integer page, KefhirRequest req) {
     if (count == 0) {
       return;
     }
-    String pageUrl = ServerRequestContext.currentRequest().orElseThrow().getPath();
+    String pageUrl = req.getServerUri().toString() + ServerRequestContext.currentRequest().orElseThrow().getPath();
     String queryString = ServerRequestContext.currentRequest().orElseThrow().getUri().getRawQuery();
     queryString = StringUtils.isEmpty(queryString) ? "" : RegExUtils.removePattern(queryString, "[&?]?_page=[0-9]+");
     pageUrl += StringUtils.isEmpty(queryString) ? "?_page=" : ("?" + queryString + "&_page=");

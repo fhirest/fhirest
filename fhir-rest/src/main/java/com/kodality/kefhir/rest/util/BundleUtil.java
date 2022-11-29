@@ -13,6 +13,7 @@
 package com.kodality.kefhir.rest.util;
 
 import com.kodality.kefhir.core.model.ResourceVersion;
+import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.List;
@@ -73,7 +74,8 @@ public class BundleUtil {
 
   private static BundleEntryComponent composeEntry(ResourceVersion version) {
     BundleEntryComponent entry = new BundleEntryComponent();
-    entry.setFullUrl(version.getId().getResourceReference());
+    VersionId id = version.getId();
+    entry.setFullUrl(id.getFullUrl() != null ? id.getFullUrl() : id.getResourceReference());
     entry.setResource(ResourceFormatService.get().parse(version.getContent().getValue()));
     return entry;
   }

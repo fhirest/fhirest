@@ -14,6 +14,7 @@
 
 public class VersionId extends ResourceId {
   private Integer version;
+  private String fullUrl;
 
   public VersionId(String resourceType) {
     super(resourceType);
@@ -55,4 +56,11 @@ public class VersionId extends ResourceId {
     this.version = version;
   }
 
+  public String getFullUrl() {
+    return fullUrl;
+  }
+
+  public void setFullUrl(String fullUrl) {
+    this.fullUrl = fullUrl;
+  }
 }
