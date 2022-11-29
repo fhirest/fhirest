@@ -67,7 +67,7 @@
 							"    resp = {};",
 							"    pm.response.json().entry.forEach(e => resp[e.link[0].url] = e.response);",
 							"    pm.expect(resp[\"res1\"].status).to.eql(\"200\");",
-							"    pm.expect(resp[\"res1\"].location).to.eql(\"Patient/\" + pm.collectionVariables.get(\"patientId\") + \"/_history/2\");",
+							"    pm.expect(resp[\"res1\"].location).to.contain(\"Patient/\" + pm.collectionVariables.get(\"patientId\") + \"/_history/2\");",
 							"    pm.expect(resp[\"res2\"].status).to.eql(\"201\");",
 							"});"
 						],
