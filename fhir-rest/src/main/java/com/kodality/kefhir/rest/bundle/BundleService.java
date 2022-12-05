@@ -21,12 +21,12 @@ import com.kodality.kefhir.rest.KefhirEndpointService;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.rest.model.KefhirResponse;
 import com.kodality.kefhir.rest.util.PreferredReturn;
-import com.kodality.kefhir.rest.util.ServerUtil;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import com.kodality.kefhir.tx.TransactionService;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.context.ServerRequestContext;
+import io.micronaut.http.server.util.HttpHostResolver;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
@@ -53,6 +53,7 @@ public class BundleService {
   private final KefhirEndpointService endpointService;
   private final ResourceFormatService resourceFormatService;
   private final TransactionService tx;
+  private final HttpHostResolver httpHostResolver;
 
   public Bundle save(Bundle bundle, String prefer) {
     if (bundle.getEntry().stream().anyMatch(e -> !e.hasRequest())) {
@@ -169,7 +170,7 @@ public class BundleService {
 
   private KefhirRequest buildRequest(BundleEntryComponent entry) {
     KefhirRequest req = new KefhirRequest();
-    req.setServerUri(ServerUtil.getServerUri(ServerRequestContext.currentRequest().orElseThrow()));
+    req.setServerUri(httpHostResolver.resolve(ServerRequestContext.currentRequest().orElseThrow()));
     String method = entry.getRequest().getMethod().toCode();
     req.setTransactionMethod(method);
     URI uri;
