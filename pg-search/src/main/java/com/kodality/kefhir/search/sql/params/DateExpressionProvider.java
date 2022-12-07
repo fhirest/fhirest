@@ -20,6 +20,7 @@ import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ import static java.util.stream.Collectors.toList;
 
 public class DateExpressionProvider extends DefaultExpressionProvider {
   private static final Map<Integer, String> intervals;
-  private static final String[] operators = {null, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt};
+  private static final String[] operators = {null, SearchPrefix.eq, SearchPrefix.ne, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt};
 
   static {
     intervals = new HashMap<>();
@@ -64,8 +65,11 @@ public class DateExpressionProvider extends DefaultExpressionProvider {
   private static String rangeSql(String field, String value) {
     SearchPrefix prefix = SearchPrefix.parse(value, operators);
     String search = range(prefix.getValue());
-    if (prefix.getPrefix() == null) {
+    if (prefix.getPrefix() == null || prefix.getPrefix().equals(SearchPrefix.eq)) {
       return field + " && " + search;
+    }
+    if (prefix.getPrefix().equals(SearchPrefix.ne)) {
+      return "not (" + field + " && " + search + ")";
     }
     if (prefix.getPrefix().equals(SearchPrefix.lt)) {
       return field + " << " + search;
@@ -84,18 +88,22 @@ public class DateExpressionProvider extends DefaultExpressionProvider {
   }
 
   private static String range(String value) {
-    value = StringUtils.replace(value, "Z", "+00:00");
-    String[] input = StringUtils.split(value, "-T:+");
-    if (value.contains("+")) { //with specified timezone
-      String date = String.format("%s-%s-%sT%s:%s:%s+%s:%s", (Object[]) maskTz(input));
-      DateUtil.parse(date, DateUtil.ISO_DATETIME).orElseThrow(() -> new IllegalArgumentException("Cannot parse date " + date)); //just for validation
-      String interval = intervals.get(input.length);
-      return "search.range('" + date + "', '" + interval + "')";
-    } else { //with system timezone
-      String date = String.format("%s-%s-%sT%s:%s:%s", (Object[]) mask(input));
-      date = LocalDateTime.parse(date).atZone(ZoneId.systemDefault()).toOffsetDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
-      String interval = intervals.get(input.length);
-      return "search.range('" + date + "', '" + interval + "')";
+    try {
+      value = StringUtils.replace(value, "Z", "+00:00");
+      String[] input = StringUtils.split(value, "-T:+");
+      if (value.contains("+")) { //with specified timezone
+        String date = String.format("%s-%s-%sT%s:%s:%s+%s:%s", (Object[]) maskTz(input));
+        DateUtil.parse(date, DateUtil.ISO_DATETIME).orElseThrow(() -> new IllegalArgumentException("Cannot parse date " + date)); //just for validation
+        String interval = intervals.get(input.length);
+        return "search.range('" + date + "', '" + interval + "')";
+      } else { //with system timezone
+        String date = String.format("%s-%s-%sT%s:%s:%s", (Object[]) mask(input));
+        date = LocalDateTime.parse(date).atZone(ZoneId.systemDefault()).toOffsetDateTime().format(DateTimeFormatter.ISO_DATE_TIME);
+        String interval = intervals.get(input.length);
+        return "search.range('" + date + "', '" + interval + "')";
+      }
+    } catch (DateTimeParseException e) {
+      throw new FhirException(400, IssueType.INVALID, "invalid or unsupported date format: " + value);
     }
   }
 
