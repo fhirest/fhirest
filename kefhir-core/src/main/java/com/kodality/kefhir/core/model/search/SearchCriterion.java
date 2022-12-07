@@ -38,9 +38,6 @@ public class SearchCriterion {
   private List<QueryParam> conditions;
   private List<QueryParam> resultParams;
 
-  public SearchCriterion() {
-  }
-
   public SearchCriterion(String type, List<QueryParam> params) {
     this.type = type;
     setParams(params);

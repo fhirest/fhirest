@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "1b4a02c3-8329-4155-8c52-dbf3d85651be",
 		"name": "41-search-date",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2623563"
 	},
 	"item": [
 		{
@@ -62,9 +63,6 @@
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
 							"    pm.expect(pm.response.json().total).to.eql(0);",
 							"});",
-							"",
-							"",
-							"",
 							""
 						],
 						"type": "text/javascript"
@@ -164,6 +162,196 @@
 						{
 							"key": "birthdate",
 							"value": "2000-02-02"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "date param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?birthdate=eq2000-02-02",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "birthdate",
+							"value": "eq2000-02-02"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "date param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(0);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?_id=ps100&birthdate=ne2000-02-02",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "ps100"
+						},
+						{
+							"key": "birthdate",
+							"value": "ne2000-02-02"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "date param",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?_id=ps100&birthdate=ne2000-02-03",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "ps100"
+						},
+						{
+							"key": "birthdate",
+							"value": "ne2000-02-03"
 						}
 					]
 				}
