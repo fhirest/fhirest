@@ -30,10 +30,10 @@ public class SearchIndexRepository {
   private JdbcTemplate jdbcTemplate;
 
   public Long saveResource(ResourceVersion version) {
-    if (version.getId().getVersion() == 1) {
-      String sql = "insert into search.resource(resource_type, resource_id, last_updated, active) select search.resource_type_id(?), ?, ?, true returning sid";
-      return jdbcTemplate.queryForObject(sql, Long.class, version.getId().getResourceType(), version.getId().getResourceId(), version.getModified());
-    }
+//    if (version.getId().getVersion() == 1) {
+//      String sql = "insert into search.resource(resource_type, resource_id, last_updated, active) select search.resource_type_id(?), ?, ?, true returning sid";
+//      return jdbcTemplate.queryForObject(sql, Long.class, version.getId().getResourceType(), version.getId().getResourceId(), version.getModified());
+//    }
     SqlBuilder sb = new SqlBuilder();
     sb.append("WITH upd AS (");
     sb.append(" update search.resource r set last_updated = ?, active = true where resource_type = search.rt_id(?) and resource_id = ?",
