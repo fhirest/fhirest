@@ -28,6 +28,8 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.context.ServerRequestContext;
 import io.micronaut.http.server.util.HttpHostResolver;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 import javax.inject.Singleton;
@@ -180,7 +182,9 @@ public class BundleService {
       uri = URI.create(((UriType) transactionGeneratedId.getValue()).getValue());
     } else {
       req.setMethod(method);
-      uri = URI.create(entry.getRequest().getUrl());
+      String url = entry.getRequest().getUrl();
+      url = url.replaceAll("\\|", URLEncoder.encode("|", StandardCharsets.UTF_8));
+      uri = URI.create(url);
     }
     req.setType(StringUtils.substringBefore(uri.getPath(), "/"));
     req.setPath(StringUtils.removeStart(uri.getPath(), req.getType()));
