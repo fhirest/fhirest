@@ -31,9 +31,8 @@ import static java.util.stream.Collectors.toList;
 @Singleton
 @RequiredArgsConstructor
 public class ConformanceInitializationService {
-  private final ResourceSearchService resourceSearchService;
-  private final ResourceFormatService resourceFormatService;
   private final List<ConformanceUpdateListener> conformanceUpdateListeners;
+  private final ConformanceResourceLoader conformanceResourceLoader;
 
   public void refresh() {
     log.info("refreshing conformance...");
@@ -54,8 +53,7 @@ public class ConformanceInitializationService {
   }
 
   protected <T extends Resource> List<T> load(String name) {
-    return resourceSearchService.search(name, "_count", "9999").getEntries().stream().map(v -> resourceFormatService.<T>parse(v.getContent()))
-        .collect(toList());
+    return conformanceResourceLoader.load(name);
   }
 
 }
