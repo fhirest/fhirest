@@ -16,7 +16,7 @@ import com.kodality.kefhir.core.exception.FhirServerException;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.search.HistorySearchCriterion;
 import com.kodality.kefhir.core.service.resource.ResourceService;
-import com.kodality.kefhir.rest.bundle.BundleService;
+import com.kodality.kefhir.rest.bundle.BundleSaveHandler;
 import com.kodality.kefhir.rest.interaction.FhirInteraction;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.rest.model.KefhirResponse;
@@ -45,7 +45,7 @@ public class FhirRootServer {
   private final Provider<KefhirEndpointInitializer> restResourceInitializer;
   private final ResourceFormatService resourceFormatService;
   private final ResourceService resourceService;
-  private final Provider<BundleService> bundleService;
+  private final Provider<BundleSaveHandler> bundleService;
 
   @FhirInteraction(interaction = CONFORMANCE, mapping = "OPTIONS /")
   public KefhirResponse conformance(KefhirRequest req) {

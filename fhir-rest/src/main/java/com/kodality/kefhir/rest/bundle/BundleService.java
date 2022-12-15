@@ -30,11 +30,8 @@ import io.micronaut.http.server.util.HttpHostResolver;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Comparator;
-import java.util.List;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -49,7 +46,7 @@ import org.hl7.fhir.r4.model.UriType;
 
 @Singleton
 @RequiredArgsConstructor
-public class BundleService {
+public class BundleService implements BundleSaveHandler {
   private final ResourceSearchService searchService;
   private final BundleReferenceHandler bundleReferenceHandler;
   private final KefhirEndpointService endpointService;
@@ -57,6 +54,7 @@ public class BundleService {
   private final TransactionService tx;
   private final HttpHostResolver httpHostResolver;
 
+  @Override
   public Bundle save(Bundle bundle, String prefer) {
     if (bundle.getEntry().stream().anyMatch(e -> !e.hasRequest())) {
       throw new FhirException(400, IssueType.INVALID, "Bundle.request element required");
@@ -216,17 +214,6 @@ public class BundleService {
       return findFhirException(e.getCause());
     }
     return null;
-  }
-
-  private static class EntityMethodOrderComparator implements Comparator<BundleEntryComponent> {
-    private static final List<HTTPVerb> order = List.of(HTTPVerb.DELETE, HTTPVerb.POST, HTTPVerb.PUT, HTTPVerb.GET);
-
-    @Override
-    public int compare(BundleEntryComponent o1, BundleEntryComponent o2) {
-      return ObjectUtils.compare(order.indexOf(o1.getRequest().getMethod()),
-          order.indexOf(o2.getRequest().getMethod()));
-    }
-
   }
 
 }
