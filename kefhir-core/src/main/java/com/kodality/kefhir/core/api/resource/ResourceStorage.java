@@ -34,7 +34,9 @@ public interface ResourceStorage {
   /**
    * transaction requires new
    */
-  ResourceVersion saveForce(ResourceId id, ResourceContent content);
+  default ResourceVersion saveForce(ResourceId id, ResourceContent content) {
+    return save(id, content);
+  }
 
   void delete(ResourceId id);
 
