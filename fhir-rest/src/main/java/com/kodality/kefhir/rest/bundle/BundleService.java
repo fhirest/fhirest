@@ -18,6 +18,7 @@ import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
 import com.kodality.kefhir.core.service.resource.SearchUtil;
 import com.kodality.kefhir.rest.KefhirEndpointService;
+import com.kodality.kefhir.rest.ServerUriBuilder;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.rest.model.KefhirResponse;
 import com.kodality.kefhir.rest.util.PreferredReturn;
@@ -26,7 +27,6 @@ import com.kodality.kefhir.structure.service.ResourceFormatService;
 import com.kodality.kefhir.tx.TransactionService;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.context.ServerRequestContext;
-import io.micronaut.http.server.util.HttpHostResolver;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -52,7 +52,7 @@ public class BundleService implements BundleSaveHandler {
   private final KefhirEndpointService endpointService;
   private final ResourceFormatService resourceFormatService;
   private final TransactionService tx;
-  private final HttpHostResolver httpHostResolver;
+  private final ServerUriBuilder serverUriBuilder;
 
   @Override
   public Bundle save(Bundle bundle, String prefer) {
@@ -170,7 +170,7 @@ public class BundleService implements BundleSaveHandler {
 
   private KefhirRequest buildRequest(BundleEntryComponent entry) {
     KefhirRequest req = new KefhirRequest();
-    req.setServerUri(httpHostResolver.resolve(ServerRequestContext.currentRequest().orElseThrow()));
+    req.setServerUri(serverUriBuilder.build(ServerRequestContext.currentRequest().orElseThrow()));
     String method = entry.getRequest().getMethod().toCode();
     req.setTransactionMethod(method);
     URI uri;

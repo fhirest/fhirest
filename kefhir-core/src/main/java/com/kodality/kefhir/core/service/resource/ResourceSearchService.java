@@ -90,14 +90,17 @@ public class ResourceSearchService {
       if ("iterate".equals(ip.getModifier())) {
         entries.addAll(result.getIncludes());
       }
-      entries.stream().filter(e -> e.getId().getResourceType().equals(resourceType)).forEach(entry -> {
-        expressions.stream()
-            .flatMap(expr -> evaluate(entry, expr))
-            .map(ref -> ResourceUtil.parseReference(ref.getReference()))
-            .filter(reference -> targetType == null || reference.getResourceType().equals(targetType))
-            .filter(reference -> !contains(result, reference))
-            .forEach(reference -> result.addInclude(storageService.load(reference)));
-      });
+      List<ResourceId> resourceIds = new ArrayList<>();
+      entries.stream()
+          .filter(e -> e.getId().getResourceType().equals(resourceType))
+          .forEach(entry -> expressions.stream()
+              .flatMap(expr -> evaluate(entry, expr))
+              .map(ref -> ResourceUtil.parseReference(ref.getReference()))
+              .filter(reference -> targetType == null || reference.getResourceType().equals(targetType))
+              .filter(reference -> !contains(result, reference))
+              .forEach(resourceIds::add)
+          );
+      result.addIncludes(storageService.load(resourceIds));
     }));
   }
 
