@@ -34,7 +34,6 @@ import io.micronaut.http.annotation.Options;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.Put;
-import io.micronaut.http.server.util.HttpHostResolver;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -58,7 +57,7 @@ public class RuleThemAllFhirController {
   private final List<KefhirRequestFilter> requestFilters;
   private final List<KefhirResponseFilter> responseFilters;
   private final FhirExceptionHandler fhirExceptionHandler;
-  private final HttpHostResolver httpHostResolver;
+  private final ServerUriBuilder serverUriBuilder;
 
   @PostConstruct
   public void init() {
@@ -129,7 +128,7 @@ public class RuleThemAllFhirController {
 
   private KefhirRequest buildKefhirRequest(HttpRequest<String> request) {
     KefhirRequest req = new KefhirRequest();
-    req.setServerUri(httpHostResolver.resolve(request));
+    req.setServerUri(serverUriBuilder.build(request));
     req.setMethod(request.getMethodName());
     String p = request.getPath();
     p = StringUtils.removeStart(p, "/");
