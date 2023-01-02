@@ -125,7 +125,7 @@
 							"pm.test(\"OK\", function () {",
 							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
-							"pm.test(\"validate search resultzzzz\", function () {",
+							"pm.test(\"validate search result\", function () {",
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
 							"    pm.expect(pm.response.json().total).to.eql(1);",

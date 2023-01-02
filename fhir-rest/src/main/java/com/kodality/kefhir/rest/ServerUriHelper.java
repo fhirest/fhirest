@@ -9,15 +9,21 @@ import org.apache.commons.lang3.StringUtils;
 
 @Singleton
 @RequiredArgsConstructor
-public class ServerUriBuilder {
+public class ServerUriHelper {
 
   private final HttpHostResolver httpHostResolver;
   private final HttpServerConfiguration httpServerConfiguration;
 
-  public String build(HttpRequest<?> request) {
+  public String buildServerUri(HttpRequest<?> request) {
     String contextPath = httpServerConfiguration.getContextPath();
     contextPath = contextPath != null ? StringUtils.prependIfMissing(contextPath, "/") : "";
     contextPath = StringUtils.removeEnd(contextPath, "/");
     return httpHostResolver.resolve(request) + contextPath;
   }
+
+  public String getContextPath() {
+    String contextPath = httpServerConfiguration.getContextPath();
+    return contextPath != null ? StringUtils.removeStart(contextPath, "/") : "";
+  }
+
 }

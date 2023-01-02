@@ -57,7 +57,7 @@ public class RuleThemAllFhirController {
   private final List<KefhirRequestFilter> requestFilters;
   private final List<KefhirResponseFilter> responseFilters;
   private final FhirExceptionHandler fhirExceptionHandler;
-  private final ServerUriBuilder serverUriBuilder;
+  private final ServerUriHelper serverUriHelper;
 
   @PostConstruct
   public void init() {
@@ -128,9 +128,11 @@ public class RuleThemAllFhirController {
 
   private KefhirRequest buildKefhirRequest(HttpRequest<String> request) {
     KefhirRequest req = new KefhirRequest();
-    req.setServerUri(serverUriBuilder.build(request));
+    req.setServerUri(serverUriHelper.buildServerUri(request));
     req.setMethod(request.getMethodName());
     String p = request.getPath();
+    p = StringUtils.removeStart(p, "/");
+    p = StringUtils.removeStart(p, serverUriHelper.getContextPath());
     p = StringUtils.removeStart(p, "/");
     p = StringUtils.removeStart(p, FHIR_ROOT);
     p = StringUtils.removeStart(p, "/");
