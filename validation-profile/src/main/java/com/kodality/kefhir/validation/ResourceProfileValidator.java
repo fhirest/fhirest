@@ -64,7 +64,7 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
   private void runValidation(String resourceType, ResourceContent content) {
     Resource resource = validateParse(content);
     validateType(resourceType, resource);
-    validateProfile(resource);
+    validateProfile(content);
   }
 
   private Resource validateParse(ResourceContent content) {
@@ -82,12 +82,12 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
     }
   }
 
-  private void validateProfile(Resource resource) {
+  private void validateProfile(ResourceContent content) {
     if (hapiContextHolder.getHapiContext() == null) {
       throw new FhirServerException(500, "fhir context initialization error");
     }
     try {
-      List<SingleValidationMessage> errors = hapiContextHolder.getValidator().validateWithResult(resource).getMessages();
+      List<SingleValidationMessage> errors = hapiContextHolder.getValidator().validateWithResult(content.getValue()).getMessages();
       errors = errors.stream().filter(m -> isError(m.getSeverity())).collect(toList());
       if (!errors.isEmpty()) {
         throw new FhirException(400, errors.stream().map(msg -> {
