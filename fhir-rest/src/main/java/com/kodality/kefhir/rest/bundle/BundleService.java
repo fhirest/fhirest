@@ -14,9 +14,9 @@ package com.kodality.kefhir.rest.bundle;
 
 import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.search.SearchCriterion;
+import com.kodality.kefhir.core.model.search.SearchCriterionBuilder;
 import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
-import com.kodality.kefhir.core.service.resource.SearchUtil;
 import com.kodality.kefhir.rest.KefhirEndpointService;
 import com.kodality.kefhir.rest.ServerUriHelper;
 import com.kodality.kefhir.rest.model.KefhirRequest;
@@ -78,7 +78,7 @@ public class BundleService implements BundleSaveHandler {
       if (entry.getRequest().getMethod() == HTTPVerb.POST && entry.getRequest().getIfNoneExist() != null) {
         String ifNoneExist = entry.getRequest().getIfNoneExist() + "&_count=0";
         String type = entry.getResource().getResourceType().name();
-        SearchCriterion criteria = new SearchCriterion(type, SearchUtil.parse(ifNoneExist, type));
+        SearchCriterion criteria = SearchCriterionBuilder.parse(ifNoneExist, type);
         SearchResult result = searchService.search(criteria);
         if (result.getTotal() == 1) {
           entry.getRequest().setMethod(HTTPVerb.NULL); //ignore

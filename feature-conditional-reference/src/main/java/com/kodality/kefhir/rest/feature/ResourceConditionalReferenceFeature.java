@@ -17,9 +17,9 @@ import com.kodality.kefhir.core.api.resource.ResourceBeforeSaveInterceptor;
 import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.search.SearchCriterion;
+import com.kodality.kefhir.core.model.search.SearchCriterionBuilder;
 import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
-import com.kodality.kefhir.core.service.resource.SearchUtil;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import com.kodality.kefhir.structure.util.ResourcePropertyUtil;
@@ -74,7 +74,7 @@ public class ResourceConditionalReferenceFeature extends ResourceBeforeSaveInter
     String resourceType = StringUtils.substringBefore(uri, "?");
     String query = StringUtils.substringAfter(uri, "?");
 
-    SearchCriterion criteria = new SearchCriterion(resourceType, SearchUtil.parse(query, resourceType));
+    SearchCriterion criteria = SearchCriterionBuilder.parse(query, resourceType);
     criteria.getResultParams().clear();
     SearchResult result = resourceSearchService.get().search(criteria);
     if (result.getTotal() != 1) {

@@ -7,12 +7,12 @@ import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.model.search.HistorySearchCriterion;
 import com.kodality.kefhir.core.model.search.SearchCriterion;
+import com.kodality.kefhir.core.model.search.SearchCriterionBuilder;
 import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.core.service.resource.ResourceOperationService;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
 import com.kodality.kefhir.core.service.resource.ResourceService;
-import com.kodality.kefhir.core.service.resource.SearchUtil;
 import com.kodality.kefhir.core.util.DateUtil;
 import com.kodality.kefhir.core.util.ResourceUtil;
 import com.kodality.kefhir.rest.model.KefhirRequest;
@@ -82,7 +82,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     String ifNoneExist = req.getHeader("If-None-Exist");
     if (ifNoneExist != null) {
       ifNoneExist += "&_count=0";
-      SearchCriterion criteria = new SearchCriterion(req.getType(), SearchUtil.parse(ifNoneExist, req.getType()));
+      SearchCriterion criteria = SearchCriterionBuilder.parse(ifNoneExist, req.getType());
       SearchResult result = resourceSearchService.search(criteria);
       if (result.getTotal() == 1) {
         return new KefhirResponse(200);
@@ -160,7 +160,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
 
   @Override
   public KefhirResponse search(KefhirRequest req) {
-    SearchCriterion criteria = new SearchCriterion(req.getType(), SearchUtil.parse(req.getParameters(), req.getType()));
+    SearchCriterion criteria = SearchCriterionBuilder.parse(req.getParameters(), req.getType());
     SearchResult result = resourceSearchService.search(criteria);
     Bundle bundle = BundleUtil.compose(result);
     addPagingLinks(bundle, criteria.getCount(), criteria.getPage(), req);
@@ -187,7 +187,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     Map<String, List<String>> query = new HashMap<>(req.getParameters());
     query.put(compartmentParams.get(0), List.of(id));
 
-    SearchCriterion criteria = new SearchCriterion(compartment, SearchUtil.parse(query, compartment));
+    SearchCriterion criteria = SearchCriterionBuilder.parse(query, compartment);
     SearchResult result = resourceSearchService.search(criteria);
     Bundle bundle = BundleUtil.compose(result);
     addPagingLinks(bundle, criteria.getCount(), criteria.getPage(), req);

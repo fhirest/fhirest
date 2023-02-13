@@ -19,6 +19,7 @@ import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.model.search.SearchCriterion;
+import com.kodality.kefhir.core.model.search.SearchCriterionBuilder;
 import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.core.service.FhirPath;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
@@ -54,7 +55,7 @@ public class ResourceSearchService {
   }
 
   public SearchResult search(String resourceType, Map<String, List<String>> params) {
-    return search(new SearchCriterion(resourceType, SearchUtil.parse(params, resourceType)));
+    return search(SearchCriterionBuilder.parse(params, resourceType));
   }
 
   public SearchResult search(SearchCriterion criteria) {

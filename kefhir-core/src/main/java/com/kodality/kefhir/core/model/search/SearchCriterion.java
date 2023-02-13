@@ -15,6 +15,7 @@ package com.kodality.kefhir.core.model.search;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -37,8 +38,9 @@ public class SearchCriterion {
   private List<QueryParam> chains;
   private List<QueryParam> conditions;
   private List<QueryParam> resultParams;
+  private Map<String, List<String>> rawParams;
 
-  public SearchCriterion(String type, List<QueryParam> params) {
+  public SearchCriterion(String type, List<QueryParam> params, Map<String, List<String>> rawParams) {
     this.type = type;
     setParams(params);
   }

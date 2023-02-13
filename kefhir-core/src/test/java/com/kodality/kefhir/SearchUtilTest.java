@@ -13,8 +13,8 @@
 package com.kodality.kefhir;
 
 import com.kodality.kefhir.core.model.search.QueryParam;
+import com.kodality.kefhir.core.model.search.SearchCriterionBuilder;
 import com.kodality.kefhir.core.service.conformance.CapabilitySearchConformance;
-import com.kodality.kefhir.core.service.resource.SearchUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -68,14 +68,14 @@ public class SearchUtilTest {
 
   @Test
   public void chaintestNoChain() {
-    List<QueryParam> q = SearchUtil.parse("name", Collections.singletonList("колян"), ResourceType.Patient.name());
+    List<QueryParam> q = SearchCriterionBuilder.parse("name", Collections.singletonList("колян"), ResourceType.Patient.name());
     Assertions.assertEquals(q.size(), 1);
     Assertions.assertEquals(q.get(0).getValues().get(0), "колян");
   }
 
   @Test
   public void chaintest() {
-    List<QueryParam> q = SearchUtil.parse("papa:Patient.papa:Patient.papa:Patient.papa:Patient.name:exact",
+    List<QueryParam> q = SearchCriterionBuilder.parse("papa:Patient.papa:Patient.papa:Patient.papa:Patient.name:exact",
         Collections.singletonList("фарадей"),
         ResourceType.Patient.name());
     Assertions.assertEquals(q.size(), 1);
