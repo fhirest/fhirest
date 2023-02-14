@@ -43,6 +43,7 @@ public class SearchCriterion {
   public SearchCriterion(String type, List<QueryParam> params, Map<String, List<String>> rawParams) {
     this.type = type;
     setParams(params);
+    this.rawParams = rawParams;
   }
 
   public String getType() {
