@@ -70,6 +70,10 @@ public class SearchCriterion {
     return resultParams.stream().filter(q -> q.getKey().equals(key)).collect(Collectors.toList());
   }
 
+  public Map<String, List<String>> getRawParams() {
+    return rawParams;
+  }
+
   public void setParams(List<QueryParam> params) {
     chains = new ArrayList<>();
     conditions = new ArrayList<>();
