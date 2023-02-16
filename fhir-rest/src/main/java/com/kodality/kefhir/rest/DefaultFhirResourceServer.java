@@ -33,6 +33,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r4.model.Parameters;
 
 @Slf4j
 @Named("default")
@@ -219,7 +220,14 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     if (!operation.startsWith("$")) {
       throw new FhirException(400, IssueType.INVALID, "operation must start with $");
     }
-    ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
+    ResourceContent content;
+    if (req.getMethod().equals("GET")) {
+      Parameters parameters = new Parameters();
+      req.getParameters().forEach((k, v) -> parameters.addParameter(k, String.join(",", v)));
+      content = resourceFormatService.compose(parameters, "json");
+    } else {
+      content = new ResourceContent(req.getBody(), req.getContentTypeName());
+    }
     ResourceContent response = resourceOperationService.runTypeOperation(operation, req.getType(), content);
     return new KefhirResponse(200, response);
   }
