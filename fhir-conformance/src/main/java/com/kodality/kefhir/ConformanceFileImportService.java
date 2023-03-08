@@ -1,10 +1,5 @@
 package com.kodality.kefhir;
 
-import com.kodality.kefhir.core.api.resource.ResourceAfterSaveInterceptor;
-import com.kodality.kefhir.core.api.resource.ResourceStorage;
-import com.kodality.kefhir.core.model.ResourceId;
-import com.kodality.kefhir.core.model.ResourceVersion;
-import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.service.conformance.ConformanceInitializationService;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.io.File;
@@ -14,7 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +21,7 @@ import org.hl7.fhir.r4.model.Resource;
 @Singleton
 @RequiredArgsConstructor
 public class ConformanceFileImportService {
-  private final ResourceStorage storehouse;
-  private final List<ResourceAfterSaveInterceptor> afterSaveInterceptors;
+  private final ConformanceSaveService conformanceSaveService;
   private final ResourceFormatService formatService;
   private final ConformanceInitializationService conformanceService;
 
@@ -61,18 +54,9 @@ public class ConformanceFileImportService {
       Set<String> removeDuplicates = new HashSet<>(); // any why are there any?
       b.getEntry().stream()
           .filter(e -> removeDuplicates.add(r.getResourceType().name() + "/" + e.getResource().getId()))
-          /*.parallel()*/.forEach(e -> save(e.getResource(), modified));
+          /*.parallel()*/.forEach(e -> conformanceSaveService.save(e.getResource(), modified));
     } else {
-      save(r, modified);
-    }
-  }
-
-  private void save(Resource r, Date fileModified) {
-    ResourceId resourceId = new ResourceId(r.getResourceType().name(), r.getId());
-    ResourceVersion current = storehouse.load(new VersionId(resourceId));
-    if (current == null || current.getModified().before(fileModified)) {
-      ResourceVersion version = storehouse.save(resourceId, formatService.compose(r, "json"));
-      afterSaveInterceptors.stream().filter(i -> i.getPhase().equals(ResourceAfterSaveInterceptor.TRANSACTION)).forEach(i -> i.handle(version));
+      conformanceSaveService.save(r, modified);
     }
   }
 
