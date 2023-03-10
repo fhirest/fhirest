@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
+import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.PrePopulatedValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.SnapshotGeneratingValidationSupport;
@@ -48,11 +49,12 @@ public class HapiContextHolder implements ConformanceUpdateListener {
     Map<String, IBaseResource> defs = ConformanceHolder.getDefinitions().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
     Map<String, IBaseResource> vs = ConformanceHolder.getValueSets().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
     Map<String, IBaseResource> cs = ConformanceHolder.getCodeSystems().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
-    cs.remove("http://snomed.info/sct"); // TODO; this will not validate snomed.
+//    cs.remove("http://snomed.info/sct"); // TODO; this will not validate snomed.
 
     IValidationSupport chain = new ValidationSupportChain(
         new InMemoryTerminologyServerValidationSupport(context),
         new PrePopulatedValidationSupport(context, defs, vs, cs),
+        new CommonCodeSystemsTerminologyService(context),
         new SnapshotGeneratingValidationSupport(context)
     );
     chain = new CachingValidationSupport(chain);
