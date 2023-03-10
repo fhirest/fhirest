@@ -6,7 +6,7 @@ dependencies {
     exclude group: 'org.apache.commons', module: 'commons-compress'
   }
 
-  implementation 'org.ehcache:ehcache:3.10.1'
+  implementation 'org.ehcache:ehcache:3.10.8'
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
