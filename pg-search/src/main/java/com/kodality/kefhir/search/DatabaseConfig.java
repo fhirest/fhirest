@@ -1,6 +1,7 @@
 package com.kodality.kefhir.search;
 
 import com.kodality.kefhir.PgTransactionManager;
+import com.kodality.kefhir.core.util.BeanContext;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
@@ -11,6 +12,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @Factory
 public class DatabaseConfig {
+    public DatabaseConfig(BeanContext bc) {
+      // bc required to run migrations
+    }
 
   @Bean
   @Requires(missingProperty = "datasources.search-app")
