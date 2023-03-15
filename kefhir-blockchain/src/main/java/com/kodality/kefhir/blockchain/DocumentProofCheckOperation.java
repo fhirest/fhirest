@@ -20,9 +20,9 @@ import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r5.model.Parameters;
+import org.hl7.fhir.r5.model.ResourceType;
+import org.hl7.fhir.r5.model.StringType;
 
 @Singleton
 @RequiredArgsConstructor

@@ -14,9 +14,9 @@
 
 import java.util.List;
 import java.util.Set;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Composition;
-import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r5.model.Bundle;
+import org.hl7.fhir.r5.model.Composition;
+import org.hl7.fhir.r5.model.Reference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ public final class ResourcePropertyUtilTest {
   @Test
   public void findReferences() {
     Composition c = new Composition();
-    c.setSubject(new Reference().setReference("patient"));
+    c.setSubject(List.of(new Reference().setReference("patient")));
     c.addEvent().addDetail().setReference("event");
     Bundle b = new Bundle();
     b.addEntry().setResource(c);

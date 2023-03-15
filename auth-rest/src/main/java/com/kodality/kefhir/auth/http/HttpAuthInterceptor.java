@@ -24,7 +24,7 @@ import java.util.Objects;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 @RequiredArgsConstructor
 @Singleton

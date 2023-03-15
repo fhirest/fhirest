@@ -3,8 +3,8 @@ package com.kodality.kefhir.rest.bundle;
 import java.util.Comparator;
 import java.util.List;
 import org.apache.commons.lang3.ObjectUtils;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
+import org.hl7.fhir.r5.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r5.model.Bundle.HTTPVerb;
 
 public class EntityMethodOrderComparator implements Comparator<BundleEntryComponent> {
   private static final List<HTTPVerb> order = List.of(HTTPVerb.DELETE, HTTPVerb.POST, HTTPVerb.PUT, HTTPVerb.GET);

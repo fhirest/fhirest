@@ -14,8 +14,8 @@ import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r5.model.Bundle;
+import org.hl7.fhir.r5.model.Resource;
 
 @Slf4j
 @Singleton

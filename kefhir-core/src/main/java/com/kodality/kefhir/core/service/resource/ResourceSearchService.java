@@ -36,7 +36,7 @@ import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -51,7 +51,7 @@ public class ResourceSearchService {
   private final FhirPath fhirPath;
 
   public SearchResult search(String resourceType, String... params) {
-    return search(resourceType, MapUtil.toMultimap(params));
+    return search(resourceType, MapUtil.toMultimap((Object[]) params));
   }
 
   public SearchResult search(String resourceType, Map<String, List<String>> params) {
@@ -142,8 +142,8 @@ public class ResourceSearchService {
     });
   }
 
-  private Stream<org.hl7.fhir.r4.model.Reference> evaluate(ResourceVersion entry, String expr) {
-    return fhirPath.<org.hl7.fhir.r4.model.Reference>evaluate(entry.getContent().getValue(), expr).stream();
+  private Stream<org.hl7.fhir.r5.model.Reference> evaluate(ResourceVersion entry, String expr) {
+    return fhirPath.<org.hl7.fhir.r5.model.Reference>evaluate(entry.getContent().getValue(), expr).stream();
   }
 
   private List<String> findReferenceParams(String resourceType, String param) {

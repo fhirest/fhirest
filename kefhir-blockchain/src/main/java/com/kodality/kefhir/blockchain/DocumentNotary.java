@@ -26,7 +26,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.util.concurrent.CompletableFuture;
 import jakarta.inject.Inject;
 import javax.inject.Singleton;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r5.model.Resource;
 
 @Singleton
 class DocumentNotary extends ResourceAfterSaveInterceptor {

@@ -5,7 +5,7 @@ import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.search.sql.ExpressionProvider;
 import com.kodality.kefhir.search.sql.params.DateExpressionProvider;
 import com.kodality.kefhir.util.sql.SqlBuilder;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public class NothingSpecialSpecialParamsProviders {
 

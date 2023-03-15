@@ -18,14 +18,14 @@ import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryResponseComponent;
-import org.hl7.fhir.r4.model.Bundle.BundleEntrySearchComponent;
-import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
-import org.hl7.fhir.r4.model.Bundle.SearchEntryMode;
+import org.hl7.fhir.r5.model.Bundle;
+import org.hl7.fhir.r5.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r5.model.Bundle.BundleEntryRequestComponent;
+import org.hl7.fhir.r5.model.Bundle.BundleEntryResponseComponent;
+import org.hl7.fhir.r5.model.Bundle.BundleEntrySearchComponent;
+import org.hl7.fhir.r5.model.Bundle.BundleType;
+import org.hl7.fhir.r5.model.Bundle.HTTPVerb;
+import org.hl7.fhir.r5.model.Bundle.SearchEntryMode;
 
 public class BundleUtil {
 

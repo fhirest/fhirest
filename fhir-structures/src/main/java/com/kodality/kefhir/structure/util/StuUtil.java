@@ -21,17 +21,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.time.DateUtils;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.ContactPoint;
-import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
-import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.r4.model.Duration;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Type;
+import org.hl7.fhir.r5.model.DataType;
+import org.hl7.fhir.r5.model.CodeableConcept;
+import org.hl7.fhir.r5.model.Coding;
+import org.hl7.fhir.r5.model.ContactPoint;
+import org.hl7.fhir.r5.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.r5.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r5.model.Duration;
+import org.hl7.fhir.r5.model.Extension;
+import org.hl7.fhir.r5.model.Identifier;
+import org.hl7.fhir.r5.model.Parameters;
+import org.hl7.fhir.r5.model.Period;
 
 import static java.util.stream.Collectors.toList;
 
@@ -62,7 +62,7 @@ public final class StuUtil {
     return toMap(extensions.stream(), e -> e.getUrl(), e -> e.getValueAsPrimitive().getValue());
   }
 
-  public static Map<String, Type> toMap(Parameters params) {
+  public static Map<String, DataType> toMap(Parameters params) {
     return toMap(params.getParameter().stream(), p -> p.getName(), p -> p.getValue());
   }
 

@@ -14,7 +14,7 @@ package com.kodality.kefhir.structure.util;
 
 import java.util.Date;
 import org.apache.commons.lang3.time.DateUtils;
-import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r5.model.Period;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

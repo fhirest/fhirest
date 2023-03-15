@@ -11,9 +11,10 @@ import com.kodality.kefhir.structure.service.ResourceFormatService;
 import io.micronaut.http.context.ServerRequestContext;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.OperationOutcome;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.Bundle;
+import org.hl7.fhir.r5.model.Bundle.LinkRelationTypes;
+import org.hl7.fhir.r5.model.OperationOutcome;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public abstract class BaseFhirResourceServer implements FhirResourceServer {
   @Override
@@ -129,14 +130,14 @@ public abstract class BaseFhirResourceServer implements FhirResourceServer {
     queryString = StringUtils.isEmpty(queryString) ? "" : RegExUtils.removePattern(queryString, "[&?]?_page=[0-9]+");
     pageUrl += StringUtils.isEmpty(queryString) ? "?_page=" : ("?" + queryString + "&_page=");
 
-    bundle.addLink().setRelation("self").setUrl(pageUrl + page);
-    bundle.addLink().setRelation("first").setUrl(pageUrl + 1);
-    bundle.addLink().setRelation("last").setUrl(pageUrl + (bundle.getTotal() / count + 1));
+    bundle.addLink().setRelation(LinkRelationTypes.SELF).setUrl(pageUrl + page);
+    bundle.addLink().setRelation(LinkRelationTypes.FIRST).setUrl(pageUrl + 1);
+    bundle.addLink().setRelation(LinkRelationTypes.LAST).setUrl(pageUrl + (bundle.getTotal() / count + 1));
     if (page > 1) {
-      bundle.addLink().setRelation("previous").setUrl(pageUrl + (page - 1));
+      bundle.addLink().setRelation(LinkRelationTypes.PREVIOUS).setUrl(pageUrl + (page - 1));
     }
     if (page * count < bundle.getTotal()) {
-      bundle.addLink().setRelation("next").setUrl(pageUrl + (page + 1));
+      bundle.addLink().setRelation(LinkRelationTypes.NEXT).setUrl(pageUrl + (page + 1));
     }
   }
 }

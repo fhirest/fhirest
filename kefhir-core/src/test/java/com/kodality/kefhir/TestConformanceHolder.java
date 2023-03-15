@@ -15,8 +15,8 @@
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import java.util.HashMap;
 import java.util.List;
-import org.hl7.fhir.r4.model.CapabilityStatement;
-import org.hl7.fhir.r4.model.SearchParameter;
+import org.hl7.fhir.r5.model.CapabilityStatement;
+import org.hl7.fhir.r5.model.SearchParameter;
 
 public class TestConformanceHolder extends ConformanceHolder {
 

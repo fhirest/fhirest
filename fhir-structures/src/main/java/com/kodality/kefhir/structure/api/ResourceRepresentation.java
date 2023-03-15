@@ -13,8 +13,8 @@
  package com.kodality.kefhir.structure.api;
 
 import java.util.List;
-import org.hl7.fhir.r4.elementmodel.Manager.FhirFormat;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r5.elementmodel.Manager.FhirFormat;
+import org.hl7.fhir.r5.model.Resource;
 
 public interface ResourceRepresentation {
   List<String> getMimeTypes();

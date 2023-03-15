@@ -2,8 +2,8 @@
 fhir="$1"
 [[ -z "$fhir" ]] && fhir="http://localhost:8181"
 temp=/tmp/kefhir
-#repo="http://www.hl7.org/fhir/definitions.json.zip"
-repo="https://kexus.kodality.com/repository/store-public/kefhir/definitions.json.zip"
+repo="http://hl7.org/fhir/5.0.0-draft-final/definitions.json.zip"
+#repo="https://kexus.kodality.com/repository/store-public/kefhir/definitions.json.zip"
 
 if [ ! -d $temp ]; then
   mkdir -p $temp && cd $temp

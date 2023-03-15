@@ -31,4 +31,5 @@ endpoints:
     details-visible: ANONYMOUS
     sensitive: false
 
-kefhir.conformance.definitions-url: https://kexus.kodality.com/repository/store-public/kefhir/definitions.json.zip
+kefhir.conformance.definitions-url: http://hl7.org/fhir/5.0.0-snapshot3/definitions.json.zip #fixme to stable version when released
+#kefhir.conformance.definitions-url: https://kexus.kodality.com/repository/store-public/kefhir/definitions.json.zip

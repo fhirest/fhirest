@@ -33,16 +33,17 @@ import java.nio.charset.StandardCharsets;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryResponseComponent;
-import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.OperationOutcome;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.UriType;
+import org.hl7.fhir.r5.model.Bundle;
+import org.hl7.fhir.r5.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r5.model.Bundle.BundleEntryResponseComponent;
+import org.hl7.fhir.r5.model.Bundle.BundleType;
+import org.hl7.fhir.r5.model.Bundle.HTTPVerb;
+import org.hl7.fhir.r5.model.Bundle.LinkRelationTypes;
+import org.hl7.fhir.r5.model.Extension;
+import org.hl7.fhir.r5.model.OperationOutcome;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.Resource;
+import org.hl7.fhir.r5.model.UriType;
 
 @Singleton
 @RequiredArgsConstructor
@@ -102,7 +103,7 @@ public class BundleService implements BundleSaveHandler {
           BundleEntryResponseComponent responseEntry = new BundleEntryResponseComponent();
           responseEntry.setStatus("" + fhirException.getStatusCode());
           BundleEntryComponent responseBundleEntry = responseBundle.addEntry();
-          responseBundleEntry.addLink().setRelation("alternate").setUrl(entry.getFullUrl());
+          responseBundleEntry.addLink().setRelation(LinkRelationTypes.ALTERNATE).setUrl(entry.getFullUrl());
           OperationOutcome outcome = new OperationOutcome();
           outcome.setIssue(fhirException.getIssues());
           responseBundleEntry.setResource(outcome);
@@ -160,7 +161,7 @@ public class BundleService implements BundleSaveHandler {
       newEntry.setResource(resourceFormatService.parse((ResourceContent) resp.getBody()));
     }
     if (entry.getFullUrl() != null) {
-      newEntry.addLink().setRelation("alternate").setUrl(entry.getFullUrl());
+      newEntry.addLink().setRelation(LinkRelationTypes.ALTERNATE).setUrl(entry.getFullUrl());
     }
     if (StringUtils.equals(prefer, PreferredReturn.OperationOutcome)) {
       newEntry.getResponse().setOutcome(new OperationOutcome());

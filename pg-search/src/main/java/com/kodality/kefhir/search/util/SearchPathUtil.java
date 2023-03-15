@@ -15,6 +15,7 @@ public final class SearchPathUtil {
         .map(s -> StringUtils.trim(s))
         .map(s -> replaceAs(s))
         .map(s -> replaceFhirpathAs(s))
+        .map(s -> replaceFhirpathOfType(s))
         .map(s -> replaceFhirpathWhereResolve(s))
         .collect(Collectors.toSet());
   }
@@ -38,6 +39,16 @@ public final class SearchPathUtil {
       return s;
     }
     String[] p = s.split(".as");
+    p[1] = StringUtils.remove(p[1], ")");
+    p[1] = StringUtils.remove(p[1], "(");
+    return p[0] + StringUtils.capitalize(p[1]);
+  }
+
+  private static String replaceFhirpathOfType(String s) {
+    if (!s.contains(".ofType(")) {
+      return s;
+    }
+    String[] p = s.split(".ofType");
     p[1] = StringUtils.remove(p[1], ")");
     p[1] = StringUtils.remove(p[1], "(");
     return p[0] + StringUtils.capitalize(p[1]);
