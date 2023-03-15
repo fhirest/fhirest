@@ -1,5 +1,4 @@
 plugins {
-  id "net.ltgt.apt-idea" version "0.18"
   id 'maven-publish'
 }
 
@@ -25,7 +24,7 @@ allprojects {
 
   dependencies {
     annotationProcessor "org.projectlombok:lombok:1.18.24"
-    implementation "org.projectlombok:lombok:1.18.24"
+    compileOnly "org.projectlombok:lombok:1.18.24"
 
     annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
     annotationProcessor "io.micronaut:micronaut-inject-java"

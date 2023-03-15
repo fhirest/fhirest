@@ -16,7 +16,6 @@ import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.HapiContextHolder;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -30,20 +29,9 @@ public class FhirPath implements ConformanceUpdateListener {
   private final ResourceFormatService formatService;
   private final HapiContextHolder hapiContextHolder;
 
-  @PostConstruct
-  private void init() {
-    engine = new FHIRPathEngine(hapiContextHolder.getHapiContext());
-  }
-
   @Override
   public void updated() {
-//        try {
-//                IWorkerContext fhirContext = SimpleWorkerContext.fromDefinitions(ConformanceHolder.getDefinitions());
-//          ((BaseWorkerContext) fhirContext).setCanRunWithoutTerminology(true);
-//          engine = new FHIRPathEngine(fhirContext);
-//        } catch (IOException | FHIRException e) {
-//          throw new RuntimeException("fhir fhir ");
-//        }
+    engine = new FHIRPathEngine(hapiContextHolder.getHapiContext());
   }
 
   @SuppressWarnings("unchecked")
@@ -59,4 +47,8 @@ public class FhirPath implements ConformanceUpdateListener {
     return evaluate(formatService.parse(content), expression);
   }
 
+  @Override
+  public Integer getOrder() {
+    return 200;
+  }
 }

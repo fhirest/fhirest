@@ -23,7 +23,7 @@ dependencies {
   implementation "io.micronaut:micronaut-http-server-netty"
   implementation("io.micronaut.liquibase:micronaut-liquibase")
 
-  runtimeOnly "ch.qos.logback:logback-classic:1.2.9"
+  runtimeOnly "ch.qos.logback:logback-classic:1.4.5"
 }
 
 shadowJar {
@@ -34,7 +34,7 @@ shadowJar {
 mainClassName = "com.kodality.kefhir.KefhirTestApplication"
 
 tasks.withType(JavaExec) {
-  jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
+  jvmArgs('-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
   if (project.hasProperty('debug')) {
     jvmArgs += ['-Xdebug', "-Xrunjdwp:transport=dt_socket,address=" + project.getProperty('debug') + ",server=y,suspend=n"]
   }
