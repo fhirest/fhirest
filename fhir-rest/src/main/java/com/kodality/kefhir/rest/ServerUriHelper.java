@@ -26,4 +26,7 @@ public class ServerUriHelper {
     return contextPath != null ? StringUtils.removeStart(contextPath, "/") : "";
   }
 
+  public String getHost(HttpRequest<?> request) {
+    return httpHostResolver.resolve(request);
+  }
 }

@@ -129,6 +129,7 @@ public class RuleThemAllFhirController {
   private KefhirRequest buildKefhirRequest(HttpRequest<String> request) {
     KefhirRequest req = new KefhirRequest();
     req.setServerUri(serverUriHelper.buildServerUri(request));
+    req.setServerHost(serverUriHelper.getHost(request));
     req.setMethod(request.getMethodName());
     String p = request.getPath();
     p = StringUtils.removeStart(p, "/");
