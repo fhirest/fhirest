@@ -25,6 +25,7 @@ import com.kodality.kefhir.rest.util.PreferredReturn;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import com.kodality.kefhir.tx.TransactionService;
+import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.context.ServerRequestContext;
 import java.net.URI;
@@ -171,7 +172,9 @@ public class BundleService implements BundleSaveHandler {
 
   private KefhirRequest buildRequest(BundleEntryComponent entry) {
     KefhirRequest req = new KefhirRequest();
-    req.setServerUri(serverUriHelper.buildServerUri(ServerRequestContext.currentRequest().orElseThrow()));
+    HttpRequest<Object> request = ServerRequestContext.currentRequest().orElseThrow();
+    req.setServerUri(serverUriHelper.buildServerUri(request));
+    req.setServerHost(serverUriHelper.getHost(request));
     String method = entry.getRequest().getMethod().toCode();
     req.setTransactionMethod(method);
     URI uri;

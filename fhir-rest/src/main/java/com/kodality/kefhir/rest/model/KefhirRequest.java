@@ -27,6 +27,7 @@ public class KefhirRequest {
   private Map<String, List<String>> headers = new LinkedHashMap<>();
   private String uri;
   private String serverUri;
+  private String serverHost;
   private String body;
   private List<MediaType> accept;
   private MediaType contentType;
