@@ -120,6 +120,9 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
 
   @Override
   public KefhirResponse conditionalUpdate(KefhirRequest req) {
+    if (req.getParameters().isEmpty()) {
+      throw new FhirException(400, IssueType.PROCESSING, "invalid conditional update request");
+    }
     req.getParameters().put(SearchCriterion._COUNT, Collections.singletonList("1"));
     SearchResult result = resourceSearchService.search(req.getType(), req.getParameters());
     if (result.getTotal() > 1) {
