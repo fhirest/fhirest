@@ -4,6 +4,8 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.validation.FhirValidator;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
+import com.kodality.kefhir.core.api.conformance.HapiValidationSupportProvider;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -26,6 +28,7 @@ public class HapiContextHolder implements ConformanceUpdateListener {
   private IWorkerContext hapiContext;
   private FhirContext context;
   private FhirValidator validator;
+  private final List<HapiValidationSupportProvider> validationSupportProviders;
 
   public IWorkerContext getHapiContext() {
     return hapiContext;
@@ -46,28 +49,32 @@ public class HapiContextHolder implements ConformanceUpdateListener {
 
   @Override
   public void updated() {
+    IValidationSupport validationSupport = getValidationSupport();
+
+    hapiContext = new HapiWorkerContext(context, validationSupport);
+    context.setValidationSupport(validationSupport);
+
+    validator = context.newValidator();
+    validator.registerValidatorModule(new FhirInstanceValidator(validationSupport));
+    preloadHapi();
+  }
+
+  protected IValidationSupport getValidationSupport() {
     Map<String, IBaseResource> defs = ConformanceHolder.getDefinitions().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
     Map<String, IBaseResource> vs = ConformanceHolder.getValueSets().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
     Map<String, IBaseResource> cs = ConformanceHolder.getCodeSystems().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
-//    cs.remove("http://snomed.info/sct"); // TODO; this will not validate snomed.
 
-    IValidationSupport chain = new ValidationSupportChain(
+    ValidationSupportChain chain = new ValidationSupportChain(
         new InMemoryTerminologyServerValidationSupport(context),
         new PrePopulatedValidationSupport(context, defs, vs, cs),
         new CommonCodeSystemsTerminologyService(context),
         new SnapshotGeneratingValidationSupport(context)
     );
-    chain = new CachingValidationSupport(chain);
-
-    hapiContext = new HapiWorkerContext(context, chain);
-    context.setValidationSupport(chain);
-
-    validator = context.newValidator();
-    validator.registerValidatorModule(new FhirInstanceValidator(chain));
-    prepareHapi();
+    validationSupportProviders.forEach(p -> chain.addValidationSupport(p.getValidationSupport(context)));
+    return new CachingValidationSupport(chain);
   }
 
-  private void prepareHapi() {
+  private void preloadHapi() {
     try {
       validator.validateWithResult("{}");
     } catch (Exception e) {
