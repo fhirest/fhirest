@@ -21,6 +21,7 @@ import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.context.IWorkerContext;
 import org.hl7.fhir.r4.hapi.ctx.HapiWorkerContext;
+import org.hl7.fhir.r4.model.CodeSystem.CodeSystemContentMode;
 
 @RequiredArgsConstructor
 @Singleton
@@ -62,7 +63,9 @@ public class HapiContextHolder implements ConformanceUpdateListener {
   protected IValidationSupport getValidationSupport() {
     Map<String, IBaseResource> defs = ConformanceHolder.getDefinitions().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
     Map<String, IBaseResource> vs = ConformanceHolder.getValueSets().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
-    Map<String, IBaseResource> cs = ConformanceHolder.getCodeSystems().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
+    Map<String, IBaseResource> cs = ConformanceHolder.getCodeSystems().stream() // validate only COMPLETE ?
+        .filter(c -> c.getContent() == CodeSystemContentMode.COMPLETE)
+        .collect(Collectors.toMap(d -> d.getUrl(), d -> d));
 
     ValidationSupportChain chain = new ValidationSupportChain(
         new InMemoryTerminologyServerValidationSupport(context),
