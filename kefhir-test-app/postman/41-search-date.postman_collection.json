@@ -89,7 +89,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?birthdate=1900-01-01",
+					"raw": "{{kefhir}}/Patient?_id=ps100,ps101&birthdate=1900-01-01",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -97,6 +97,10 @@
 						"Patient"
 					],
 					"query": [
+						{
+							"key": "_id",
+							"value": "ps100,ps101"
+						},
 						{
 							"key": "birthdate",
 							"value": "1900-01-01"
@@ -151,7 +155,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?birthdate=2000-02-02",
+					"raw": "{{kefhir}}/Patient?_id=ps100,ps101birthdate=2000-02-02",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -160,8 +164,8 @@
 					],
 					"query": [
 						{
-							"key": "birthdate",
-							"value": "2000-02-02"
+							"key": "_id",
+							"value": "ps100,ps101birthdate=2000-02-02"
 						}
 					]
 				}
@@ -213,7 +217,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?birthdate=eq2000-02-02",
+					"raw": "{{kefhir}}/Patient?_id=ps100,ps101birthdate=eq2000-02-02",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -222,8 +226,8 @@
 					],
 					"query": [
 						{
-							"key": "birthdate",
-							"value": "eq2000-02-02"
+							"key": "_id",
+							"value": "ps100,ps101birthdate=eq2000-02-02"
 						}
 					]
 				}
@@ -403,7 +407,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?birthdate=2000-02",
+					"raw": "{{kefhir}}/Patient?_id=ps100,ps101&birthdate=2000-02",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -411,6 +415,10 @@
 						"Patient"
 					],
 					"query": [
+						{
+							"key": "_id",
+							"value": "ps100,ps101"
+						},
 						{
 							"key": "birthdate",
 							"value": "2000-02"
@@ -465,7 +473,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?birthdate=2000",
+					"raw": "{{kefhir}}/Patient?_id=ps100,ps101&birthdate=2000",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -473,6 +481,10 @@
 						"Patient"
 					],
 					"query": [
+						{
+							"key": "_id",
+							"value": "ps100,ps101"
+						},
 						{
 							"key": "birthdate",
 							"value": "2000"
@@ -527,7 +539,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?birthdate=le2000-02-02&_id=ps100,ps101",
+					"raw": "{{kefhir}}/Patient?_id=ps100,ps101&birthdate=le2000-02-02",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -536,12 +548,12 @@
 					],
 					"query": [
 						{
-							"key": "birthdate",
-							"value": "le2000-02-02"
-						},
-						{
 							"key": "_id",
 							"value": "ps100,ps101"
+						},
+						{
+							"key": "birthdate",
+							"value": "le2000-02-02"
 						}
 					]
 				}
@@ -592,7 +604,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?birthdate=lt2000-02-02&_id=ps100,ps101",
+					"raw": "{{kefhir}}/Patient?_id=ps100,ps101&birthdate=lt2000-02-02",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -601,12 +613,12 @@
 					],
 					"query": [
 						{
-							"key": "birthdate",
-							"value": "lt2000-02-02"
-						},
-						{
 							"key": "_id",
 							"value": "ps100,ps101"
+						},
+						{
+							"key": "birthdate",
+							"value": "lt2000-02-02"
 						}
 					]
 				}
@@ -657,7 +669,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{kefhir}}/Patient?birthdate=ge2000-02-02&_id=ps100,ps101",
+					"raw": "{{kefhir}}/Patient?_id=ps100,ps101&birthdate=ge2000-02-02",
 					"host": [
 						"{{kefhir}}"
 					],
@@ -666,12 +678,12 @@
 					],
 					"query": [
 						{
-							"key": "birthdate",
-							"value": "ge2000-02-02"
-						},
-						{
 							"key": "_id",
 							"value": "ps100,ps101"
+						},
+						{
+							"key": "birthdate",
+							"value": "ge2000-02-02"
 						}
 					]
 				}
