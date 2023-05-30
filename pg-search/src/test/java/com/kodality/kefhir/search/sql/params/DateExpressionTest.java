@@ -21,8 +21,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.TimeZone;
 import org.hl7.fhir.r5.model.CodeType;
+import org.hl7.fhir.r5.model.Enumeration;
+import org.hl7.fhir.r5.model.Enumerations;
 import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r5.model.Enumerations.VersionIndependentResourceTypesAll;
+import org.hl7.fhir.r5.model.Enumerations.VersionIndependentResourceTypesAllEnumFactory;
+import org.hl7.fhir.r5.model.PrimitiveType;
 import org.hl7.fhir.r5.model.SearchParameter;
+import org.hl7.fhir.r5.model.StringType;
+import org.hl7.fhir.r5.model.TypeConvertor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,16 +40,16 @@ public class DateExpressionTest {
   @BeforeEach
   public void mocks() {
     SearchParameter sp = new SearchParameter();
-    sp.setBase(Collections.singletonList(new CodeType("NotAResource")));
+    sp.setBase(Collections.singletonList(new VersionIndependentResourceTypesAllEnumFactory().fromType(new StringType("Patient"))));
     sp.setCode("barabashka");
-    sp.setExpression("NotAResource.h.o.y");
+    sp.setExpression("Patient.h.o.y");
     TestConformanceHolder.apply(sp);
 
     new BlindexRepository() {
       @Override
       public java.util.List<Blindex> loadIndexes() {
         Blindex b = new Blindex();
-        b.setResourceType("NotAResource");
+        b.setResourceType("Patient");
         b.setPath("h.o.y");
         b.setName("date_index_table");
         return Collections.singletonList(b);
@@ -71,7 +78,7 @@ public class DateExpressionTest {
   }
 
   private void test(String input, String expectedCondition) {
-    QueryParam param = new QueryParam("barabashka", null, SearchParamType.DATE, "NotAResource");
+    QueryParam param = new QueryParam("barabashka", null, SearchParamType.DATE, "Patient");
     param.setValues(Arrays.asList(input));
     SqlBuilder result = testMe.makeExpression(param, "a");
     if (expectedCondition == null) {

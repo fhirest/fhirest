@@ -21,8 +21,8 @@ public class TestConformanceHolder extends ConformanceHolder {
   public static void apply(SearchParameter sp) {
     searchParamGroups = searchParamGroups == null ? new HashMap<>() : searchParamGroups;
     sp.getBase().forEach(ct -> {
-      searchParamGroups.putIfAbsent(ct.getValue(), new HashMap<>());
-      searchParamGroups.get(ct.getValue()).put(sp.getCode(), sp);
+      searchParamGroups.putIfAbsent(ct.getValue().toCode(), new HashMap<>());
+      searchParamGroups.get(ct.getValue().toCode()).put(sp.getCode(), sp);
     });
   }
 

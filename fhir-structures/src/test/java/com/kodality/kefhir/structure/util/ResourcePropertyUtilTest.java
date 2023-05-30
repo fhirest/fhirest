@@ -29,7 +29,7 @@ public final class ResourcePropertyUtilTest {
   public void findReferences() {
     Composition c = new Composition();
     c.setSubject(List.of(new Reference().setReference("patient")));
-    c.addEvent().addDetail().setReference("event");
+    c.addEvent().addDetail().setReference(new Reference("event"));
     Bundle b = new Bundle();
     b.addEntry().setResource(c);
     List<Reference> refs = ResourcePropertyUtil.findProperties(b, Reference.class).collect(toList());

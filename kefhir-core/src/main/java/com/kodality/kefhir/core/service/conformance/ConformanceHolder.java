@@ -52,7 +52,7 @@ public class ConformanceHolder {
     ConformanceHolder.searchParamGroups = new HashMap<>();
     ConformanceHolder.searchParams = new HashMap<>();
     searchParamGroups.forEach(p -> {
-      p.getBase().forEach(ct -> ConformanceHolder.searchParamGroups.computeIfAbsent(ct.getValue(), x -> new HashMap<>()).put(p.getCode(), p));
+      p.getBase().forEach(ct -> ConformanceHolder.searchParamGroups.computeIfAbsent(ct.getValue().toCode(), x -> new HashMap<>()).put(p.getCode(), p));
       searchParams.put(p.getId(), p);
     });
   }
