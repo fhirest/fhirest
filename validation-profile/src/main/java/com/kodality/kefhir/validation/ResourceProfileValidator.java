@@ -22,8 +22,8 @@ import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.service.conformance.HapiContextHolder;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
-import java.util.List;
 import jakarta.inject.Inject;
+import java.util.List;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -103,7 +103,7 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
       if (e instanceof FHIRException) {
         throw new FhirException(500, IssueType.INVALID, e.getMessage());
       }
-      throw new RuntimeException(":/", e);
+      throw new RuntimeException("exception during profile validation: " + e.getMessage(), e);
     }
   }
 
