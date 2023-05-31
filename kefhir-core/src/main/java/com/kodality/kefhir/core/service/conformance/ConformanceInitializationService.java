@@ -13,8 +13,6 @@
 package com.kodality.kefhir.core.service.conformance;
 
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
-import com.kodality.kefhir.core.service.resource.ResourceSearchService;
-import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -25,7 +23,6 @@ import org.hl7.fhir.r5.model.CapabilityStatement;
 import org.hl7.fhir.r5.model.Resource;
 
 import static java.util.concurrent.CompletableFuture.runAsync;
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Singleton
@@ -37,7 +34,9 @@ public class ConformanceInitializationService {
   public void refresh() {
     log.info("refreshing conformance...");
     CompletableFuture.allOf(
-        runAsync(() -> ConformanceHolder.setCapabilityStatement(this.<CapabilityStatement>load("CapabilityStatement").stream().findFirst().orElse(null))),
+        runAsync(() -> ConformanceHolder.setCapabilityStatement(this.<CapabilityStatement>load("CapabilityStatement").stream()
+            .filter(r -> r.getId().equals("base")) // TODO: think if there are several capability statements
+            .findFirst().orElse(null))),
         runAsync(() -> ConformanceHolder.setStructureDefinitions(load("StructureDefinition"))),
         runAsync(() -> ConformanceHolder.setSearchParamGroups(load("SearchParameter"))),
         runAsync(() -> ConformanceHolder.setValueSets(load("ValueSet"))),
