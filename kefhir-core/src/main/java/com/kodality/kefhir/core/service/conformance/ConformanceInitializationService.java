@@ -34,8 +34,9 @@ public class ConformanceInitializationService {
   public void refresh() {
     log.info("refreshing conformance...");
     CompletableFuture.allOf(
+        // TODO: think if there are several capability statements
         runAsync(() -> ConformanceHolder.setCapabilityStatement(this.<CapabilityStatement>load("CapabilityStatement").stream()
-            .filter(r -> r.getId().equals("base")) // TODO: think if there are several capability statements
+            .sorted((o1, o2) -> o1.getId().equals("base") ? 1 : 0)
             .findFirst().orElse(null))),
         runAsync(() -> ConformanceHolder.setStructureDefinitions(load("StructureDefinition"))),
         runAsync(() -> ConformanceHolder.setSearchParamGroups(load("SearchParameter"))),
