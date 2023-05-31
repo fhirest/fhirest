@@ -61,7 +61,7 @@ release snapshot:
   - "./gradlew publish"
   only:
   - master
-  - "/^R\\d/$"
+  - "/^R\\d$/"
 
 release tag:
   stage: release
