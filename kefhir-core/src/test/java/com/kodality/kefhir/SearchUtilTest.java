@@ -18,14 +18,15 @@ import com.kodality.kefhir.core.service.conformance.CapabilitySearchConformance;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.hl7.fhir.r4.model.CapabilityStatement;
-import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestComponent;
-import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
-import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
-import org.hl7.fhir.r4.model.CapabilityStatement.RestfulCapabilityMode;
-import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.SearchParameter;
+import org.hl7.fhir.r5.model.CapabilityStatement;
+import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestComponent;
+import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
+import org.hl7.fhir.r5.model.CapabilityStatement.RestfulCapabilityMode;
+import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r5.model.Enumerations.VersionIndependentResourceTypesAll;
+import org.hl7.fhir.r5.model.ResourceType;
+import org.hl7.fhir.r5.model.SearchParameter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ public class SearchUtilTest {
 
     CapabilityStatementRestResourceComponent resource = rest.addResource().setType(ResourceType.Patient.name());
 
-    addSearchParam(resource, searchParams, "papa", SearchParamType.REFERENCE).addTarget(ResourceType.Patient.name());
+    addSearchParam(resource, searchParams, "papa", SearchParamType.REFERENCE).addTarget(VersionIndependentResourceTypesAll.PATIENT);
     addSearchParam(resource, searchParams, "name", SearchParamType.STRING);
 
     TestConformanceHolder.setCapabilityStatement(capability);
@@ -61,7 +62,7 @@ public class SearchUtilTest {
     sp.setType(type);
     sp.setName(name);
     sp.setCode(name);
-    sp.addBase(resource.getType());
+    sp.addBase(VersionIndependentResourceTypesAll.fromCode(resource.getType()));
     searchParams.add(sp);
     return sp;
   }

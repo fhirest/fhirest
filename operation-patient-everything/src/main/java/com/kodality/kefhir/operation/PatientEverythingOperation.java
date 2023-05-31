@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
-import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.ResourceType;
+import org.hl7.fhir.r5.model.Bundle.BundleType;
+import org.hl7.fhir.r5.model.ResourceType;
 
 @Singleton
 @RequiredArgsConstructor

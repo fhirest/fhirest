@@ -19,15 +19,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
-import org.hl7.fhir.r4.model.CapabilityStatement;
-import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
-import org.hl7.fhir.r4.model.CapabilityStatement.RestfulCapabilityMode;
-import org.hl7.fhir.r4.model.CodeSystem;
-import org.hl7.fhir.r4.model.CompartmentDefinition;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
-import org.hl7.fhir.r4.model.SearchParameter;
-import org.hl7.fhir.r4.model.StructureDefinition;
-import org.hl7.fhir.r4.model.ValueSet;
+import org.hl7.fhir.r5.model.CapabilityStatement;
+import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r5.model.CapabilityStatement.RestfulCapabilityMode;
+import org.hl7.fhir.r5.model.CodeSystem;
+import org.hl7.fhir.r5.model.CompartmentDefinition;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.SearchParameter;
+import org.hl7.fhir.r5.model.StructureDefinition;
+import org.hl7.fhir.r5.model.ValueSet;
 
 public class ConformanceHolder {
   protected static CapabilityStatement capabilityStatement;
@@ -52,7 +52,7 @@ public class ConformanceHolder {
     ConformanceHolder.searchParamGroups = new HashMap<>();
     ConformanceHolder.searchParams = new HashMap<>();
     searchParamGroups.forEach(p -> {
-      p.getBase().forEach(ct -> ConformanceHolder.searchParamGroups.computeIfAbsent(ct.getValue(), x -> new HashMap<>()).put(p.getCode(), p));
+      p.getBase().forEach(ct -> ConformanceHolder.searchParamGroups.computeIfAbsent(ct.getValue().toCode(), x -> new HashMap<>()).put(p.getCode(), p));
       searchParams.put(p.getId(), p);
     });
   }

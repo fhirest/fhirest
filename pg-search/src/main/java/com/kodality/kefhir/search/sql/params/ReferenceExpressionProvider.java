@@ -25,8 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.CodeType;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.Enumeration;
+import org.hl7.fhir.r5.model.Enumerations.VersionIndependentResourceTypesAll;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -121,8 +122,8 @@ public class ReferenceExpressionProvider extends DefaultExpressionProvider {
   }
 
   private static Set<String> getParamTargets(QueryParam param) {
-    List<CodeType> targets = ConformanceHolder.requireSearchParam(param.getResourceType(), param.getKey()).getTarget();
-    return targets.stream().map(c -> c.getValue()).collect(toSet());
+    List<Enumeration<VersionIndependentResourceTypesAll>> targets = ConformanceHolder.requireSearchParam(param.getResourceType(), param.getKey()).getTarget();
+    return targets.stream().map(c -> c.getValue().toCode()).collect(toSet());
   }
 
   private static class ThreadLocalInteger extends ThreadLocal<Map<String, Integer>> {

@@ -30,8 +30,8 @@ import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public final class SearchSqlUtil {
   private static final Map<String, ExpressionProvider> specialParams;

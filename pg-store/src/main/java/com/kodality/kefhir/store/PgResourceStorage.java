@@ -33,7 +33,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import jakarta.inject.Inject;
 import javax.inject.Singleton;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r5.model.Resource;
 
 @Primary
 @Singleton

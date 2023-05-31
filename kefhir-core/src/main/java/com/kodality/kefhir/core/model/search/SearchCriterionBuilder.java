@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
-import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
-import org.hl7.fhir.r4.model.SearchParameter;
+import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
+import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.SearchParameter;
 
 import static java.util.stream.Collectors.toList;
 
@@ -93,7 +93,7 @@ public final class SearchCriterionBuilder {
     ChainForge forge = new ChainForge(key, modifier, conformance.getType(), resourceType);
     if (chain.contains(CHAIN) && conformance.getType() == SearchParamType.REFERENCE) {
       String remainder = chain.contains(CHAIN) ? StringUtils.substringAfter(chain, CHAIN) : null;
-      List<String> targetResourceTypes = sp.getTarget().stream().map(ct -> ct.getValue()).collect(toList());
+      List<String> targetResourceTypes = sp.getTarget().stream().map(ct -> ct.getValue().toCode()).collect(toList());
       if (modifier != null) {
         targetResourceTypes.retainAll(Collections.singletonList(modifier));
       }
@@ -127,7 +127,7 @@ public final class SearchCriterionBuilder {
     }
     if (conformance.getType() == SearchParamType.REFERENCE) {
       return CollectionUtils.isEmpty(sp.getTarget())
-          || sp.getTarget().stream().anyMatch(t -> t.getValue().equals(modifier));
+          || sp.getTarget().stream().anyMatch(t -> t.getCode().equals(modifier));
     }
     // FIXME gone from searchparameters?
     return true;

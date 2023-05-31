@@ -5,7 +5,7 @@ import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.List;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r5.model.Resource;
 
 import static java.util.stream.Collectors.toList;
 

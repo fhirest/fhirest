@@ -16,7 +16,7 @@ import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.search.QueryParam;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public class TokenExpressionProvider extends DefaultExpressionProvider {
 

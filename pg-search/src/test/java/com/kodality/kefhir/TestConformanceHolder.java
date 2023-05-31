@@ -14,15 +14,15 @@
 
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import java.util.HashMap;
-import org.hl7.fhir.r4.model.SearchParameter;
+import org.hl7.fhir.r5.model.SearchParameter;
 
 public class TestConformanceHolder extends ConformanceHolder {
 
   public static void apply(SearchParameter sp) {
     searchParamGroups = searchParamGroups == null ? new HashMap<>() : searchParamGroups;
     sp.getBase().forEach(ct -> {
-      searchParamGroups.putIfAbsent(ct.getValue(), new HashMap<>());
-      searchParamGroups.get(ct.getValue()).put(sp.getCode(), sp);
+      searchParamGroups.putIfAbsent(ct.getValue().toCode(), new HashMap<>());
+      searchParamGroups.get(ct.getValue().toCode()).put(sp.getCode(), sp);
     });
   }
 

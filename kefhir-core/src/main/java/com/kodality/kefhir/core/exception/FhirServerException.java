@@ -12,8 +12,8 @@
  */
  package com.kodality.kefhir.core.exception;
 
-import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueSeverity;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public class FhirServerException extends FhirException {
 

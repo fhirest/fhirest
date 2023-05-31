@@ -27,9 +27,9 @@ import jakarta.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.Reference;
+import org.hl7.fhir.r5.model.Resource;
 
 /**
  * https://www.hl7.org/fhir/http.html#transaction

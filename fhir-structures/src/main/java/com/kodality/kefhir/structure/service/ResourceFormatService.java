@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -29,7 +30,7 @@ import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r5.model.Resource;
 
 @RequiredArgsConstructor
 @Singleton
@@ -48,6 +49,11 @@ public class ResourceFormatService {
         .newCacheConfigurationBuilder(String.class, Resource.class, ResourcePoolsBuilder.heap(2048));
     builder.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(32)));
     cache = manager.createCache("resources", builder.build());
+  }
+
+  @PreDestroy
+  public void destroy(){
+    cache.clear();
   }
 
   public static ResourceFormatService get() {

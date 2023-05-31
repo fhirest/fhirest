@@ -19,9 +19,9 @@ import org.hl7.fhir.common.hapi.validation.support.SnapshotGeneratingValidationS
 import org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain;
 import org.hl7.fhir.common.hapi.validation.validator.FhirInstanceValidator;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.context.IWorkerContext;
-import org.hl7.fhir.r4.hapi.ctx.HapiWorkerContext;
-import org.hl7.fhir.r4.model.CodeSystem.CodeSystemContentMode;
+import org.hl7.fhir.r5.context.IWorkerContext;
+import org.hl7.fhir.r5.hapi.ctx.HapiWorkerContext;
+import org.hl7.fhir.r5.model.Enumerations.CodeSystemContentMode;
 
 @RequiredArgsConstructor
 @Singleton
@@ -45,7 +45,7 @@ public class HapiContextHolder implements ConformanceUpdateListener {
 
   @PostConstruct
   public void init() {
-    context = FhirContext.forR4();
+    context = FhirContext.forR5();
   }
 
   @Override

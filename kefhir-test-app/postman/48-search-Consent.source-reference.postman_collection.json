@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "74e4e5d7-3beb-43aa-b662-f71179627ee3",
+		"_postman_id": "b1c5e18c-2c0c-4a74-bcae-780bd6125b35",
 		"name": "48-search-Consent.source-reference",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5159090"
 	},
 	"item": [
 		{
@@ -36,7 +37,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"request\": {\n        \"url\": \"Consent/consent100\",\n        \"method\": \"PUT\"\n      },\n      \"resource\": {\n  \"resourceType\": \"Consent\",\n  \"status\": \"active\",\n  \"scope\": {\"coding\": [{\"code\": \"patient-privacy\"}]},\n  \"category\": [{\"coding\": [{\"code\": \"59284-0\"}]}],\n  \"sourceReference\": { \"reference\": \"QuestionnaireResponse/qr100\" },\n  \"policyRule\": {\"coding\": [{\"code\": \"OPTIN\"}]}\n}\n}\n  ]\n}\n"
+					"raw": "{\n    \"resourceType\": \"Bundle\",\n    \"type\": \"transaction\",\n    \"entry\": [\n        {\n            \"request\": {\n                \"url\": \"Consent/consent100\",\n                \"method\": \"PUT\"\n            },\n            \"resource\": {\n                \"resourceType\": \"Consent\",\n                \"status\": \"active\",\n                \"scope\": {\n                    \"coding\": [\n                        {\n                            \"code\": \"patient-privacy\"\n                        }\n                    ]\n                },\n                \"category\": [\n                    {\n                        \"coding\": [\n                            {\n                                \"code\": \"59284-0\"\n                            }\n                        ]\n                    }\n                ],\n                \"sourceReference\": [{\n                    \"reference\": \"QuestionnaireResponse/qr100\"\n                }],\n                \"policyRule\": {\n                    \"coding\": [\n                        {\n                            \"code\": \"OPTIN\"\n                        }\n                    ]\n                }\n            }\n        }\n    ]\n}"
 				},
 				"url": {
 					"raw": "{{kefhir}}",

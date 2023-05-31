@@ -15,7 +15,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.Validate;
-import org.hl7.fhir.r4.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
 
 public class QueryParam {
   private final String key;

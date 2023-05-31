@@ -1,7 +1,7 @@
 dependencies {
   api "ca.uhn.hapi.fhir:hapi-fhir-base:$hapiVersion"
-  api "ca.uhn.hapi.fhir:hapi-fhir-structures-r4:$hapiVersion"
-  api "ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r4:$hapiVersion"
+  api "ca.uhn.hapi.fhir:hapi-fhir-structures-r5:$hapiVersion"
+  api "ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r5:$hapiVersion"
   api("ca.uhn.hapi.fhir:hapi-fhir-validation:$hapiVersion") {
     exclude group: 'org.apache.commons', module: 'commons-compress'
   }

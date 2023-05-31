@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.StructureDefinition;
+import org.hl7.fhir.r5.model.StructureDefinition;
 
 @Singleton
 @RequiredArgsConstructor

@@ -14,7 +14,7 @@
 
 import com.kodality.kefhir.core.exception.FhirException;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public final class SearchUtil {
   /**

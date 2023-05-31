@@ -5,7 +5,7 @@ import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.structure.service.ContentTypeService;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
-import org.hl7.fhir.r4.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 @Singleton
 @RequiredArgsConstructor

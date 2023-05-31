@@ -31,4 +31,6 @@ endpoints:
     details-visible: ANONYMOUS
     sensitive: false
 
-kefhir.conformance.definitions-url: https://kexus.kodality.com/repository/store-public/kefhir/definitions.json.zip
+## due to this https://chat.fhir.org/#narrow/stream/179166-implementers/topic/composite.20search.20parameters.20in.20R5, some definitions altered manually and uploaded to kodality repository
+kefhir.conformance.definitions-url: https://kexus.kodality.com/repository/store-public/kefhir/defs-r5.zip
+
