@@ -69,7 +69,7 @@ release tag:
   - export APP_VERSION="$CI_COMMIT_REF_NAME"
   - ./gradlew publish -Pversion="$APP_VERSION"
   only:
-  - "/^R\\d-\\d*$/"
+  - "/^R\\d\\.\\d*$/"
   except:
   - branches
 
