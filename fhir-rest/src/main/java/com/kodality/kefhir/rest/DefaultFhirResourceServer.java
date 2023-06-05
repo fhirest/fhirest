@@ -207,7 +207,15 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
       throw new FhirException(400, IssueType.INVALID, "operation must start with $");
     }
     ResourceId id = new ResourceId(req.getType(), resourceId);
-    ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
+
+    ResourceContent content;
+    if (req.getMethod().equals("GET")) {
+      Parameters parameters = new Parameters();
+      req.getParameters().forEach((k, v) -> parameters.addParameter(k, String.join(",", v)));
+      content = resourceFormatService.compose(parameters, "json");
+    } else {
+      content = new ResourceContent(req.getBody(), req.getContentTypeName());
+    }
     ResourceContent response = resourceOperationService.runInstanceOperation(operation, id, content);
     return new KefhirResponse(200, response);
   }
