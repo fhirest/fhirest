@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.validation.FhirValidator;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.api.conformance.HapiValidationSupportProvider;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,6 +27,9 @@ import org.hl7.fhir.r5.model.Enumerations.CodeSystemContentMode;
 @RequiredArgsConstructor
 @Singleton
 public class HapiContextHolder implements ConformanceUpdateListener {
+
+  public static final List<CodeSystemContentMode> SUPPORTED_CS_CONTENT_MODES = Arrays.asList(CodeSystemContentMode.COMPLETE, CodeSystemContentMode.FRAGMENT);
+
   protected IWorkerContext hapiContext;
   protected FhirContext context;
   protected FhirValidator validator;
@@ -64,7 +68,7 @@ public class HapiContextHolder implements ConformanceUpdateListener {
     Map<String, IBaseResource> defs = ConformanceHolder.getDefinitions().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
     Map<String, IBaseResource> vs = ConformanceHolder.getValueSets().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
     Map<String, IBaseResource> cs = ConformanceHolder.getCodeSystems().stream()
-        .filter(c -> c.getContent() == CodeSystemContentMode.COMPLETE)  // validate only COMPLETE ?
+        .filter(c -> SUPPORTED_CS_CONTENT_MODES.contains(c.getContent()))
         .collect(Collectors.toMap(d -> d.getUrl(), d -> d));
 
     ValidationSupportChain chain = new ValidationSupportChain(
