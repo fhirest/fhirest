@@ -30,7 +30,6 @@ import io.micronaut.http.annotation.Consumes;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Options;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.annotation.Put;
@@ -167,11 +166,6 @@ public class RuleThemAllFhirController {
 
   @Delete(uris = {"{path:.*}"})
   public HttpResponse<?> delete(HttpRequest request) {
-    return execute(request);
-  }
-
-  @Options(uris = {"{path:.*}"})
-  public HttpResponse<?> options(HttpRequest request) {
     return execute(request);
   }
 

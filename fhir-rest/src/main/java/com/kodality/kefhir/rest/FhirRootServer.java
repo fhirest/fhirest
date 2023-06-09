@@ -47,14 +47,9 @@ public class FhirRootServer {
   private final ResourceService resourceService;
   private final Provider<BundleSaveHandler> bundleService;
 
-  @FhirInteraction(interaction = CONFORMANCE, mapping = "OPTIONS /")
+  @FhirInteraction(interaction = CONFORMANCE, mapping = "GET /metadata")
   public KefhirResponse conformance(KefhirRequest req) {
     return new KefhirResponse(200, restResourceInitializer.get().getModifiedCapability());
-  }
-
-  @FhirInteraction(interaction = CONFORMANCE, mapping = "GET /metadata")
-  public KefhirResponse conformance_(KefhirRequest req) {
-    return conformance(req);
   }
 
   @FhirInteraction(interaction = TRANSACTION, mapping = "POST /")
