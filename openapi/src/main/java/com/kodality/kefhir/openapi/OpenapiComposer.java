@@ -40,6 +40,7 @@ import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResource
 @RequiredArgsConstructor
 public class OpenapiComposer implements ConformanceUpdateListener {
   private final HapiContextHolder hapiContextHolder;
+  private final BeanContext bc; //needed for static ref
   private static final String ROOT = "root";
   private static final String FHIR_ROOT = "fhir"; //TODO @see com.kodality.kefhir.rest.RuleThemAllFhirController.FHIR_ROOT
   private String openApiYaml;
