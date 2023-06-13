@@ -57,14 +57,19 @@ function startkefhir() {
   export DB_URL="jdbc:postgresql://localhost:$DB_PORT/kefhirdb"
   [[ -f '/.dockerenv' ]] && export DB_URL="jdbc:postgresql://172.17.0.1:$DB_PORT/kefhirdb"
   export APP_PORT=$APP_PORT
-  ../gradlew run 2>&1 >test-reports/server.log &
+  >test-reports/server.log
+  ../gradlew run 2>&1 | tee test-reports/server.log &
   PID=$!
 
 #  while ! grep -m1 'Startup completed' < test-reports/server.log; do sleep 1; done
 #  ../etc/download-fhir-definitions.sh "http://localhost:$APP_PORT" || finish 1
 
-  while ! grep -m1 'conformance loaded' < test-reports/server.log; do sleep 1; done
-  while ! grep -m1 'blindex initialization finished' < test-reports/server.log; do sleep 1; done
+  while true; do
+    if ! ps -p $PID >/dev/null 2>&1; then exit 1; fi
+    if ! grep -m1 'conformance loaded' < test-reports/server.log; then continue; fi
+    if ! grep -m1 'blindex initialization finished' < test-reports/server.log; then continue; fi
+    break;
+  done
   sleep 5
   echo "app started up."
 }

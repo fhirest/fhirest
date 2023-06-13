@@ -55,6 +55,9 @@ public class OpenapiComposer implements ConformanceUpdateListener {
 
   private OpenAPI generateOpenApi() {
     CapabilityStatement cs = ConformanceHolder.getCapabilityStatement();
+    if (cs == null) {
+      return null;
+    }
 
     OpenAPI openApi = new OpenAPI();
 
