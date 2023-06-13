@@ -42,7 +42,6 @@ public class OpenapiComposer implements ConformanceUpdateListener {
   private final HapiContextHolder hapiContextHolder;
   private final BeanContext bc; //needed for static ref
   private static final String ROOT = "root";
-  private static final String FHIR_ROOT = "fhir"; //TODO @see com.kodality.kefhir.rest.RuleThemAllFhirController.FHIR_ROOT
   private String openApiYaml;
 
   @Override
@@ -203,7 +202,6 @@ public class OpenapiComposer implements ConformanceUpdateListener {
   }
 
   protected Operation addOperation(Paths apiPaths, String path, String method) {
-    path = "/" + FHIR_ROOT + path;
     PathItem pathItem = apiPaths.computeIfAbsent(path, k -> new PathItem());
 
     Operation op = new Operation();
