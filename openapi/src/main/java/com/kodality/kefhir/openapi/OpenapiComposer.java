@@ -1,6 +1,7 @@
 package com.kodality.kefhir.openapi;
 
 import ca.uhn.fhir.rest.api.Constants;
+import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.api.resource.InstanceOperationDefinition;
 import com.kodality.kefhir.core.api.resource.TypeOperationDefinition;
 import com.kodality.kefhir.core.model.InteractionType;
@@ -37,16 +38,22 @@ import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResource
 
 @Singleton
 @RequiredArgsConstructor
-public class OpenapiComposer {
+public class OpenapiComposer implements ConformanceUpdateListener {
   private final HapiContextHolder hapiContextHolder;
   private static final String ROOT = "root";
   private static final String FHIR_ROOT = "fhir"; //TODO @see com.kodality.kefhir.rest.RuleThemAllFhirController.FHIR_ROOT
+  private String openApiYaml;
 
-  public String generateOpenApiYaml() {
-    return Yaml.pretty(generateOpenApi());
+  @Override
+  public void updated() {
+    this.openApiYaml = Yaml.pretty(generateOpenApi());
   }
 
-  public OpenAPI generateOpenApi() {
+  public String generateOpenApiYaml() {
+    return this.openApiYaml;
+  }
+
+  private OpenAPI generateOpenApi() {
     CapabilityStatement cs = ConformanceHolder.getCapabilityStatement();
 
     OpenAPI openApi = new OpenAPI();
@@ -245,4 +252,5 @@ public class OpenapiComposer {
     return new Parameter().name("vid").in("path").description("Resource Version Id").example("1")
         .schema(new Schema<>().type("string").minimum(new BigDecimal(1))).style(Parameter.StyleEnum.SIMPLE);
   }
+
 }
