@@ -1,0 +1,7 @@
+dependencies {
+  api project(':fhir-structures')
+  api project(':kefhir-core')
+
+  implementation 'io.swagger.core.v3:swagger-models:2.2.11'
+  implementation 'io.swagger.core.v3:swagger-core:2.2.11'
+}

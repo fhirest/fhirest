@@ -15,6 +15,7 @@ include 'validation-profile'
 include 'feature-conditional-reference'
 include 'kefhir-blockchain'
 include 'kefhir-scheduler'
+include 'openapi'
 
 include 'kefhir-test-app'
 include 'operation-patient-everything'
