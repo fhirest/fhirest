@@ -203,7 +203,7 @@ public class OpenapiComposer implements ConformanceUpdateListener {
   }
 
   protected Operation addOperation(Paths apiPaths, String path, String method) {
-    path = FHIR_ROOT + path;
+    path = "/" + FHIR_ROOT + path;
     PathItem pathItem = apiPaths.computeIfAbsent(path, k -> new PathItem());
 
     Operation op = new Operation();
