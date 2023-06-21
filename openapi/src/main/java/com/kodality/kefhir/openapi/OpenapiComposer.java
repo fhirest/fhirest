@@ -239,7 +239,7 @@ public class OpenapiComposer implements ConformanceUpdateListener {
   private ApiResponses resourceResponse(String name, String resourceType) {
     return new ApiResponses().addApiResponse(name, new ApiResponse()
         .content(resourceType == null ? null : buildResourceApiContent(resourceType))
-        .description("resource '" + resourceType + "'")
+        .description(resourceType == null ? "response" : ("resource '" + resourceType + "'"))
     );
   }
 
