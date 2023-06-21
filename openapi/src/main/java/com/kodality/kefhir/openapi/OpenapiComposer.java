@@ -175,8 +175,8 @@ public class OpenapiComposer implements ConformanceUpdateListener {
               .name(sp.getName())
               .in("query")
               .description(sp.getDocumentation())
-              .schema(new Schema().type(sp.getType().name()))
-              .style(Parameter.StyleEnum.SIMPLE)
+              .schema(new Schema().type("string"))
+//              .style(Parameter.StyleEnum.SIMPLE)
           ).toList())
       );
     }
