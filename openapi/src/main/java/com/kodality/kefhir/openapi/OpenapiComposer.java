@@ -35,6 +35,8 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r5.model.CapabilityStatement;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceOperationComponent;
+import org.hl7.fhir.r5.model.ContactPoint;
+import org.hl7.fhir.r5.model.ContactPoint.ContactPointSystem;
 
 @Singleton
 @RequiredArgsConstructor
@@ -67,7 +69,8 @@ public class OpenapiComposer implements ConformanceUpdateListener {
         .version(cs.getSoftware().getVersion())
         .contact(new Contact()
             .name(cs.getContactFirstRep().getName())
-            .email(cs.getContactFirstRep().getTelecomFirstRep().getValue())
+            .email(cs.getContactFirstRep().getTelecom().stream().filter(t -> t.getSystem() == ContactPointSystem.EMAIL)
+                .map(ContactPoint::getValue).findFirst().orElse(null))
         )
     );
 
