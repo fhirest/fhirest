@@ -175,6 +175,7 @@ public class OpenapiComposer implements ConformanceUpdateListener {
               .name(sp.getName())
               .in("query")
               .description(sp.getDocumentation())
+              .content(new Content())
               .style(Parameter.StyleEnum.SIMPLE)
           ).toList())
       );
@@ -192,8 +193,10 @@ public class OpenapiComposer implements ConformanceUpdateListener {
                 .requestBody(resourceRequest("Parameters"))
         ) : Stream.empty(),
         instanceOperations.contains(opComponent.getName()) ? Stream.of(
-            addOperation(paths, "/" + resourceType + "/{id}/$" + opComponent.getName(), "GET"),
+            addOperation(paths, "/" + resourceType + "/{id}/$" + opComponent.getName(), "GET")
+                .addParametersItem(resourceIdParameter()),
             addOperation(paths, "/" + resourceType + "/{id}/$" + opComponent.getName(), "POST")
+                .addParametersItem(resourceIdParameter())
                 .requestBody(resourceRequest("Parameters"))
         ) : Stream.empty()
     ).forEach(op -> op
@@ -234,7 +237,10 @@ public class OpenapiComposer implements ConformanceUpdateListener {
   }
 
   private ApiResponses resourceResponse(String name, String resourceType) {
-    return new ApiResponses().addApiResponse(name, new ApiResponse().content(resourceType == null ? null : buildResourceApiContent(resourceType)));
+    return new ApiResponses().addApiResponse(name, new ApiResponse()
+        .content(resourceType == null ? null : buildResourceApiContent(resourceType))
+        .description("resource '" + resourceType + "'")
+    );
   }
 
   private Content buildResourceApiContent(String resourceType) {
