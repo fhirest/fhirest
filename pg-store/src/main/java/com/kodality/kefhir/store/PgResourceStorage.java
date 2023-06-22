@@ -25,13 +25,13 @@ import com.kodality.kefhir.store.repository.ResourceRepository;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import io.micronaut.context.annotation.Primary;
+import jakarta.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import jakarta.inject.Inject;
 import javax.inject.Singleton;
 import org.hl7.fhir.r5.model.Resource;
 
@@ -50,11 +50,6 @@ public class PgResourceStorage implements ResourceStorage {
 
   @Override
   public ResourceVersion save(ResourceId id, ResourceContent content) {
-    return store(id, content);
-  }
-
-  @Override
-  public ResourceVersion saveForce(ResourceId id, ResourceContent content) {
     return store(id, content);
   }
 

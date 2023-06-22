@@ -16,4 +16,6 @@ public interface TransactionManager {
 
   TransactionRef requireTransaction();
 
+  TransactionRef requireNewTransaction();
+
 }

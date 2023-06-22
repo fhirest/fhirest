@@ -19,6 +19,7 @@ import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.core.model.search.HistorySearchCriterion;
 import com.kodality.kefhir.structure.api.ResourceContent;
+import com.kodality.kefhir.tx.TransactionService;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,9 +29,11 @@ import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 @Singleton
 public class ResourceStorageService {
   private final Map<String, ResourceStorage> storages;
+  private final TransactionService tx;
 
-  public ResourceStorageService(List<ResourceStorage> storages) {
+  public ResourceStorageService(List<ResourceStorage> storages, TransactionService tx) {
     this.storages = storages.stream().collect(Collectors.toMap(s -> s.getResourceType(), s -> s));
+    this.tx = tx;
   }
 
   private ResourceStorage getStorage(String resourceType) {
@@ -58,10 +61,6 @@ public class ResourceStorageService {
     getStorage(id.getResourceType()).delete(id);
   }
 
-  /**
-   * use with caution. only business logic
-   * inside transaction
-   */
   public ResourceVersion store(ResourceId id, ResourceContent content) {
     return getStorage(id.getResourceType()).save(id, content);
   }
@@ -71,7 +70,7 @@ public class ResourceStorageService {
    * outside of transaction
    */
   public ResourceVersion storeForce(ResourceId id, ResourceContent content) {
-    return getStorage(id.getResourceType()).saveForce(id, content);
+    return tx.newTransaction(() -> getStorage(id.getResourceType()).save(id, content));
   }
 
   public String generateNewId(String resourceType) {
