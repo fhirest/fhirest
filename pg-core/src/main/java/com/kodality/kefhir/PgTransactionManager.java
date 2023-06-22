@@ -10,13 +10,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.kodality.kefhir;
+package com.kodality.kefhir;
 
 import com.kodality.kefhir.tx.TransactionManager;
 import com.kodality.kefhir.tx.TransactionRef;
 import javax.sql.DataSource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -28,9 +29,20 @@ public class PgTransactionManager extends TransactionAspectSupport implements Tr
   }
 
   @Override
+  public TransactionRef requireNewTransaction() {
+    DefaultTransactionAttribute txAttr = new DefaultTransactionAttribute(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, "requireNewTransaction");
+    return pgTransactionRef(txInfo);
+  }
+
+  @Override
   public TransactionRef requireTransaction() {
     DefaultTransactionAttribute txAttr = new DefaultTransactionAttribute();
-    TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, null);
+    TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, "requireTransaction");
+    return pgTransactionRef(txInfo);
+  }
+
+  private TransactionRef pgTransactionRef(TransactionInfo txInfo) {
     return new TransactionRef() {
 
       @Override

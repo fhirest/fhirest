@@ -40,8 +40,8 @@ function finish() {
   ex=$1
   [[ -z "$ex" ]] && ex = 0
   echo 'cleaning up...'
+  kill -15 `jobs -p` >/dev/null 2>&1
   docker rm -vf $DB_DOCKER_NAME >/dev/null 2>&1
-  kill -9 `jobs -p` >/dev/null 2>&1
   exit $ex
 }
 

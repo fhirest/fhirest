@@ -30,10 +30,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Singleton;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
@@ -42,13 +41,25 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Singleton
-@RequiredArgsConstructor
 public class ResourceSearchService {
   private static final String INCLUDE_ALL = "*";
-  private final Optional<ResourceSearchHandler> searchHandler;
+  
+  private final Map<String, ResourceSearchHandler> searchHandlers;
   private final List<ResourceBeforeSearchInterceptor> beforeSearchInterceptors;
   private final ResourceStorageService storageService;
   private final FhirPath fhirPath;
+
+  public ResourceSearchService(List<ResourceSearchHandler> searchHandlers, List<ResourceBeforeSearchInterceptor> beforeSearchInterceptors,
+                               ResourceStorageService storageService, FhirPath fhirPath) {
+    this.searchHandlers = searchHandlers.stream().collect(Collectors.toMap(s -> s.getResourceType(), s -> s));
+    this.beforeSearchInterceptors = beforeSearchInterceptors;
+    this.storageService = storageService;
+    this.fhirPath = fhirPath;
+  }
+
+  private ResourceSearchHandler getSearchHandler(String resourceType) {
+    return searchHandlers.getOrDefault(resourceType, searchHandlers.get(ResourceSearchHandler.DEFAULT));
+  }
 
   public SearchResult search(String resourceType, String... params) {
     return search(resourceType, MapUtil.toMultimap((Object[]) params));
@@ -59,11 +70,12 @@ public class ResourceSearchService {
   }
 
   public SearchResult search(SearchCriterion criteria) {
-    if (searchHandler.isEmpty()) {
+    ResourceSearchHandler searchHandler = getSearchHandler(criteria.getType());
+    if (searchHandler == null) {
       throw new FhirServerException(500, "search module not installed");
     }
     beforeSearchInterceptors.forEach(i -> i.handle(criteria));
-    SearchResult result = searchHandler.get().search(criteria);
+    SearchResult result = searchHandler.search(criteria);
     List<ResourceId> loadIds = result.getEntries().stream().filter(e -> e.getContent() == null).map(e -> (ResourceId) e.getId()).collect(toList());
     Map<String, ResourceVersion> versions = storageService.load(loadIds).stream().collect(toMap(v -> v.getId().getResourceReference(), v -> v));
     result.getEntries()

@@ -26,17 +26,7 @@ public interface ResourceStorage {
     return DEFAULT;
   }
 
-  /**
-   * transaction supports
-   */
   ResourceVersion save(ResourceId id, ResourceContent content);
-
-  /**
-   * transaction requires new
-   */
-  default ResourceVersion saveForce(ResourceId id, ResourceContent content) {
-    return save(id, content);
-  }
 
   void delete(ResourceId id);
 

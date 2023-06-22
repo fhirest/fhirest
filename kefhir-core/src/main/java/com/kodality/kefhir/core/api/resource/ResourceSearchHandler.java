@@ -16,5 +16,11 @@ import com.kodality.kefhir.core.model.search.SearchCriterion;
 import com.kodality.kefhir.core.model.search.SearchResult;
 
 public interface ResourceSearchHandler {
+  String DEFAULT = "default";
+
+  default String getResourceType() {
+    return DEFAULT;
+  }
+
   SearchResult search(SearchCriterion criteria);
 }
