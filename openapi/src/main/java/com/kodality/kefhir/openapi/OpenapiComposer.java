@@ -275,9 +275,7 @@ public class OpenapiComposer implements ConformanceUpdateListener {
 
   private Parameter operationParameter(OperationDefinitionParameterComponent defParameter) {
     return new Parameter().name(defParameter.getName()).in("query").description(defParameter.getDocumentation())
-        .schema(new Schema<>().type("string")
-            .minimum(BigDecimal.valueOf(defParameter.getMin()))
-            .maximum("*".equals(defParameter.getMax()) ? null : new BigDecimal(defParameter.getMax())));
+        .schema(new Schema<>().type("string"));
   }
 
   private Parameter resourceIdParameter() {
