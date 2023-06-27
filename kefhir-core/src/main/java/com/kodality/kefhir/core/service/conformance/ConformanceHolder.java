@@ -24,6 +24,7 @@ import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResource
 import org.hl7.fhir.r5.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r5.model.CodeSystem;
 import org.hl7.fhir.r5.model.CompartmentDefinition;
+import org.hl7.fhir.r5.model.OperationDefinition;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.SearchParameter;
 import org.hl7.fhir.r5.model.StructureDefinition;
@@ -39,6 +40,7 @@ public class ConformanceHolder {
   protected static List<CodeSystem> codeSystems;
   protected static Map<String, CompartmentDefinition> compartmentDefinitions;
   protected static Map<String, Map<String, List<String>>> compartmentDefinitionParams;
+  protected static Map<String, OperationDefinition> operationDefinitions;
 
   protected static void setCapabilityStatement(CapabilityStatement capabilityStatement) {
     ConformanceHolder.capabilityStatement = capabilityStatement;
@@ -63,6 +65,11 @@ public class ConformanceHolder {
 
   protected static void setCodeSystems(List<CodeSystem> codeSystems) {
     ConformanceHolder.codeSystems = codeSystems;
+  }
+
+  protected static void setOperationDefinitions(List<OperationDefinition> operationDefinitions) {
+    ConformanceHolder.operationDefinitions = operationDefinitions == null ? null
+        : operationDefinitions.stream().collect(Collectors.toMap(s -> s.getUrl(), s -> s));
   }
 
   protected static void setCompartmentDefinitions(List<CompartmentDefinition> compartmentDefinitions) {
@@ -139,6 +146,14 @@ public class ConformanceHolder {
       throw new FhirException(400, IssueType.NOTSUPPORTED, details);
     }
     return param;
+  }
+
+  public static List<OperationDefinition> getOperationDefinitions() {
+    return operationDefinitions == null ? List.of() : new ArrayList<>(operationDefinitions.values());
+  }
+
+  public static OperationDefinition getOperationDefinition(String url) {
+    return operationDefinitions == null ? null : operationDefinitions.get(url);
   }
 
 }

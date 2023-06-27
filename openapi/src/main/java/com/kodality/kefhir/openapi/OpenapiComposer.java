@@ -2,8 +2,6 @@ package com.kodality.kefhir.openapi;
 
 import ca.uhn.fhir.rest.api.Constants;
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
-import com.kodality.kefhir.core.api.resource.InstanceOperationDefinition;
-import com.kodality.kefhir.core.api.resource.TypeOperationDefinition;
 import com.kodality.kefhir.core.model.InteractionType;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.core.service.conformance.HapiContextHolder;
@@ -28,7 +26,7 @@ import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import jakarta.inject.Singleton;
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -37,6 +35,9 @@ import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResource
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceOperationComponent;
 import org.hl7.fhir.r5.model.ContactPoint;
 import org.hl7.fhir.r5.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.r5.model.OperationDefinition;
+import org.hl7.fhir.r5.model.OperationDefinition.OperationDefinitionParameterComponent;
+import org.hl7.fhir.r5.model.OperationDefinition.OperationParameterScope;
 
 @Singleton
 @RequiredArgsConstructor
@@ -169,42 +170,60 @@ public class OpenapiComposer implements ConformanceUpdateListener {
           addOperation(paths, "/" + resourceType, "GET"),
           addOperation(paths, "/" + resourceType + "/_search", "POST")
       ).forEach(op -> op
-          .addTagsItem(resourceType).summary(InteractionType.SEARCHTYPE)
-          .responses(resourceResponse("200", "Bundle"))
-          .setParameters(resource.getSearchParam().stream().map(sp -> new Parameter()
-              .name(sp.getName())
-              .in("query")
-              .description(sp.getDocumentation())
-              .schema(new Schema().type("string"))
+              .addTagsItem(resourceType).summary(InteractionType.SEARCHTYPE)
+              .responses(resourceResponse("200", "Bundle"))
+              .setParameters(resource.getSearchParam().stream().map(sp -> new Parameter()
+                      .name(sp.getName())
+                      .in("query")
+                      .description(sp.getDocumentation())
+                      .schema(new Schema().type("string"))
 //              .style(Parameter.StyleEnum.SIMPLE)
-          ).toList())
+              ).toList())
       );
     }
   }
 
   private void registerResourceOperation(Paths paths, String resourceType, CapabilityStatementRestResourceOperationComponent opComponent) {
-    //TODO: take info from OperationDefinition resource when supported
-    List<String> instanceOperations = BeanContext.getBeans(InstanceOperationDefinition.class).stream().map(d -> d.getOperationName()).toList();
-    List<String> typeOperations = BeanContext.getBeans(TypeOperationDefinition.class).stream().map(d -> d.getOperationName()).toList();
-    Stream.concat(
-        typeOperations.contains(opComponent.getName()) ? Stream.of(
-            addOperation(paths, "/" + resourceType + "/$" + opComponent.getName(), "GET"),
-            addOperation(paths, "/" + resourceType + "/$" + opComponent.getName(), "POST")
-                .requestBody(resourceRequest("Parameters"))
-        ) : Stream.empty(),
-        instanceOperations.contains(opComponent.getName()) ? Stream.of(
-            addOperation(paths, "/" + resourceType + "/{id}/$" + opComponent.getName(), "GET")
-                .addParametersItem(resourceIdParameter()),
-            addOperation(paths, "/" + resourceType + "/{id}/$" + opComponent.getName(), "POST")
-                .addParametersItem(resourceIdParameter())
-                .requestBody(resourceRequest("Parameters"))
-        ) : Stream.empty()
-    ).forEach(op -> op
-        .addTagsItem(resourceType)
-        .summary(InteractionType.OPERATION)
-        .description(opComponent.getName())
-        .responses(resourceResponse("200", null))
-    );
+    OperationDefinition opDef = ConformanceHolder.getOperationDefinition(opComponent.getDefinition());
+    if (opDef == null) {
+      return;
+    }
+    if (opDef.getType()) {
+      addOperation(paths, "/" + resourceType + "/$" + opComponent.getName(), "POST")
+          .requestBody(resourceRequest("Parameters"))
+          .addTagsItem(resourceType)
+          .summary(InteractionType.OPERATION)
+          .description(opComponent.getName())
+          .responses(resourceResponse("200", null));
+      addOperation(paths, "/" + resourceType + "/$" + opComponent.getName(), "GET")
+          .parameters(opDef.getParameter().stream()
+              .filter(p -> p.getScope() == null || p.getScope().stream().anyMatch(ps -> ps.getCode().equals(OperationParameterScope.TYPE.toCode())))
+              .map(this::operationParameter)
+              .collect(Collectors.toList()))
+          .addTagsItem(resourceType)
+          .summary(InteractionType.OPERATION)
+          .description(opComponent.getName())
+          .responses(resourceResponse("200", null));
+    }
+    if (opDef.getInstance()) {
+      addOperation(paths, "/" + resourceType + "/{id}/$" + opComponent.getName(), "POST")
+          .addParametersItem(resourceIdParameter())
+          .requestBody(resourceRequest("Parameters"))
+          .addTagsItem(resourceType)
+          .summary(InteractionType.OPERATION)
+          .description(opComponent.getName())
+          .responses(resourceResponse("200", null));
+      addOperation(paths, "/" + resourceType + "/{id}/$" + opComponent.getName(), "GET")
+          .parameters(opDef.getParameter().stream()
+              .filter(p -> p.getScope() == null || p.getScope().stream().anyMatch(ps -> ps.getCode().equals(OperationParameterScope.INSTANCE.toCode())))
+              .map(this::operationParameter)
+              .collect(Collectors.toList()))
+          .addParametersItem(resourceIdParameter())
+          .addTagsItem(resourceType)
+          .summary(InteractionType.OPERATION)
+          .description(opComponent.getName())
+          .responses(resourceResponse("200", null));
+    }
   }
 
   protected Operation addOperation(Paths apiPaths, String path, String method) {
@@ -252,6 +271,13 @@ public class OpenapiComposer implements ConformanceUpdateListener {
     jsonSchema.setExample(exampleJson);
     result.addMediaType(Constants.CT_FHIR_JSON_NEW, jsonSchema);
     return result;
+  }
+
+  private Parameter operationParameter(OperationDefinitionParameterComponent defParameter) {
+    return new Parameter().name(defParameter.getName()).in("query").description(defParameter.getDocumentation())
+        .schema(new Schema<>().type("string")
+            .minimum(BigDecimal.valueOf(defParameter.getMin()))
+            .maximum("*".equals(defParameter.getMax()) ? null : new BigDecimal(defParameter.getMax())));
   }
 
   private Parameter resourceIdParameter() {

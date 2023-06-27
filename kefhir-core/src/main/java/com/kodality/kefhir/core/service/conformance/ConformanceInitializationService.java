@@ -41,7 +41,8 @@ public class ConformanceInitializationService {
         runAsync(() -> ConformanceHolder.setSearchParamGroups(load("SearchParameter"))),
         runAsync(() -> ConformanceHolder.setValueSets(load("ValueSet"))),
         runAsync(() -> ConformanceHolder.setCodeSystems(load("CodeSystem"))),
-        runAsync(() -> ConformanceHolder.setCompartmentDefinitions(load("CompartmentDefinition")))
+        runAsync(() -> ConformanceHolder.setCompartmentDefinitions(load("CompartmentDefinition"))),
+        runAsync(() -> ConformanceHolder.setOperationDefinitions(load("OperationDefinition")))
     ).join();
     conformanceUpdateListeners.stream().sorted(Comparator.comparing(ConformanceUpdateListener::getOrder)).forEach(l -> l.updated());
     if (ConformanceHolder.getCapabilityStatement() != null) {
