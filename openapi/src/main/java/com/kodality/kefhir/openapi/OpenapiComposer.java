@@ -29,15 +29,19 @@ import java.math.BigDecimal;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r5.model.CapabilityStatement;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceOperationComponent;
 import org.hl7.fhir.r5.model.ContactPoint;
 import org.hl7.fhir.r5.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.r5.model.Enumerations.OperationParameterUse;
 import org.hl7.fhir.r5.model.OperationDefinition;
 import org.hl7.fhir.r5.model.OperationDefinition.OperationDefinitionParameterComponent;
-import org.hl7.fhir.r5.model.OperationDefinition.OperationParameterScope;
+
+import static org.hl7.fhir.r5.model.OperationDefinition.OperationParameterScope.INSTANCE;
+import static org.hl7.fhir.r5.model.OperationDefinition.OperationParameterScope.TYPE;
 
 @Singleton
 @RequiredArgsConstructor
@@ -197,7 +201,8 @@ public class OpenapiComposer implements ConformanceUpdateListener {
           .responses(resourceResponse("200", null));
       addOperation(paths, "/" + resourceType + "/$" + opComponent.getName(), "GET")
           .parameters(opDef.getParameter().stream()
-              .filter(p -> p.getScope() == null || p.getScope().stream().anyMatch(ps -> ps.getCode().equals(OperationParameterScope.TYPE.toCode())))
+              .filter(p -> p.getUse() == null || p.getUse() == OperationParameterUse.IN)
+              .filter(p -> CollectionUtils.isEmpty(p.getScope()) || p.getScope().stream().anyMatch(ps -> ps.getCode().equals(TYPE.toCode())))
               .map(this::operationParameter)
               .collect(Collectors.toList()))
           .addTagsItem(resourceType)
@@ -215,7 +220,8 @@ public class OpenapiComposer implements ConformanceUpdateListener {
           .responses(resourceResponse("200", null));
       addOperation(paths, "/" + resourceType + "/{id}/$" + opComponent.getName(), "GET")
           .parameters(opDef.getParameter().stream()
-              .filter(p -> p.getScope() == null || p.getScope().stream().anyMatch(ps -> ps.getCode().equals(OperationParameterScope.INSTANCE.toCode())))
+              .filter(p -> p.getUse() == null || p.getUse() == OperationParameterUse.IN)
+              .filter(p -> CollectionUtils.isEmpty(p.getScope()) || p.getScope().stream().anyMatch(ps -> ps.getCode().equals(INSTANCE.toCode())))
               .map(this::operationParameter)
               .collect(Collectors.toList()))
           .addParametersItem(resourceIdParameter())
