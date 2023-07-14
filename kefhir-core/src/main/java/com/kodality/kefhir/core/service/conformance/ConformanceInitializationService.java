@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r5.model.CapabilityStatement;
 import org.hl7.fhir.r5.model.Resource;
+import org.hl7.fhir.r5.model.TerminologyCapabilities;
 
 import static java.util.concurrent.CompletableFuture.runAsync;
 
@@ -37,6 +38,8 @@ public class ConformanceInitializationService {
         // TODO: think if there are several capability statements
         runAsync(() -> ConformanceHolder.setCapabilityStatement(
             this.<CapabilityStatement>load("CapabilityStatement").stream().min((o1, o2) -> o1.getId().equals("base") ? 0 : 1).orElse(null))),
+        runAsync(() -> ConformanceHolder.setTerminologyCapabilities(
+            this.<TerminologyCapabilities>load("TerminologyCapabilities").stream().findFirst().orElse(null))),
         runAsync(() -> ConformanceHolder.setStructureDefinitions(load("StructureDefinition"))),
         runAsync(() -> ConformanceHolder.setSearchParamGroups(load("SearchParameter"))),
         runAsync(() -> ConformanceHolder.setValueSets(load("ValueSet"))),

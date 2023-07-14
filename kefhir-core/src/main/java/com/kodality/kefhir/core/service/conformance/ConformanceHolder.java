@@ -28,10 +28,12 @@ import org.hl7.fhir.r5.model.OperationDefinition;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.SearchParameter;
 import org.hl7.fhir.r5.model.StructureDefinition;
+import org.hl7.fhir.r5.model.TerminologyCapabilities;
 import org.hl7.fhir.r5.model.ValueSet;
 
 public class ConformanceHolder {
   protected static CapabilityStatement capabilityStatement;
+  protected static TerminologyCapabilities terminologyCapabilities;
   protected static List<StructureDefinition> definitions;
   //resource type -> code -> param
   protected static Map<String, Map<String, SearchParameter>> searchParamGroups;
@@ -44,6 +46,10 @@ public class ConformanceHolder {
 
   protected static void setCapabilityStatement(CapabilityStatement capabilityStatement) {
     ConformanceHolder.capabilityStatement = capabilityStatement;
+  }
+
+  protected static void setTerminologyCapabilities(TerminologyCapabilities terminologyCapabilities) {
+    ConformanceHolder.terminologyCapabilities = terminologyCapabilities;
   }
 
   protected static void setStructureDefinitions(List<StructureDefinition> definitions) {
@@ -88,6 +94,10 @@ public class ConformanceHolder {
 
   public static CapabilityStatement getCapabilityStatement() {
     return capabilityStatement;
+  }
+
+  public static TerminologyCapabilities getTerminologyCapabilities() {
+    return terminologyCapabilities;
   }
 
   public static CapabilityStatementRestResourceComponent getCapabilityResource(String type) {

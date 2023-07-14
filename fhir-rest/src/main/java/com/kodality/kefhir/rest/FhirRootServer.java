@@ -15,6 +15,7 @@ package com.kodality.kefhir.rest;
 import com.kodality.kefhir.core.exception.FhirServerException;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.model.search.HistorySearchCriterion;
+import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.core.service.resource.ResourceService;
 import com.kodality.kefhir.rest.bundle.BundleSaveHandler;
 import com.kodality.kefhir.rest.interaction.FhirInteraction;
@@ -49,6 +50,10 @@ public class FhirRootServer {
 
   @FhirInteraction(interaction = CONFORMANCE, mapping = "GET /metadata")
   public KefhirResponse conformance(KefhirRequest req) {
+    String mode = req.getParameter("mode");
+    if ("terminology".equals(mode)) {
+      return new KefhirResponse(200, ConformanceHolder.getTerminologyCapabilities());
+    }
     return new KefhirResponse(200, restResourceInitializer.get().getModifiedCapability());
   }
 
