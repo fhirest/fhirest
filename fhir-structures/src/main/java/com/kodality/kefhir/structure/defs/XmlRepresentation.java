@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r5.elementmodel.Manager.FhirFormat;
 import org.hl7.fhir.r5.formats.IParser;
 import org.hl7.fhir.r5.formats.IParser.OutputStyle;
 import org.hl7.fhir.r5.formats.XmlParser;
@@ -35,8 +34,8 @@ public class XmlRepresentation implements ResourceRepresentation {
   }
 
   @Override
-  public FhirFormat getFhirFormat() {
-    return FhirFormat.XML;
+  public String getName() {
+    return "xml";
   }
 
   @Override

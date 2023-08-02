@@ -19,6 +19,7 @@ import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MutableHttpResponse;
+import java.util.List;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,8 +65,9 @@ public class FhirExceptionHandler {
   }
 
   protected MutableHttpResponse<?> toResponse(HttpRequest<?> request, OperationOutcome outcome, int statusCode) {
-    String ct = request.getHeaders().get("Accept") == null ? "application/json" : request.getHeaders().get("Accept");
-    ResourceContent c = resourceFormatService.compose(outcome, ct);
+    List<String> ct = request.getHeaders().get("Accept") == null ? List.of() : List.of(request.getHeaders().get("Accept").split(","));
+    String accept = resourceFormatService.findSupported(ct).stream().findFirst().orElse("application/json");
+    ResourceContent c = resourceFormatService.compose(outcome, accept);
 
     MutableHttpResponse<?> response = HttpResponse.status(HttpStatus.valueOf(statusCode));
     response.body(c.getValue());

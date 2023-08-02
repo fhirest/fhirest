@@ -51,7 +51,7 @@ public class ContentTypeService {
   }
 
   public boolean isSameType(String t1, String t2) {
-    return Objects.equals(t1, t2) || getMimeType(t1).equals(getMimeType(t2));
+    return Objects.equals(t1, t2) || Objects.equals(getMimeType(t1), getMimeType(t2));
   }
 
 }

@@ -1,11 +1,13 @@
 package com.kodality.kefhir.rest.filter;
 
+import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import io.micronaut.http.MediaType;
 import java.util.List;
 import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 @Singleton
 @RequiredArgsConstructor
@@ -22,14 +24,17 @@ public class FormatFilter implements KefhirRequestFilter {
   public void handleRequest(KefhirRequest req) {
     String format = req.getParameter(FORMAT);
     if (format != null) {
-      String mime = resourceFormatService.findPresenter(format).get().getMimeTypes().get(0);
+      String mime = resourceFormatService.findPresenter(format).map(p -> p.getMimeTypes().get(0))
+          .orElseThrow(() -> new FhirException(406, IssueType.INVALID, "unsupported _format"));
       req.setAccept(List.of(MediaType.of(mime)));
       req.setContentType(MediaType.of(mime));
       req.getParameters().remove(FORMAT);
     }
-    // XXX text/html? added this to open urls directly on browser
-    if (req.getAccept() == null || req.getAccept().get(0).getName().equals("*/*") || req.getAccept().get(0).getName().equals("text/html")) {
-      req.setAccept(req.getContentType() == null ? MediaType.APPLICATION_JSON_TYPE : req.getContentType());
+    if (req.getAccept() == null) {
+      req.setAccept(req.getContentType() == null ? MediaType.ALL_TYPE : req.getContentType());
+    }
+    if (resourceFormatService.findSupported(req.getAccept().stream().map(MediaType::getName).toList()).isEmpty()) {
+      throw new FhirException(406, IssueType.INVALID, "unsupported Accept");
     }
   }
 }

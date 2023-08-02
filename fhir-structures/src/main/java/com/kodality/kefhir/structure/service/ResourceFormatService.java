@@ -17,6 +17,7 @@ import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.api.ResourceRepresentation;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -52,7 +53,7 @@ public class ResourceFormatService {
   }
 
   @PreDestroy
-  public void destroy(){
+  public void destroy() {
     cache.clear();
   }
 
@@ -60,13 +61,17 @@ public class ResourceFormatService {
     return instance;
   }
 
-  public ResourceContent compose(Resource resource, String mime) {
+  public ResourceContent compose(Resource resource, String... mimes) {
+    //XXX: default json if empty?
+    return compose(resource, mimes == null ? List.of("json") : List.of(mimes));
+  }
+
+  public ResourceContent compose(Resource resource, List<String> mimes) {
     if (resource == null) {
       return null;
     }
-    ResourceRepresentation presenter =
-        findPresenter(mime).orElse(findPresenter("json").orElseThrow(() -> new ParseException("unknown format")));
-    return new ResourceContent(presenter.compose(resource), presenter.getFhirFormat().getExtension());
+    ResourceRepresentation presenter = findPresenter(mimes).orElseThrow(() -> new ParseException("unknown format"));
+    return new ResourceContent(presenter.compose(resource), presenter.getName());
   }
 
   public <R extends Resource> R parse(ResourceContent content) {
@@ -88,11 +93,20 @@ public class ResourceFormatService {
     return (R) cache.get(key).copy();
   }
 
-  public Optional<ResourceRepresentation> findPresenter(String ct) {
-    if (ct == null) {
+  public List<String> findSupported(List<String> contentTypes) {
+    //TODO: why json? find first? ordered?
+    return contentTypes.stream().map(ct -> ct.equals("*/*") ? "application/json" : ct).filter(ct -> findPresenter(ct).isPresent()).toList();
+  }
+
+  public Optional<ResourceRepresentation> findPresenter(List<String> contentTypes) {
+    return contentTypes.stream().map(m -> findPresenter(m).orElse(null)).filter(Objects::nonNull).findFirst();
+  }
+
+  public Optional<ResourceRepresentation> findPresenter(String contentType) {
+    if (contentType == null) {
       return Optional.empty();
     }
-    String mime = StringUtils.substringBefore(ct, ";");
+    String mime = StringUtils.substringBefore(contentType, ";");
     return representations.stream().filter(c -> c.getMimeTypes().contains(mime)).findFirst();
   }
 

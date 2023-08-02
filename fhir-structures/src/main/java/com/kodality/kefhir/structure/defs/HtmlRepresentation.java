@@ -12,70 +12,54 @@
  */
 package com.kodality.kefhir.structure.defs;
 
-import com.kodality.kefhir.structure.api.ParseException;
 import com.kodality.kefhir.structure.api.ResourceRepresentation;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import javax.inject.Singleton;
-import org.apache.commons.lang3.StringUtils;
+import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.formats.IParser;
 import org.hl7.fhir.r5.formats.IParser.OutputStyle;
 import org.hl7.fhir.r5.formats.JsonParser;
 import org.hl7.fhir.r5.model.Resource;
 
 @Singleton
-public class JsonRepresentation implements ResourceRepresentation {
+@RequiredArgsConstructor
+public class HtmlRepresentation implements ResourceRepresentation {
 
   @Override
   public List<String> getMimeTypes() {
-    return Arrays.asList("application/fhir+json", "application/json+fhir", "application/json", "text/json", "json");
+    return List.of("text/html");
   }
 
   @Override
   public String getName() {
-    return "json";
+    return "html";
   }
 
   @Override
   public String compose(Resource resource) {
     try {
-      ByteArrayOutputStream output = new ByteArrayOutputStream();
-      JsonParser parser = new JsonParser();
-      parser.compose(output, resource);
-      return output.toString(StandardCharsets.UTF_8);
-    } catch (Exception e) {
+      IParser p = new JsonParser().setOutputStyle(OutputStyle.PRETTY);
+      String json = p.composeString(resource);
+      return "<html><body><div><pre>" + json + "</pre></div></body></html>";
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
   @Override
   public boolean isParsable(String input) {
-    String strip = StringUtils.stripStart(input, null);
-    return StringUtils.startsWithAny(strip, "{", "[");
+    return false;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public <R extends Resource> R parse(String input) {
-    try {
-      return (R) new JsonParser().parse(input);
-    } catch (Exception e) {
-      throw new ParseException(e);
-    }
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public String prettify(String content) {
-    //TODO: ugly
-    IParser p = new JsonParser().setOutputStyle(OutputStyle.PRETTY);
-    try {
-      return p.composeString(p.parse(content));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    return content;
   }
 
 }

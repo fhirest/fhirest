@@ -24,6 +24,7 @@ import com.kodality.kefhir.structure.service.ResourceFormatService;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
+import io.micronaut.http.MediaType;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Consumes;
@@ -86,23 +87,16 @@ public class RuleThemAllFhirController {
     MutableHttpResponse<String> r = HttpResponse.status(HttpStatus.valueOf(resp.getStatus()));
     resp.getHeaders().forEach((k, vv) -> vv.stream().filter(Objects::nonNull).forEach(v -> r.header(k, v)));
     if (resp.getBody() != null) {
-      String accept = req.getAccept().get(0).getName(); //FIXME .get(0)
+      List<String> accepts = req.getAccept().stream().map(MediaType::getName).toList();
+      String accept = resourceFormatService.findSupported(accepts).get(0);
       ResourceContent formatted = format(resp.getBody(), accept);
       if ("true".equals(req.getParameter(PRETTY))) {
         prettify(formatted);
       }
       r.body(formatted.getValue());
-      r.contentType(getResponseContentType(accept, formatted) + ";charset=utf-8"); // XXX ugly charset
+      r.contentType(accept + ";charset=utf-8");
     }
     return r;
-  }
-
-  private String getResponseContentType(String accept, ResourceContent content) {
-    List<String> contentTypes = resourceFormatService.findPresenter(content.getContentType()).get().getMimeTypes();
-    if (accept != null && contentTypes.contains(accept)) {
-      return accept;
-    }
-    return contentTypes.get(0);
   }
 
   private ResourceContent format(Object body, String contentType) {
