@@ -563,8 +563,8 @@
 							"pm.test(\"OK\", function () {",
 							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
-							"pm.test(\"body is xml\", function () {",
-							"    pm.expect(postman.getResponseHeader(\"Content-Type\").startsWith(\"application/xml\")).to.eq(true);",
+							"pm.test(\"body is html\", function () {",
+							"    pm.expect(postman.getResponseHeader(\"Content-Type\").startsWith(\"text/html\")).to.eq(true);",
 							"  pm.expect(pm.response.text().startsWith('<')).to.eq(true);",
 							"});"
 						],
