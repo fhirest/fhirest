@@ -13,6 +13,7 @@
 package com.kodality.kefhir.core.service.conformance;
 
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
+import com.kodality.kefhir.core.service.conformance.loader.ConformanceLoader;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -30,7 +31,7 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 @RequiredArgsConstructor
 public class ConformanceInitializationService {
   private final List<ConformanceUpdateListener> conformanceUpdateListeners;
-  private final ConformanceResourceLoader conformanceResourceLoader;
+  private final ConformanceLoader conformanceLoader;
 
   public void refresh() {
     log.info("refreshing conformance...");
@@ -56,7 +57,7 @@ public class ConformanceInitializationService {
   }
 
   protected <T extends Resource> List<T> load(String name) {
-    return conformanceResourceLoader.load(name);
+    return conformanceLoader.load(name);
   }
 
 }

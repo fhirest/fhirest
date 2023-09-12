@@ -1,4 +1,4 @@
-package com.kodality.kefhir.core.service.conformance;
+package com.kodality.kefhir.core.service.conformance.loader;
 
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
@@ -11,7 +11,7 @@ import static java.util.stream.Collectors.toList;
 
 @Singleton
 @RequiredArgsConstructor
-public class DefaultConformanceResourceLoader implements ConformanceResourceLoader {
+public class ConformanceStorageLoader implements ConformanceLoader {
 
   private final ResourceSearchService resourceSearchService;
   private final ResourceFormatService resourceFormatService;
