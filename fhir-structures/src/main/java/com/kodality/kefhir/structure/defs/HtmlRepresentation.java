@@ -45,6 +45,13 @@ public class HtmlRepresentation implements ResourceRepresentation {
       String json = p.composeString(resource);
       json = StringEscapeUtils.escapeHtml4(json);
       String html = (resource instanceof DomainResource dr) ? dr.getText().getDivAsString() : null;
+      String script = """
+        function addUrlParameter(name, value) {
+          const urlParams = new URLSearchParams(window.location.search);
+          urlParams.set(name, value);
+          window.location.search = decodeURIComponent(urlParams);
+        }
+      """;
       String css = """
         body {
           margin: 8px
@@ -80,8 +87,9 @@ public class HtmlRepresentation implements ResourceRepresentation {
           margin-bottom: 0px;
         }
       """;
-      return "<html><head><style>"+css+"</style></head><body>"
-             + "<div class=\"header\">This is a HTML representation of a resource. <a href=\"?_format=json\">Raw json</a></div>"
+      return "<html><head><style>"+css+"</style><script>"+script+"</script></head><body>"
+             + "<div class=\"header\">This is a HTML representation of a resource. "
+             + "<a href=\"javascript:addUrlParameter('_format', 'json');\">Raw json</a></div>"
              + (html == null ? "" : "<h1>Resource narrative</h1><div class=\"resource-text\">" + html + "</div>")
              + "<h1>Resource json</h1><div class=\"resource-json\"><pre>" + json + "</pre></div>"
              + "</body></html>";
