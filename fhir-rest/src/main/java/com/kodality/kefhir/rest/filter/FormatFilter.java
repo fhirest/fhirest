@@ -5,7 +5,7 @@ import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import io.micronaut.http.MediaType;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 

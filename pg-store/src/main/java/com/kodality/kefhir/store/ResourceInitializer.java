@@ -16,7 +16,7 @@ import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import com.kodality.kefhir.store.repository.ResourceFunctionsRepository;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
 @Singleton

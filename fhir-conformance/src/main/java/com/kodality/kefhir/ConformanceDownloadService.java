@@ -4,6 +4,7 @@ import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
+import jakarta.inject.Provider;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,8 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import jakarta.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 

@@ -12,7 +12,8 @@
  */
 package com.kodality.kefhir.auth;
 
-import javax.inject.Singleton;
+
+import jakarta.inject.Singleton;
 
 @Singleton
 public class ClientIdentity {

@@ -31,7 +31,7 @@ import io.micronaut.http.context.ServerRequestContext;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.Bundle;

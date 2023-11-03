@@ -12,8 +12,8 @@
  */
 package com.kodality.kefhir.store.repository;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Named;;
+import jakarta.inject.Singleton;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Singleton

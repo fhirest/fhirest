@@ -14,10 +14,10 @@ package com.kodality.kefhir.core.service.conformance;
 
 import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.loader.ConformanceLoader;
+import jakarta.inject.Singleton;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r5.model.CapabilityStatement;

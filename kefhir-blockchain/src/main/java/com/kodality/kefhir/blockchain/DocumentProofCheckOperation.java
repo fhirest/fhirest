@@ -18,7 +18,7 @@ import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.core.service.resource.ResourceService;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.Parameters;
 import org.hl7.fhir.r5.model.ResourceType;

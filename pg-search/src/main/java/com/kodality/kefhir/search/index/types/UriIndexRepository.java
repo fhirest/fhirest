@@ -16,7 +16,7 @@ import com.kodality.kefhir.search.index.TypeIndexRepository;
 import com.kodality.kefhir.util.sql.SqlBuilder;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
 import static java.util.stream.Collectors.joining;

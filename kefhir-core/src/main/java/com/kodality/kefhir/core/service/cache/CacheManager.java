@@ -15,7 +15,7 @@ package com.kodality.kefhir.core.service.cache;
 import jakarta.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.function.Supplier;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.ehcache.Cache;
 import org.ehcache.config.builders.CacheConfigurationBuilder;

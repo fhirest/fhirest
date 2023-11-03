@@ -4,7 +4,7 @@ import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.rest.DefaultFhirResourceServer;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.rest.model.KefhirResponse;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.ResourceType;
 

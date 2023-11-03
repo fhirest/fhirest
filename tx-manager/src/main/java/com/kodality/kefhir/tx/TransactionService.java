@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
 import static java.util.stream.Collectors.toList;

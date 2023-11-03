@@ -15,8 +15,8 @@ package com.kodality.kefhir.search.repository;
 import java.util.HashMap;
 import java.util.Map;
 import jakarta.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import jakarta.inject.Named;;
+import jakarta.inject.Singleton;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Singleton

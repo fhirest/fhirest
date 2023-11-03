@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;

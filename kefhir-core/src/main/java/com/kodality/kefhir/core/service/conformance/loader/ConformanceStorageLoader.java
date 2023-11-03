@@ -3,7 +3,7 @@ package com.kodality.kefhir.core.service.conformance.loader;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.Resource;
 

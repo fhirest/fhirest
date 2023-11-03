@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.Bundle.BundleType;
 import org.hl7.fhir.r5.model.ResourceType;

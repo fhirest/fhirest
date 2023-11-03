@@ -2,7 +2,7 @@ package com.kodality.kefhir.scheduler.api;
 
 import com.kodality.kefhir.scheduler.JobRepository;
 import java.util.Date;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

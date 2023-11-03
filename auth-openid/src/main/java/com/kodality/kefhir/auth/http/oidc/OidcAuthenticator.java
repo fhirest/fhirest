@@ -17,7 +17,7 @@ import com.kodality.kefhir.auth.http.AuthenticationProvider;
 import com.kodality.kefhir.auth.http.HttpAuthorization;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
 //TODO: .well-known

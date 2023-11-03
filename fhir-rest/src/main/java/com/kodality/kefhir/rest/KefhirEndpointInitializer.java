@@ -20,7 +20,7 @@ import com.kodality.kefhir.core.service.conformance.ConformanceHolder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;

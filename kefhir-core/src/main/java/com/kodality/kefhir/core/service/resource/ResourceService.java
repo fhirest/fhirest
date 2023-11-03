@@ -23,7 +23,7 @@ import com.kodality.kefhir.core.util.ResourceUtil;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.tx.TransactionService;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
 import static com.kodality.kefhir.core.api.resource.ResourceAfterSaveInterceptor.FINALIZATION;

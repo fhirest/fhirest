@@ -21,7 +21,7 @@ import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.rest.model.KefhirResponse;
 import java.util.List;
 import java.util.Objects;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;

@@ -2,7 +2,7 @@ package com.kodality.kefhir.search;
 
 import com.kodality.kefhir.search.repository.BlindexRepository;
 import io.micronaut.scheduling.annotation.Scheduled;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

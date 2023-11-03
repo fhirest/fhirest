@@ -24,7 +24,7 @@ import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import jakarta.inject.Inject;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r5.model.CodeableConcept;

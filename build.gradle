@@ -1,11 +1,13 @@
 plugins {
   id 'maven-publish'
+  id("org.owasp.dependencycheck") version "8.4.2"
 }
 
 group "com.kodality.kefhir"
 
 allprojects {
   apply plugin: "java-library"
+  apply plugin: "org.owasp.dependencycheck"
 
   version rootProject.version
   group rootProject.group
@@ -23,21 +25,21 @@ allprojects {
   }
 
   dependencies {
-    annotationProcessor "org.projectlombok:lombok:1.18.24"
-    compileOnly "org.projectlombok:lombok:1.18.24"
+    annotationProcessor "org.projectlombok:lombok:1.18.30"
+    compileOnly "org.projectlombok:lombok:1.18.30"
 
     annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
     annotationProcessor "io.micronaut:micronaut-inject-java"
 
     api platform("io.micronaut:micronaut-bom:$micronautVersion")
-    api "io.micronaut:micronaut-inject"
-    api "io.micronaut:micronaut-runtime"
-    api "javax.inject:javax.inject:1"
-    api 'org.glassfish.hk2.external:jakarta.inject:2.6.1'
+    implementation "io.micronaut:micronaut-inject"
+    implementation "io.micronaut:micronaut-runtime"
+    implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
-    api "org.apache.commons:commons-collections4:4.4"
-    api "org.apache.commons:commons-lang3:3.12.0"
-    api "commons-io:commons-io:2.11.0"
+    implementation "org.apache.commons:commons-collections4:4.4"
+    implementation "org.apache.commons:commons-lang3:3.13.0"
+    implementation "commons-io:commons-io:2.15.0"
   }
 }
 

@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class YupiAuthenticator implements AuthenticationProvider {

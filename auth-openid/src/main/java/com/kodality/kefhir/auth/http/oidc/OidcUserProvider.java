@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 

@@ -16,7 +16,7 @@ import com.kodality.kefhir.core.api.conformance.ConformanceUpdateListener;
 import com.kodality.kefhir.core.service.conformance.HapiContextHolder;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r5.model.Resource;

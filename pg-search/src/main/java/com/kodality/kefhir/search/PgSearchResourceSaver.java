@@ -17,7 +17,7 @@ import com.kodality.kefhir.core.api.resource.ResourceAfterSaveInterceptor;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.model.ResourceVersion;
 import com.kodality.kefhir.search.index.IndexService;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class PgSearchResourceSaver extends ResourceAfterSaveInterceptor implements ResourceAfterDeleteInterceptor {

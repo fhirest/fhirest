@@ -8,7 +8,7 @@ import com.kodality.kefhir.core.model.VersionId;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import java.util.Date;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r5.model.Resource;

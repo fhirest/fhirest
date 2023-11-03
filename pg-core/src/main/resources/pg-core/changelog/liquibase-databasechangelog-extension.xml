@@ -9,14 +9,14 @@
   <property name="schemaName" value="public"/>
   <property name="changeLogTableName" value="${database.databaseChangeLogTableName}"/>
 
-  <changeSet id="liquibase-drop-pk-if-exists" author="">
+  <changeSet id="liquibase-drop-pk-if-exists" author="pg-core">
     <preConditions onFail="MARK_RAN">
       <primaryKeyExists schemaName="${schemaName}" tableName="${changeLogTableName}" primaryKeyName="PK_${changeLogTableName}"/>
     </preConditions>
     <dropPrimaryKey schemaName="${schemaName}" tableName="${changeLogTableName}" constraintName="PK_${changeLogTableName}"/>
   </changeSet>
 
-  <changeSet id="liquibase-create-pk" author="">
+  <changeSet id="liquibase-create-pk" author="kodality">
     <addPrimaryKey schemaName="${schemaName}" tableName="${changeLogTableName}" constraintName="PK_${changeLogTableName}" columnNames="ID,AUTHOR,FILENAME"/>
   </changeSet>
 

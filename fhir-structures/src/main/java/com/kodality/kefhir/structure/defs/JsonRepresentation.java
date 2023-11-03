@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.formats.IParser;
 import org.hl7.fhir.r5.formats.IParser.OutputStyle;

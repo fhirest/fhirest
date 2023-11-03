@@ -19,7 +19,7 @@ import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 

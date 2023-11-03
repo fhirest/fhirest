@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.Validate;
 import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;

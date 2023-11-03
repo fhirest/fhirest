@@ -3,7 +3,7 @@ package com.kodality.kefhir.scheduler;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
-import javax.inject.Named;
+import jakarta.inject.Named;;
 import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 

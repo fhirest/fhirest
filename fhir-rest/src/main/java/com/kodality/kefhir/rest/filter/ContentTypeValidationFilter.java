@@ -3,7 +3,7 @@ package com.kodality.kefhir.rest.filter;
 import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.structure.service.ContentTypeService;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 

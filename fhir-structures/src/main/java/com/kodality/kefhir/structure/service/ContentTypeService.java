@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class ContentTypeService {

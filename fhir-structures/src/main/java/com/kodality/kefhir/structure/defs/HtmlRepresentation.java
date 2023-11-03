@@ -13,9 +13,9 @@
 package com.kodality.kefhir.structure.defs;
 
 import com.kodality.kefhir.structure.api.ResourceRepresentation;
+import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.util.List;
-import javax.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.StringEscapeUtils;
 import org.hl7.fhir.r5.formats.IParser;

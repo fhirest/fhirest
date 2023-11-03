@@ -17,7 +17,7 @@ import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.rest.filter.KefhirRequestExecutionInterceptor;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import java.util.Set;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 

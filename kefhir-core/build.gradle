@@ -2,7 +2,7 @@
 dependencies {
   api project(':fhir-structures')
   api project(':tx-manager')
-  api 'org.ehcache:ehcache:3.10.1'
+  api "org.ehcache:ehcache:${ehcacheVersion}"
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"

@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-  <changeSet id="extensions-2" author="">
+  <changeSet id="extensions-2" author="pg-core">
     <sql>
       CREATE EXTENSION IF NOT EXISTS pg_trgm SCHEMA public;
       CREATE EXTENSION IF NOT EXISTS btree_gist SCHEMA public;

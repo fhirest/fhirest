@@ -18,7 +18,7 @@ import com.kodality.kefhir.core.model.search.SearchCriterion;
 import com.kodality.kefhir.core.model.search.SearchResult;
 import com.kodality.kefhir.search.repository.PgSearchRepository;
 import java.util.List;
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
 @Singleton
