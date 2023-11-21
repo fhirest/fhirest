@@ -14,11 +14,11 @@ package com.kodality.kefhir.core.service.conformance.loader;
 
 import com.kodality.kefhir.core.util.BeanContext;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
+import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.hl7.fhir.r5.model.Bundle;
 import org.hl7.fhir.r5.model.Resource;
 
