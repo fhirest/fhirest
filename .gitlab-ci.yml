@@ -3,39 +3,39 @@ image: openjdk:17-slim
 cache:
   key: "$CI_PROJECT_NAME"
   paths:
-  - "/tmp/kefhir"
-  - ".gradle"
-  - build
+    - "/tmp/kefhir"
+    - ".gradle"
+    - build
 
 stages:
-- prepare
-- build
-- test
-- release
-- deploy
+  - prepare
+  - build
+  - test
+  - release
+  - deploy
 
 build-builder:
   image: docker:dind
   stage: prepare
   script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  - docker build -t $CI_REGISTRY/kodality/fhir/kefhir/kefhir-builder:latest -f .gitlab-ci.Dockerfile  .
-  - docker push $CI_REGISTRY/kodality/fhir/kefhir/kefhir-builder:latest
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/kodality/fhir/kefhir/kefhir-builder:latest -f .gitlab-ci.Dockerfile  .
+    - docker push $CI_REGISTRY/kodality/fhir/kefhir/kefhir-builder:latest
   only:
     refs:
-    - master
+      - master
     changes:
-    - ".gitlab-ci.Dockerfile"
+      - ".gitlab-ci.Dockerfile"
 
 build:
   stage: build
   script:
-  - "./gradlew clean assemble"
+    - "./gradlew clean assemble"
 
 test-junit:
   stage: test
   script:
-  - "./gradlew test"
+    - "./gradlew test"
   artifacts:
     when: always
     name: Test_Result
@@ -47,49 +47,49 @@ test-newman:
   image: registry.gitlab.com/kodality/fhir/kefhir/kefhir-builder:latest
   stage: test
   script:
-  - kefhir-test-app/run-tests.sh
+    - kefhir-test-app/run-tests.sh
   artifacts:
     when: always
     name: Test_Result
     expire_in: 1 day
     paths:
-    - "./kefhir-test-app/test-reports"
+      - "./kefhir-test-app/test-reports"
 
 release snapshot:
   stage: release
   script:
-  - "./gradlew publish"
+    - "./gradlew publish"
   only:
-  - master
-  - "/^R\\d$/"
+    - master
+    - /^R\d*\.\d*$/
 
 release tag:
   stage: release
   script:
-  - export APP_VERSION="$CI_COMMIT_REF_NAME"
-  - ./gradlew publish -Pversion="$APP_VERSION"
+    - export APP_VERSION="$CI_COMMIT_REF_NAME"
+    - ./gradlew publish -Pversion="$APP_VERSION"
   only:
-  - "/^R\\d\\.\\d*$/"
+    - /^R\d*\.\d*\.\d*$/
   except:
-  - branches
+    - branches
 
 release scripts:
   image: registry.gitlab.com/kodality/fhir/kefhir/kefhir-builder:latest
   stage: release
   script:
-  - etc/publish-scripts.sh
+    - etc/publish-scripts.sh
   only:
     refs:
-    - master
+      - master
     changes:
-    - etc/*
+      - etc/*
 
 build-examples:
   stage: deploy
   trigger:
     project: kodality/fhir/kefhir-examples
   only:
-  - master
+    - master
 
 include:
-- template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
