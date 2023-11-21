@@ -1,9 +1,7 @@
 plugins {
-  id "com.github.johnrengelman.shadow" version "7.1.0"
-  id "application"
+  id("io.micronaut.minimal.library") apply false
+  id("io.micronaut.minimal.application")
 }
-
-apply plugin: "application"
 
 dependencies {
   api project(':kefhir-core')
@@ -18,30 +16,28 @@ dependencies {
   api project(':operation-patient-everything')
   api project(':openapi')
 
-  implementation platform("io.micronaut:micronaut-bom:$micronautVersion")
-  annotationProcessor "io.micronaut:micronaut-inject-java"
   implementation "io.micronaut:micronaut-runtime"
   implementation "io.micronaut:micronaut-http-server-netty"
   implementation("io.micronaut.liquibase:micronaut-liquibase")
+  implementation 'org.liquibase:liquibase-core:4.24.0' //rewrite micronauts liquibase version to a fresher one
 
+  runtimeOnly 'io.micronaut:micronaut-jackson-databind'
   runtimeOnly "ch.qos.logback:logback-classic:1.4.5"
 }
 
-shadowJar {
-  zip64 true
-  mergeServiceFiles()
+application {
+  mainClass.set("com.kodality.kefhir.KefhirTestApplication")
 }
 
-mainClassName = "com.kodality.kefhir.KefhirTestApplication"
+micronaut {
+  version "${micronautVersion}"
+  runtime("netty")
+}
 
-tasks.withType(JavaExec) {
-  jvmArgs('-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote')
+run {
+  jvmArgs = ['-XX:TieredStopAtLevel=1']
   if (project.hasProperty('debug')) {
     jvmArgs += ['-Xdebug', "-Xrunjdwp:transport=dt_socket,address=" + project.getProperty('debug') + ",server=y,suspend=n"]
   }
 }
 
-tasks.withType(JavaCompile){
-  options.encoding = "UTF-8"
-  options.compilerArgs.add('-parameters')
-}

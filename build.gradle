@@ -1,6 +1,8 @@
 plugins {
   id 'maven-publish'
   id("org.owasp.dependencycheck") version "8.4.2"
+  id 'io.micronaut.minimal.library' version "4.1.2"
+  id 'io.micronaut.minimal.application' version "4.1.2"
 }
 
 group "com.kodality.kefhir"
@@ -28,13 +30,10 @@ allprojects {
     annotationProcessor "org.projectlombok:lombok:1.18.30"
     compileOnly "org.projectlombok:lombok:1.18.30"
 
-    annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
-    annotationProcessor "io.micronaut:micronaut-inject-java"
-
-    api platform("io.micronaut:micronaut-bom:$micronautVersion")
     implementation "io.micronaut:micronaut-inject"
     implementation "io.micronaut:micronaut-runtime"
     implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
+    implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
     implementation "org.apache.commons:commons-collections4:4.4"
@@ -45,6 +44,15 @@ allprojects {
 
 subprojects { Project project ->
   apply plugin: "maven-publish"
+  apply plugin: "io.micronaut.minimal.library"
+
+  micronaut {
+    version "${micronautVersion}"
+    processing {
+      incremental(true)
+      annotations("com.kodality.kefhir.*")
+    }
+  }
 
   java {
     withSourcesJar()
