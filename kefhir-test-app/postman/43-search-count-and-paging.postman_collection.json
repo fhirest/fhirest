@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "dd61c5ae-ade8-4ec3-b747-bf060bd9cc57",
+		"_postman_id": "ab999b87-af25-4d88-8c13-e752dd26dea4",
 		"name": "43-search-count-and-paging",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2623563"
 	},
 	"item": [
 		{
@@ -255,6 +256,213 @@
 						{
 							"key": "_page",
 							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "links-last-1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().link.filter(l => l.relation === 'last')[0].url.endsWith(\"_page=8\")).true",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?_id=zombie1,zombie2,zombie3,zombie4,zombie5,zombie6,zombie7,zombie8&_sort=_id&_count=1",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "zombie1,zombie2,zombie3,zombie4,zombie5,zombie6,zombie7,zombie8"
+						},
+						{
+							"key": "_sort",
+							"value": "_id"
+						},
+						{
+							"key": "_count",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "links-last-2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().link.filter(l => l.relation === 'last')[0].url.endsWith(\"_page=4\")).true",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?_id=zombie1,zombie2,zombie3,zombie4,zombie5,zombie6,zombie7,zombie8&_sort=_id&_count=2",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "zombie1,zombie2,zombie3,zombie4,zombie5,zombie6,zombie7,zombie8"
+						},
+						{
+							"key": "_sort",
+							"value": "_id"
+						},
+						{
+							"key": "_count",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "links-last-3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().link.filter(l => l.relation === 'last')[0].url.endsWith(\"_page=3\")).true",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{kefhir}}/Patient?_id=zombie1,zombie2,zombie3,zombie4,zombie5,zombie6,zombie7,zombie8&_sort=_id&_count=3",
+					"host": [
+						"{{kefhir}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "zombie1,zombie2,zombie3,zombie4,zombie5,zombie6,zombie7,zombie8"
+						},
+						{
+							"key": "_sort",
+							"value": "_id"
+						},
+						{
+							"key": "_count",
+							"value": "3"
 						}
 					]
 				}
