@@ -132,7 +132,7 @@ public abstract class BaseFhirResourceServer implements FhirResourceServer {
 
     bundle.addLink().setRelation(LinkRelationTypes.SELF).setUrl(pageUrl + page);
     bundle.addLink().setRelation(LinkRelationTypes.FIRST).setUrl(pageUrl + 1);
-    bundle.addLink().setRelation(LinkRelationTypes.LAST).setUrl(pageUrl + (bundle.getTotal() / count + 1));
+    bundle.addLink().setRelation(LinkRelationTypes.LAST).setUrl(pageUrl + ((int) Math.ceil((double) bundle.getTotal() / count)));
     if (page > 1) {
       bundle.addLink().setRelation(LinkRelationTypes.PREVIOUS).setUrl(pageUrl + (page - 1));
     }
