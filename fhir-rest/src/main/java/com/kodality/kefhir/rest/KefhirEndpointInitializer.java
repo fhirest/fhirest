@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import jakarta.inject.Singleton;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -63,7 +65,7 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
   private void restart() {
     stop();
     if (capability != null) {
-      capability.getRest().stream().filter(r -> r.getMode() == RestfulCapabilityMode.SERVER).forEach(r -> start(r));
+      capability.getRest().stream().filter(r -> r.getMode() == RestfulCapabilityMode.SERVER).forEach(this::start);
     }
   }
 
@@ -75,7 +77,7 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
     if (capability == null || CollectionUtils.isEmpty(definitions)) {
       return null;
     }
-    List<String> defined = definitions.stream().map(d -> d.getName()).collect(toList());
+    List<String> defined = definitions.stream().map(d -> d.getName()).toList();
 
     // multiple capabilities. how should we handle these?
     CapabilityStatement capabilityStatement = capability.copy();
@@ -100,20 +102,15 @@ public class KefhirEndpointInitializer implements ConformanceUpdateListener {
   }
 
   /**
-   * currenty rewrites capability operations with system operations.
-   * this doesn't see to be very correct
-   * propaply should either leave as is, either filter capability operations with system operations.
-   * and this url thingy looks like a hack
+   * remove unimplemented operations
    */
   private void prepareOperations(CapabilityStatementRestComponent rest) {
-    rest.getResource().forEach( r-> {
-      r.setOperation(new ArrayList<>());
-    instanceOperations.stream().filter(io -> io.getResourceType().equals(r.getType()))
-        .forEach(io -> r.getOperation().add(new CapabilityStatementRestResourceOperationComponent().setName(io.getOperationName())
-        .setDefinition("http://hl7.org/fhir/OperationDefinition/" + io.getResourceType() + "-" + io.getOperationName())));
-    typeOperations.stream().filter(io -> io.getResourceType().equals(r.getType()))
-        .forEach(to -> r.getOperation().add(new CapabilityStatementRestResourceOperationComponent().setName(to.getOperationName())
-        .setDefinition("http://hl7.org/fhir/OperationDefinition/" + to.getResourceType() + "-" + to.getOperationName())));
+    rest.getResource().forEach(r -> {
+      List<String> implementedOperations = Stream.concat(
+          instanceOperations.stream().filter(o -> o.getResourceType().equals(r.getType())).map(InstanceOperationDefinition::getOperationName),
+          typeOperations.stream().filter(o -> o.getResourceType().equals(r.getType())).map(TypeOperationDefinition::getOperationName)
+      ).toList();
+      r.setOperation(r.getOperation().stream().filter(o -> implementedOperations.contains(o.getName())).toList());
     });
   }
 

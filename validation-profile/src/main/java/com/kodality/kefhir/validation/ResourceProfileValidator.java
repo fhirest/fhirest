@@ -52,7 +52,10 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
     if (StringUtils.isEmpty(parameters.getValue())) {
       return;
     }
-    runValidation(ResourceType.Parameters.name(), parameters);
+
+    // some operations ($transform) accept non-default-spec resources, thus parse fails
+    // runValidation(ResourceType.Parameters.name(), parameters);
+    validateProfile(parameters);
   }
 
   @Override
@@ -63,7 +66,7 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
 
   private void runValidation(String resourceType, ResourceContent content) {
     Resource resource = validateParse(content);
-    validateType(resourceType, resource);
+    validateType(resourceType, resource.getResourceType().name());
     validateProfile(content);
   }
 
@@ -75,9 +78,9 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
     }
   }
 
-  private void validateType(String resourceType, Resource resource) {
-    if (!resource.getResourceType().name().equals(resourceType)) {
-      String msg = "was expecting " + resourceType + " but found " + resource.getResourceType().name();
+  private void validateType(String expectedType, String resourceType) {
+    if (!resourceType.equals(expectedType)) {
+      String msg = "was expecting " + expectedType + " but found " + resourceType;
       throw new FhirException(400, IssueType.INVALID, msg);
     }
   }
