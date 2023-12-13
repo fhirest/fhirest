@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r5.model.CapabilityStatement;
@@ -103,7 +104,7 @@ public class ConformanceHolder {
   public static CapabilityStatementRestResourceComponent getCapabilityResource(String type) {
     return getCapabilityStatement().getRest().stream().filter(r -> r.getMode() == RestfulCapabilityMode.SERVER)
         .map(r -> r.getResource().stream().filter(rr -> rr.getType().equals(type)).findFirst().orElse(null))
-        .filter(r -> r != null)
+        .filter(Objects::nonNull)
         .findFirst()
         .orElse(null);
   }

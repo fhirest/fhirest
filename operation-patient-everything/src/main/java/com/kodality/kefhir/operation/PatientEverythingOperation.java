@@ -60,7 +60,7 @@ public class PatientEverythingOperation implements InstanceOperationDefinition {
         () -> resourceSearchService.search("Coverage", "patient", pId),
         () -> resourceSearchService.search("Claim", "patient", pId)
     );
-    List<ResourceVersion> versions = x.map(r -> CompletableFuture.supplyAsync(r)).flatMap(cf -> cf.join().getEntries().stream()).collect(Collectors.toList());
+    List<ResourceVersion> versions = x.map(CompletableFuture::supplyAsync).flatMap(cf -> cf.join().getEntries().stream()).collect(Collectors.toList());
     return formatService.compose(BundleUtil.compose(versions, BundleType.SEARCHSET), "json");
   }
 }
