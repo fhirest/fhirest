@@ -7,6 +7,10 @@ import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * don't forget to add nginx proxypass conf:
+ * proxy_set_header Host $http_host/path;
+ */
 @Singleton
 @RequiredArgsConstructor
 public class ServerUriHelper {

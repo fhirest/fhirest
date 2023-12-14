@@ -130,14 +130,14 @@ public class RuleThemAllFhirController {
     p = StringUtils.removeStart(p, "/");
     p = StringUtils.removeStart(p, FHIR_ROOT);
     p = StringUtils.removeStart(p, "/");
-    if (p.length() > 0 && Character.isUpperCase(p.charAt(0))) { // a bit ugly way to understand is it a /root request or not
+    if (!p.isEmpty() && Character.isUpperCase(p.charAt(0))) { // a bit ugly way to understand is it a /root request or not
       req.setType(StringUtils.substringBefore(p, "/"));
       req.setPath(StringUtils.substringAfter(p, "/"));
     } else {
       req.setPath(p);
     }
-    request.getHeaders().forEachValue((k, v) -> req.putHeader(k, v));
-    request.getParameters().forEachValue((k, v) -> req.putParameter(k, v));
+    request.getHeaders().forEachValue(req::putHeader);
+    request.getParameters().forEachValue(req::putParameter);
     req.setUri(req.getUri());
     req.setBody(request.getBody(String.class).orElse(null));
     return req;
