@@ -14,12 +14,12 @@ package com.kodality.kefhir.structure.defs;
 
 import com.kodality.kefhir.structure.api.ParseException;
 import com.kodality.kefhir.structure.api.ResourceRepresentation;
+import jakarta.inject.Singleton;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.formats.IParser;
 import org.hl7.fhir.r5.formats.IParser.OutputStyle;

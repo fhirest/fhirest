@@ -34,6 +34,10 @@ public class KefhirRequest {
 
   private String transactionMethod;
   private KefhirEnabledOperation operation;
+  /**
+   * for custom and internal logic
+   */
+  private Map<String, Object> properties = new LinkedHashMap<>();
 
   public void setAccept(MediaType accept) {
     this.accept = List.of(accept);

@@ -14,7 +14,6 @@ import com.kodality.kefhir.core.service.resource.ResourceOperationService;
 import com.kodality.kefhir.core.service.resource.ResourceSearchService;
 import com.kodality.kefhir.core.service.resource.ResourceService;
 import com.kodality.kefhir.core.util.DateUtil;
-import com.kodality.kefhir.core.util.JsonUtil;
 import com.kodality.kefhir.core.util.ResourceUtil;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.rest.model.KefhirResponse;
@@ -23,13 +22,11 @@ import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import java.util.ArrayList;
+import jakarta.inject.Singleton;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.inject.Singleton;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r5.model.Bundle;
@@ -239,7 +236,6 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     return new KefhirResponse(200, response);
   }
 
-  // do not parse body here, as some operations ($transform) might accept resources of unknown type, and HAPI parser fails in these cases
   private ResourceContent readOperationParameters(String operation, KefhirRequest req) {
     OperationDefinition opDef = findOperationDefinition(operation, req);
 
@@ -252,8 +248,8 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
       return resourceFormatService.compose(parameters, "json");
     }
 
-    Map<String, Object> body = JsonUtil.fromJson(req.getBody());
-    if (body != null && body.containsKey("resourceType") && body.get("resourceType").equals(ResourceType.Parameters.name())) {
+    Resource body = req.getBody() == null ? null : resourceFormatService.parse(req.getBody());
+    if (body != null && body.getResourceType() == ResourceType.Parameters) {
       return new ResourceContent(req.getBody(), req.getContentTypeName());
     }
 
@@ -266,12 +262,12 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
       throw new FhirException(400, IssueType.INVALID,
           "Operation MAY accept Resource in body only if operation definition has exactly one input parameter whose type is a FHIR Resource");
     }
+    String resourceParameterName = resourceParams.get(0).getName();
 
-    List<Object> parameters = new ArrayList<>();
-    parameters.add(Map.of("name", resourceParams.get(0).getName(), "resource", body));
-    req.getParameters().forEach((k, v) -> parameters.add(Map.of("name", k, "valueString", String.join(",", v))));
-    String p = JsonUtil.toJson(Map.of("resourceType", "Parameters", "parameter", parameters));
-    return new ResourceContent(p, "json");
+    Parameters parameters = new Parameters();
+    req.getParameters().forEach((k, v) -> parameters.addParameter(k, String.join(",", v)));
+    parameters.addParameter().setName(resourceParameterName).setResource(body);
+    return resourceFormatService.compose(parameters, req.getContentTypeName());
   }
 
   private static OperationDefinition findOperationDefinition(String operation, KefhirRequest req) {

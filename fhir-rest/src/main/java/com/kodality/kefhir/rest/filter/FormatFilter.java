@@ -4,8 +4,8 @@ import com.kodality.kefhir.core.exception.FhirException;
 import com.kodality.kefhir.rest.model.KefhirRequest;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
 import io.micronaut.http.MediaType;
-import java.util.List;
 import jakarta.inject.Singleton;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
@@ -31,7 +31,10 @@ public class FormatFilter implements KefhirRequestFilter {
       req.getParameters().remove(FORMAT);
     }
     if (req.getAccept() == null) {
-      req.setAccept(req.getContentType() == null ? MediaType.ALL_TYPE : req.getContentType());
+      req.setAccept(MediaType.ALL_TYPE);
+    }
+    if (req.getAccept().size() == 1 && req.getAccept().get(0).getName().equals(MediaType.ALL_TYPE.getName()) && req.getContentType() != null) {
+      req.setAccept(List.of(req.getContentType(), MediaType.ALL_TYPE));
     }
     if (resourceFormatService.findSupported(req.getAccept().stream().map(MediaType::getName).toList()).isEmpty()) {
       throw new FhirException(406, IssueType.INVALID, "unsupported Accept");
