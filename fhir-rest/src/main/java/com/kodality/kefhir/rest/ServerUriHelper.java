@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * don't forget to add nginx proxypass conf:
  * proxy_set_header Host $http_host/path;
+ * proxy_set_header X-Forwarded-Host $http_host/path;
+ * proxy_set_header X-Forwarded-Proto $scheme;
  */
 @Singleton
 @RequiredArgsConstructor

@@ -22,6 +22,7 @@ import com.kodality.kefhir.core.model.ResourceId;
 import com.kodality.kefhir.core.service.conformance.HapiContextHolder;
 import com.kodality.kefhir.structure.api.ResourceContent;
 import com.kodality.kefhir.structure.service.ResourceFormatService;
+import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Inject;
 import java.util.List;
 import jakarta.inject.Singleton;
@@ -36,6 +37,7 @@ import org.hl7.fhir.r5.model.ResourceType;
 
 import static java.util.stream.Collectors.toList;
 
+@Requires(property = "kefhir.validation-profile.enabled", value = io.micronaut.core.util.StringUtils.TRUE, defaultValue = io.micronaut.core.util.StringUtils.TRUE)
 @Singleton
 public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor implements OperationInterceptor {
   @Inject
