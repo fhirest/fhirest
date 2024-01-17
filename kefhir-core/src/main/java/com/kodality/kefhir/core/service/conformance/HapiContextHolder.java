@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
@@ -85,15 +86,14 @@ public class HapiContextHolder implements ConformanceUpdateListener {
   }
 
   protected IValidationSupport getValidationSupport() {
-    Map<String, IBaseResource> defs = ConformanceHolder.getDefinitions().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
+    Map<String, IBaseResource> defs = ConformanceHolder.getDefinitions().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d, (a, b) -> a));
     // hack to bypass hapi structuredefinition.type validation, (#see org.hl7.fhir.validation.instance.InstanceValidator.checkTypeValue)
     // because wo don't have information about "source package" and it isn't even a part of fhir resource.
-    // go to hapi hell.
     defs.values().forEach(def -> ((Resource) def).setSourcePackage(new PackageInformation("hl7.fhir.r", def.getMeta().getLastUpdated())));
-    Map<String, IBaseResource> vs = ConformanceHolder.getValueSets().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
+    Map<String, IBaseResource> vs = ConformanceHolder.getValueSets().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d, (a, b) -> a));
     Map<String, IBaseResource> cs = ConformanceHolder.getCodeSystems().stream()
         .filter(c -> SUPPORTED_CS_CONTENT_MODES.contains(c.getContent()))
-        .collect(Collectors.toMap(d -> d.getUrl(), d -> d));
+        .collect(Collectors.toMap(d -> d.getUrl(), d -> d, (a, b) -> a));
 
     ValidationSupportChain chain = new ValidationSupportChain(
         new InMemoryTerminologyServerValidationSupport(context),
@@ -127,8 +127,7 @@ public class HapiContextHolder implements ConformanceUpdateListener {
      * Constructor
      */
     public KefhirSnapshotGeneratingValidationSupport(FhirContext theCtx) {
-      Validate.notNull(theCtx);
-      myCtx = theCtx;
+      myCtx = Objects.requireNonNull(theCtx);
       myVersionCanonicalizer = new VersionCanonicalizer(theCtx);
     }
 
