@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset kefhir:resource dbms:postgresql
+--changeset fhirest:resource dbms:postgresql
 create table search.resource (
   sid           bigserial,
   resource_type bigint references search.resource_type(id),

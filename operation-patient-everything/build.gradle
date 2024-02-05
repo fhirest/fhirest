@@ -1,4 +1,4 @@
 dependencies {
-    api project(':kefhir-core')
+    api project(':fhirest-core')
     api project(':fhir-rest')
 }

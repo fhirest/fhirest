@@ -3,7 +3,7 @@ dependencies {
   api project(':pg-core')
   api project(':pg-store')
   api project(':fhir-structures')
-  api project(':kefhir-core')
+  api project(':fhirest-core')
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"

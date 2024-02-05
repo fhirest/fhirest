@@ -1,4 +1,0 @@
-dependencies {
-  api project(':pg-core')
-  api project(':kefhir-core')
-}

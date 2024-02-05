@@ -1,0 +1,679 @@
+{
+	"info": {
+		"_postman_id": "cd5f1f07-0603-48d4-9f9c-2e7199430b32",
+		"name": "01-basic-crud",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2623563"
+	},
+	"item": [
+		{
+			"name": "create Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"});",
+							"",
+							"patientRef = postman.getResponseHeader(\"Location\");",
+							"pm.collectionVariables.set(\"patientId\", patientRef.replace(/.*Patient\\/([^\\/]*).*/, '$1'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:fhirest-tests\",\n            \"value\": \"TESTPATIENT-1\"\n        }\n    ],\n    \"name\": [\n        {\n            \"given\": [\n                \"Most\",\n                \"Sick\"\n            ],\n            \"family\": \"Person\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"male\",\n    \"telecom\": [\n        {\n            \"use\": \"work\",\n            \"rank\": 1,\n            \"value\": \"123\",\n            \"system\": \"phone\"\n        }\n    ],\n    \"birthDate\": \"1970-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "load Patient by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"correct person loaded\", function () {",
+							"    pm.expect(pm.response.json().identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient/{{patientId}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient history",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"history bundle is returned\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"history\");",
+							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient/{{patientId}}/_history",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}",
+						"_history"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "load Patient by history id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"correct person loaded\", function () {",
+							"    pm.expect(pm.response.json().identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient/{{patientId}}/_history/1",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}",
+						"_history",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient search by identifier",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"TESTPATIENT-1\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient?_id={{patientId}}&identifier=TESTPATIENT-1",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "{{patientId}}"
+						},
+						{
+							"key": "identifier",
+							"value": "TESTPATIENT-1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([204]);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient/{{patientId}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete unexistant",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([204]);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient/doesnotexist123",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient",
+						"doesnotexist123"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient search deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(0);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient?_id={{patientId}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "{{patientId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update unexistant Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"});",
+							"",
+							"",
+							"patientRef = postman.getResponseHeader(\"Location\");",
+							"pm.collectionVariables.set(\"patientId\", patientRef.replace(/.*Patient\\/([^\\/]*).*/, '$1'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:fhirest-tests\",\n            \"value\": \"TESTPATIENT-2\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"female\",\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient/{{$guid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient",
+						"{{$guid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"version is 2\", function () {",
+							"  vers = postman.getResponseHeader(\"Content-Location\").replace(/.*Patient\\/[^\\/]*\\/_history\\/([0-9]*)/, \"$1\");",
+							"  pm.expect(vers).to.eql(\"2\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:fhirest-tests\",\n            \"value\": \"TESTPATIENT-2\"\n        }\n    ],\n    \"active\": true,\n    \"gender\": \"female\",\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient/{{patientId}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conditional update unexistant Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([201]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var uuid = require('uuid');",
+							"pm.collectionVariables.set(\"randomIdentifier\", 'TESTPATIENT-' + uuid.v4());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:fhirest-tests\",\n            \"value\": \"{{randomIdentifier}}\"\n        }\n    ],\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient?identifier={{randomIdentifier}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "identifier",
+							"value": "{{randomIdentifier}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conditional update Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"version is 2\", function () {",
+							"  vers = postman.getResponseHeader(\"Content-Location\").replace(/.*Patient\\/[^\\/]*\\/_history\\/([0-9]*)/, \"$1\");",
+							"  pm.expect(vers).to.eql(\"2\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"identifier\": [\n        {\n            \"system\": \"urn:fhirest-tests\",\n            \"value\": \"{{randomIdentifier}}\"\n        }\n    ],\n    \"birthDate\": \"1975-01-01\",\n    \"resourceType\": \"Patient\"\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient?identifier={{randomIdentifier}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "identifier",
+							"value": "{{randomIdentifier}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "patientId",
+			"value": ""
+		},
+		{
+			"key": "randomIdentifier",
+			"value": ""
+		}
+	]
+}

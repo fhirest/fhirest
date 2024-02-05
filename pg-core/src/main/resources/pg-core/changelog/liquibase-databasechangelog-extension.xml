@@ -16,7 +16,7 @@
     <dropPrimaryKey schemaName="${schemaName}" tableName="${changeLogTableName}" constraintName="PK_${changeLogTableName}"/>
   </changeSet>
 
-  <changeSet id="liquibase-create-pk" author="kodality">
+  <changeSet id="liquibase-create-pk" author="fhirest">
     <addPrimaryKey schemaName="${schemaName}" tableName="${changeLogTableName}" constraintName="PK_${changeLogTableName}" columnNames="ID,AUTHOR,FILENAME"/>
   </changeSet>
 

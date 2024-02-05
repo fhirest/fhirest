@@ -8,7 +8,7 @@ if [ -f ~/.gradle/gradle.properties ]; then
 fi
 [[ -z $u ]] && echo "no username" && exit 1
 
-mkdir -p /tmp/kefhir/downloads && cd /tmp/kefhir/downloads
+mkdir -p /tmp/fhirest/downloads && cd /tmp/fhirest/downloads
 wget $repo
 for t in ./*; do
   curl -v -u $u:$p --upload-file $t https://kexus.kodality.com/repository/store-public/kefhir/$t

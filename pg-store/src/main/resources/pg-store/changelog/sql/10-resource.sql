@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset kefhir:resource dbms:postgresql
+--changeset fhirest:resource dbms:postgresql
 CREATE SEQUENCE store.resource_key_seq INCREMENT 1 MINVALUE 1;
 
 create table store.resource (
@@ -16,15 +16,15 @@ create table store.resource (
 ) PARTITION BY LIST (type);
 --
 
---changeset kefhir:resource_key_seq  dbms:postgresql
+--changeset fhirest:resource_key_seq  dbms:postgresql
 CREATE SEQUENCE store.resource_id_seq INCREMENT 1 MINVALUE 1;
 SELECT setval('store.resource_id_seq', nextval('store.resource_key_seq'));
 --rollback select 1
 
---changeset kefhir:resource_updated_index
+--changeset fhirest:resource_updated_index
 create index on store.resource(updated);
 --
 
---changeset kefhir:add-profile
+--changeset fhirest:add-profile
 alter table store.resource add column profiles bigint[]; --references store.resource(uid)
 --

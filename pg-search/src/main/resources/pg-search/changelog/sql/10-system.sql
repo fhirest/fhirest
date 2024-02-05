@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset kefhir:system dbms:postgresql
+--changeset fhirest:system dbms:postgresql
 create table search.system (
   id     bigserial primary key,
   system text,

@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset kefhir:blindex dbms:postgresql
+--changeset fhirest:blindex dbms:postgresql
 create table search.blindex (
   id			bigserial primary key,
   resource_type text not null,
@@ -11,6 +11,6 @@ create table search.blindex (
 );
 --rollback drop table blindex;
 
---changeset kefhir:blindex-notifier
+--changeset fhirest:blindex-notifier
 select core.add_object_notifier('search.blindex');
 --

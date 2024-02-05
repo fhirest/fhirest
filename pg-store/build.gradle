@@ -2,5 +2,5 @@ dependencies {
   api project(':auth-core')
   api project(':pg-core')
   api project(':fhir-structures')
-  api project(':kefhir-core')
+  api project(':fhirest-core')
 }

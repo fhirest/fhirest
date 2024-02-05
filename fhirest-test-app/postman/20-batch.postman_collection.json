@@ -1,0 +1,57 @@
+{
+	"info": {
+		"_postman_id": "dd3c5435-1a4a-4bf5-943d-b2ad18259020",
+		"name": "20-batch",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "batch",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"transaction responses\", function () {",
+							"    pm.expect(pm.response.json().type).to.eql(\"batch-response\");",
+							"    resp = {};",
+							"    pm.response.json().entry.forEach(e => resp[e.link[0].url] = e.response);",
+							"    pm.expect(resp[\"res1\"].status).to.eql(\"201\");",
+							"    pm.expect(resp[\"res2\"].status).to.eql(\"201\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"batch\",\n  \"entry\": [\n    {\n        \"fullUrl\": \"res1\",\n      \"request\": {\n          \"url\": \"Patient\",\n          \"method\": \"POST\"\n      },\n      \"resource\": {\n                  \"identifier\": [\n        {\n            \"system\": \"urn:fhirest-tests\",\n            \"value\": \"TESTPATIENT-4\"\n        }\n    ],\n        \"name\": [\n          {\n            \"family\": \"Saltaformaggiooo\"\n          }\n        ],\n        \"gender\": \"male\",\n        \"active\": true,\n        \"birthDate\": \"1999-01-01\",\n        \"resourceType\": \"Patient\"\n      }\n    },\n        {\n            \"fullUrl\": \"res2\",\n      \"request\": {\n          \"url\": \"Patient\",\n          \"method\": \"POST\"\n      },\n      \"resource\": {\n        \"name\": [\n          {\n            \"family\": \"Quattroformaggio\"\n          }\n        ],\n        \"gender\": \"male\",\n        \"active\": true,\n        \"birthDate\": \"2020-01-01\",\n        \"resourceType\": \"Patient\"\n      }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}",
+					"host": [
+						"{{fhirest}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

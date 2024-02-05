@@ -2,7 +2,7 @@
 dependencies {
   api project(':fhir-structures')
   api project(':tx-manager')
-  api project(':kefhir-core')
+  api project(':fhirest-core')
 
   implementation "io.micronaut:micronaut-management"
   implementation "io.micronaut:micronaut-http-server"

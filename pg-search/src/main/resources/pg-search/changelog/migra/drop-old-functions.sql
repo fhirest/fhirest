@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset kefhir:drop-old-functions-2
+--changeset fhirest:drop-old-functions-2
 drop function if exists extract_date;
 drop function if exists extract_number;
 drop function if exists extract_quantity;

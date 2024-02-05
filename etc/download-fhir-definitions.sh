@@ -1,7 +1,7 @@
 #!/bin/bash
 fhir="$1"
 [[ -z "$fhir" ]] && fhir="http://localhost:8181"
-temp=/tmp/kefhir
+temp=/tmp/fhirest
 repo="https://kexus.kodality.com/repository/store-public/kefhir/defs-r5.zip"
 #repo="http://hl7.org/fhir/5.0.0-draft-final/definitions.json.zip"
 #repo="https://kexus.kodality.com/repository/store-public/kefhir/definitions.json.zip"

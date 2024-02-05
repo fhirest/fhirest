@@ -5,7 +5,7 @@
 
   <includeAll path="sql" relativeToChangelogFile="true" />
 
-  <changeSet dbms="PostgreSQL" id="search-funcs" runOnChange="true" author="kefhir">
+  <changeSet dbms="PostgreSQL" id="search-funcs" runOnChange="true" author="fhirest">
     <sqlFile splitStatements="false" path="functions/range_instant.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/range.sql" relativeToChangelogFile="true" />
     <sqlFile splitStatements="false" path="functions/resource_type_id.sql" relativeToChangelogFile="true" />

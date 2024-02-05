@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset kefhir:search_init-1
+--changeset fhirest:search_init-1
 select search.define_resource('CapabilityStatement');
 select search.define_resource('TerminologyCapabilities');
 select search.define_resource('StructureDefinition');

@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "6757d55d-ece1-4cdc-812c-9c0573f27540",
+		"name": "44-search-sorting-multiple-names",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2623563"
+	},
+	"item": [
+		{
+			"name": "test data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"type\": \"transaction\",\n  \"entry\": [\n    {\n      \"request\": { \"url\": \"Patient/hunter1\", \"method\": \"PUT\" },\n      \"resource\": { \"name\": [{\"family\": \"a Van Damme\"}, {\"family\": \"c Stallone\"}], \"active\": true, \"gender\": \"male\", \"birthDate\": \"1908-02-02\", \"resourceType\": \"Patient\" }\n    },\n    {\n      \"request\": { \"url\": \"Patient/hunter2\", \"method\": \"PUT\" },\n      \"resource\": { \"name\": [{\"family\": \"b Schwarzenegger\"}, {\"family\": \"d Lungren\"}], \"active\": true, \"gender\": \"male\", \"birthDate\": \"1907-02-02\", \"resourceType\": \"Patient\" }\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}",
+					"host": [
+						"{{fhirest}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "_sort",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(2);",
+							"    pm.expect(pm.response.json().entry.map(e => e.resource.id)).to.eql(['hunter1', 'hunter2']);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient?_id=hunter1,hunter2&_sort=family",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "hunter1,hunter2"
+						},
+						{
+							"key": "_sort",
+							"value": "family"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "_sort",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(2);",
+							"    pm.expect(pm.response.json().entry.map(e => e.resource.id)).to.eql(['hunter2', 'hunter1']);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient?_id=hunter1,hunter2&_sort=-family",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "hunter1,hunter2"
+						},
+						{
+							"key": "_sort",
+							"value": "-family"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

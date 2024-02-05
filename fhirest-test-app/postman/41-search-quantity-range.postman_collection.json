@@ -1,0 +1,175 @@
+{
+	"info": {
+		"_postman_id": "2606da84-7d02-4893-907f-1b1bc3a245b3",
+		"name": "41-search-quantity-range",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5159090"
+	},
+	"item": [
+		{
+			"name": "test data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"resourceType\": \"Bundle\",\n    \"type\": \"transaction\",\n    \"entry\": [\n        {\n            \"fullUrl\": \"test-condition-100\",\n            \"request\": {\n                \"url\": \"Condition/condition100\",\n                \"method\": \"PUT\"\n            },\n            \"resource\": {\n                \"resourceType\": \"Condition\",\n                \"clinicalStatus\": {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://terminology.hl7.org/CodeSystem/condition-clinical\",\n                            \"code\": \"active\"\n                        }\n                    ]\n                },\n                \"subject\": {\n                    \"reference\": \"Patient/example\"\n                },\n                \"onsetRange\": {\n                    \"low\": {\n                        \"value\": 3\n                    },\n                    \"high\": {\n                        \"value\": 7\n                    }\n                }\n            }\n        },\n        {\n            \"fullUrl\": \"test-condition-101\",\n            \"request\": {\n                \"url\": \"Condition/condition101\",\n                \"method\": \"PUT\"\n            },\n            \"resource\": {\n                \"resourceType\": \"Condition\",\n                \"clinicalStatus\": {\n                    \"coding\": [\n                        {\n                            \"system\": \"http://terminology.hl7.org/CodeSystem/condition-clinical\",\n                            \"code\": \"active\"\n                        }\n                    ]\n                },\n                \"subject\": {\n                    \"reference\": \"Patient/example\"\n                },\n                \"onsetRange\": {\n                    \"low\": {\n                        \"value\": 99\n                    }\n                }\n            }\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}",
+					"host": [
+						"{{fhirest}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "quantity-range param no",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(0);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Condition?onset-age=1",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Condition"
+					],
+					"query": [
+						{
+							"key": "onset-age",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "quantity-range param yes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"condition100\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Condition?onset-age=5",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Condition"
+					],
+					"query": [
+						{
+							"key": "onset-age",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
