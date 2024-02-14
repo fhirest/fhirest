@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.StructureDefinition;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class StructureDefinitionHolder implements ConformanceUpdateListener {
   private Map<String, Map<String, List<StructureElement>>> structures;

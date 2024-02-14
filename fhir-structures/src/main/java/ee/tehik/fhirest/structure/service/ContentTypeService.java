@@ -18,9 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class ContentTypeService {
   private final Map<String, String> mimes;
   private final List<String> mediaTypes;

@@ -21,32 +21,32 @@ import ee.tehik.fhirest.rest.model.FhirestResponse;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import ee.tehik.fhirest.structure.service.ContentTypeService;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
-import io.micronaut.http.HttpRequest;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.MutableHttpResponse;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Consumes;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Delete;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.Produces;
-import io.micronaut.http.annotation.Put;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Nullable;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-@Consumes("*/*")
-@Produces("*/*")
-@Controller("/" + RuleThemAllFhirController.FHIR_ROOT)
+@RequestMapping(path = "/" + RuleThemAllFhirController.FHIR_ROOT, consumes = "*/*", produces = "*/*")
+@Controller
 @RequiredArgsConstructor
 public class RuleThemAllFhirController {
   private static final String PRETTY = "_pretty";
@@ -65,7 +65,12 @@ public class RuleThemAllFhirController {
     responseFilters.sort(Comparator.comparing(FhirestResponseFilter::getOrder));
   }
 
-  private HttpResponse<?> execute(HttpRequest request) {
+  @RequestMapping(path = "{*path}", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+  public ResponseEntity<String> get(HttpServletRequest request) {
+    return execute(request);
+  }
+
+  private ResponseEntity<String> execute(HttpServletRequest request) {
     try {
       FhirestRequest req = buildFhirestRequest(request);
       req.setOperation(endpointService.findOperation(req));
@@ -83,20 +88,20 @@ public class RuleThemAllFhirController {
     }
   }
 
-  private HttpResponse<String> readFhirestResponse(FhirestResponse resp, FhirestRequest req) {
-    MutableHttpResponse<String> r = HttpResponse.status(HttpStatus.valueOf(resp.getStatus()));
+  private ResponseEntity<String> readFhirestResponse(FhirestResponse resp, FhirestRequest req) {
+    BodyBuilder r = ResponseEntity.status(HttpStatus.valueOf(resp.getStatus()));
     resp.getHeaders().forEach((k, vv) -> vv.stream().filter(Objects::nonNull).forEach(v -> r.header(k, v)));
-    if (resp.getBody() != null) {
-      List<String> accepts = req.getAccept().stream().map(MediaType::getName).toList();
-      String accept = resourceFormatService.findSupported(accepts).get(0);
-      ResourceContent formatted = format(resp.getBody(), accept);
-      if ("true".equals(req.getParameter(PRETTY))) {
-        prettify(formatted);
-      }
-      r.body(formatted.getValue());
-      r.contentType(accept + ";charset=utf-8");
+    if (resp.getBody() == null) {
+      return r.build();
     }
-    return r;
+    List<String> accepts = req.getAccept().stream().map(MediaType::toString).toList();
+    String accept = resourceFormatService.findSupported(accepts).get(0);
+    ResourceContent formatted = format(resp.getBody(), accept);
+    if ("true".equals(req.getParameter(PRETTY))) {
+      prettify(formatted);
+    }
+    return r.header(HttpHeaders.CONTENT_TYPE, accept + ";charset=utf-8")
+        .body(formatted.getValue());
   }
 
   private ResourceContent format(Object body, String contentType) {
@@ -119,12 +124,10 @@ public class RuleThemAllFhirController {
     content.setValue(resourceFormatService.findPresenter(content.getContentType()).get().prettify(content.getValue()));
   }
 
-  private FhirestRequest buildFhirestRequest(HttpRequest<String> request) {
+  private FhirestRequest buildFhirestRequest(HttpServletRequest request) {
     FhirestRequest req = new FhirestRequest();
-    req.setServerUri(serverUriHelper.buildServerUri(request));
-    req.setServerHost(serverUriHelper.getHost(request));
-    req.setMethod(request.getMethodName());
-    String p = request.getPath();
+    req.setMethod(request.getMethod());
+    String p = StringUtils.defaultString(request.getRequestURI());
     p = StringUtils.removeStart(p, "/");
     p = StringUtils.removeStart(p, serverUriHelper.getContextPath());
     p = StringUtils.removeStart(p, "/");
@@ -136,31 +139,23 @@ public class RuleThemAllFhirController {
     } else {
       req.setPath(p);
     }
-    request.getHeaders().forEachValue(req::putHeader);
-    request.getParameters().forEachValue(req::putParameter);
-    req.setUri(req.getUri());
-    req.setBody(request.getBody(String.class).orElse(null));
+    Collections.list(request.getHeaderNames()).forEach(n -> req.putHeader(n, request.getHeader(n)));
+    request.getParameterMap().forEach((k, vv) -> Stream.of(vv).forEach(v -> req.putParameter(k, v)));
+    req.setBody(readBody(request));
     return req;
   }
 
-  @Get(uris = {"{path:.*}"})
-  public HttpResponse<?> get(HttpRequest request) {
-    return execute(request);
+  private String readBody(HttpServletRequest req) {
+    try {
+      ServletInputStream is = req.getInputStream();
+      ByteArrayOutputStream result = new ByteArrayOutputStream();
+      byte[] buffer = new byte[1024];
+      for (int length; (length = is.read(buffer)) != -1; ) {
+        result.write(buffer, 0, length);
+      }
+      return result.toString(StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
-
-  @Post(uris = {"{path:.*}"})
-  public HttpResponse<?> post(HttpRequest request, @Nullable @Body String json) {
-    return execute(request);
-  }
-
-  @Put(uris = {"{path:.*}"})
-  public HttpResponse<?> put(HttpRequest request, @Nullable @Body String json) {
-    return execute(request);
-  }
-
-  @Delete(uris = {"{path:.*}"})
-  public HttpResponse<?> delete(HttpRequest request) {
-    return execute(request);
-  }
-
 }

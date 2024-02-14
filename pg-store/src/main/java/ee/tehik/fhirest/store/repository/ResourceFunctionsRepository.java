@@ -13,10 +13,10 @@
 package ee.tehik.fhirest.store.repository;
 
 import jakarta.inject.Named;;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@Singleton
+@Component
 public class ResourceFunctionsRepository {
   private final JdbcTemplate adminJdbcTemplate;
 

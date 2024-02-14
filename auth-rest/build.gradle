@@ -2,9 +2,7 @@ dependencies {
   api project(':auth-core')
   api project(':fhir-rest')
 
-  testImplementation "io.micronaut.test:micronaut-test-core"
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
+  testImplementation "org.springframework.boot:spring-boot-starter-test"
 }
 
 test { useJUnitPlatform() }

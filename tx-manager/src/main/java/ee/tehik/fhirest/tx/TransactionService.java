@@ -16,12 +16,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class TransactionService {
   private final List<TransactionManager> txManagers;

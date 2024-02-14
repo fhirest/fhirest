@@ -17,13 +17,13 @@ import ee.tehik.fhirest.util.sql.SqlBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
 import static java.util.stream.Collectors.joining;
 
 @Slf4j
-@Singleton
+@Component
 public class StringIndexRepository extends TypeIndexRepository<String> {
 
   @Override

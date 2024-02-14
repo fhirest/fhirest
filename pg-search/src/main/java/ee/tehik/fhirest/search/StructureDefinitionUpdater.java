@@ -17,10 +17,10 @@ import ee.tehik.fhirest.core.service.conformance.ConformanceHolder;
 import ee.tehik.fhirest.search.repository.ResourceStructureRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class StructureDefinitionUpdater implements ConformanceUpdateListener {
   private final ResourceStructureRepository structureDefinitionRepository;

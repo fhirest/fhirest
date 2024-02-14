@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -38,7 +38,7 @@ import org.hl7.fhir.r5.model.SearchParameter;
 import org.postgresql.util.PSQLException;
 
 @Slf4j
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class BlindexInitializer {
   private final BlindexRepository blindexRepository;

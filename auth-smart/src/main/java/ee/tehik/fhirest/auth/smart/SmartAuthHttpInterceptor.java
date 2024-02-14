@@ -17,12 +17,12 @@ import ee.tehik.fhirest.core.exception.FhirException;
 import ee.tehik.fhirest.rest.filter.FhirestRequestExecutionInterceptor;
 import ee.tehik.fhirest.rest.model.FhirestRequest;
 import java.util.Set;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 @RequiredArgsConstructor
-@Singleton
+@Component
 public class SmartAuthHttpInterceptor implements FhirestRequestExecutionInterceptor {
   private final ClientIdentity clientIdentity;
 

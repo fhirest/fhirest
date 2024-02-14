@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
@@ -40,12 +39,13 @@ import org.hl7.fhir.r5.model.Resource;
 import org.hl7.fhir.utilities.validation.ValidationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService.getFhirVersionEnum;
 
 @RequiredArgsConstructor
-@Singleton
+@Component
 public class HapiContextHolder implements ConformanceUpdateListener {
 
   public static final List<CodeSystemContentMode> SUPPORTED_CS_CONTENT_MODES = Arrays.asList(CodeSystemContentMode.COMPLETE, CodeSystemContentMode.FRAGMENT);

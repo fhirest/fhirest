@@ -5,7 +5,6 @@ import ee.tehik.fhirest.core.api.conformance.ConformanceUpdateListener;
 import ee.tehik.fhirest.core.model.InteractionType;
 import ee.tehik.fhirest.core.service.conformance.ConformanceHolder;
 import ee.tehik.fhirest.core.service.conformance.HapiContextHolder;
-import ee.tehik.fhirest.core.util.BeanContext;
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -24,7 +23,6 @@ import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
-import jakarta.inject.Singleton;
 import java.math.BigDecimal;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,15 +37,15 @@ import org.hl7.fhir.r5.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r5.model.Enumerations.OperationParameterUse;
 import org.hl7.fhir.r5.model.OperationDefinition;
 import org.hl7.fhir.r5.model.OperationDefinition.OperationDefinitionParameterComponent;
+import org.springframework.stereotype.Component;
 
 import static org.hl7.fhir.r5.model.OperationDefinition.OperationParameterScope.INSTANCE;
 import static org.hl7.fhir.r5.model.OperationDefinition.OperationParameterScope.TYPE;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class OpenapiComposer implements ConformanceUpdateListener {
   private final HapiContextHolder hapiContextHolder;
-  private final BeanContext bc; //needed for static ref
   private static final String ROOT = "root";
   private String openApiYaml;
 

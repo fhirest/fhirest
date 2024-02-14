@@ -25,7 +25,7 @@ import ee.tehik.fhirest.structure.service.ResourceFormatService;
 import ee.tehik.fhirest.structure.util.ResourcePropertyUtil;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Reference;
@@ -36,7 +36,7 @@ import org.hl7.fhir.r5.model.Resource;
  * Conditional Reference implementation.
  * originally should only apply to transaction, but we thought might be global..
  */
-@Singleton
+@Component
 public class ResourceConditionalReferenceFeature extends ResourceBeforeSaveInterceptor implements OperationInterceptor {
   @Inject
   private ResourceFormatService representationService;

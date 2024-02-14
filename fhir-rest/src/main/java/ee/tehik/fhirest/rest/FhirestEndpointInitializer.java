@@ -19,7 +19,6 @@ import ee.tehik.fhirest.core.model.InteractionType;
 import ee.tehik.fhirest.core.service.conformance.ConformanceHolder;
 import java.util.Collections;
 import java.util.List;
-import jakarta.inject.Singleton;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +30,13 @@ import org.hl7.fhir.r5.model.CapabilityStatement.ResourceVersionPolicy;
 import org.hl7.fhir.r5.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r5.model.CapabilityStatement.SystemRestfulInteraction;
 import org.hl7.fhir.r5.model.StructureDefinition;
+import org.springframework.stereotype.Component;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class FhirestEndpointInitializer implements ConformanceUpdateListener {
   private final FhirestEndpointService endpointService;

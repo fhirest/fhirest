@@ -18,13 +18,11 @@ import ee.tehik.fhirest.core.model.ResourceId;
 import ee.tehik.fhirest.core.model.ResourceVersion;
 import ee.tehik.fhirest.core.model.VersionId;
 import ee.tehik.fhirest.core.model.search.HistorySearchCriterion;
-import ee.tehik.fhirest.core.service.conformance.ConformanceHolder;
 import ee.tehik.fhirest.core.util.DateUtil;
 import ee.tehik.fhirest.core.util.JsonUtil;
 import ee.tehik.fhirest.store.repository.ResourceRepository;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
-import io.micronaut.context.annotation.Primary;
 import jakarta.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -32,11 +30,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import jakarta.inject.Singleton;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 @Primary
-@Singleton
+@Component
 public class PgResourceStorage implements ResourceStorage {
   @Inject
   private ClientIdentity clientIdentity;
@@ -130,15 +129,14 @@ public class PgResourceStorage implements ResourceStorage {
     version.getContent().setValue(JsonUtil.toJson(resource));
   }
 
-  private List<VersionId> findProfiles(ResourceVersion version) {
+  private List<String> findProfiles(ResourceVersion version) {
     Resource resource = resourceFormatService.parse(version.getContent());
     if (resource.getMeta() == null || resource.getMeta().getProfile() == null) {
       return null;
     }
     return resource.getMeta().getProfile().stream()
-        .map(p -> ConformanceHolder.getDefinitions().stream().filter(def -> def.getUrl().equals(p.getValue())).findFirst().orElse(null))
+        .map(p -> p.getValue())
         .filter(Objects::nonNull)
-        .map(def -> new VersionId(def.getResourceType().name(), def.getId(), Integer.valueOf(def.getMeta().getVersionId())))
         .collect(Collectors.toList());
   }
 

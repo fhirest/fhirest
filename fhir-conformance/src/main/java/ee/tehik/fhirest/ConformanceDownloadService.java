@@ -2,11 +2,8 @@ package ee.tehik.fhirest;
 
 import ee.tehik.fhirest.core.api.conformance.ConformanceUpdateListener;
 import ee.tehik.fhirest.core.service.conformance.ConformanceHolder;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Value;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
-import jakarta.inject.Singleton;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,10 +18,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Singleton
-@Requires(property = "fhirest.conformance.definitions-url")
+@Component
+@ConditionalOnProperty("fhirest.conformance.definitions-url")
 public class ConformanceDownloadService implements ConformanceUpdateListener {
   private boolean singleShot;
   @Inject

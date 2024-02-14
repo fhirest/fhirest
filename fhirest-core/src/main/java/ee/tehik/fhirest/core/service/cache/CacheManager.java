@@ -15,16 +15,16 @@ package ee.tehik.fhirest.core.service.cache;
 import jakarta.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.function.Supplier;
-import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.ehcache.Cache;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Singleton
+@Component
 public class CacheManager implements AutoCloseable {
   private final org.ehcache.CacheManager manager = CacheManagerBuilder.newCacheManagerBuilder().build();
 

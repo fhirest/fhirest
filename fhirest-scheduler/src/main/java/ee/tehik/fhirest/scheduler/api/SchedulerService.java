@@ -2,11 +2,11 @@ package ee.tehik.fhirest.scheduler.api;
 
 import ee.tehik.fhirest.scheduler.JobRepository;
 import java.util.Date;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@Singleton
+@Component
 public class SchedulerService {
   private final JobRepository jobRepository;
 

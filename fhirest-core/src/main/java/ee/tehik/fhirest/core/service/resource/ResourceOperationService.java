@@ -19,11 +19,11 @@ import ee.tehik.fhirest.core.exception.FhirException;
 import ee.tehik.fhirest.core.model.ResourceId;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import java.util.List;
-import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class ResourceOperationService {
   private final List<InstanceOperationDefinition> instanceOperations;

@@ -1,4 +1,6 @@
 dependencies {
   api project(':fhirest-core')
   api project(':fhir-structures')
+
+  implementation 'org.springframework:spring-web'
 }

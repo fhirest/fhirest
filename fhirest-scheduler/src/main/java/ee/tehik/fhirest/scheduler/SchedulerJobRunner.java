@@ -1,15 +1,17 @@
 package ee.tehik.fhirest.scheduler;
 
 import ee.tehik.fhirest.scheduler.api.ScheduleJobRunner;
-import io.micronaut.scheduling.annotation.Scheduled;
 import java.util.List;
-import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Singleton
+@Component
+@EnableScheduling
 @RequiredArgsConstructor
 public class SchedulerJobRunner {
   private final JobRepository jobRepository;

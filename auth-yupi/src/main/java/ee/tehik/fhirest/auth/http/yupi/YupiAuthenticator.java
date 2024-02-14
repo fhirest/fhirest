@@ -20,9 +20,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class YupiAuthenticator implements AuthenticationProvider {
   private static final Map<String, String> yupiOrgs = Map.of(
       "yupi", "yupland",

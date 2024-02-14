@@ -18,10 +18,10 @@ import ee.tehik.fhirest.core.model.search.SearchCriterion;
 import ee.tehik.fhirest.core.model.search.SearchResult;
 import ee.tehik.fhirest.search.repository.PgSearchRepository;
 import java.util.List;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class PgSearchHandler implements ResourceSearchHandler {
   private final PgSearchRepository pgSearchRepository;

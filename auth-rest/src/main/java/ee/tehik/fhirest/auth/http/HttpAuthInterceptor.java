@@ -21,13 +21,13 @@ import ee.tehik.fhirest.rest.model.FhirestRequest;
 import ee.tehik.fhirest.rest.model.FhirestResponse;
 import java.util.List;
 import java.util.Objects;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 @RequiredArgsConstructor
-@Singleton
+@Component
 @Slf4j
 public class HttpAuthInterceptor implements FhirestRequestFilter, FhirestResponseFilter {
   private final ClientIdentity clientIdentity;

@@ -3,7 +3,6 @@ package ee.tehik.fhirest.auth.http.oidc;
 import com.google.gson.Gson;
 import ee.tehik.fhirest.auth.User;
 import ee.tehik.fhirest.core.exception.FhirException;
-import io.micronaut.context.annotation.Value;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -15,13 +14,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toSet;
 
-@Singleton
+@Component
 public class OidcUserProvider {
   private final HttpClient httpClient;
   @Value("${oidc.url}")

@@ -18,13 +18,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import jakarta.inject.Singleton;
 import org.hl7.fhir.r5.model.CapabilityStatement;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
 import org.hl7.fhir.r5.model.CapabilityStatement.RestfulCapabilityMode;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class CapabilitySearchConformance implements ConformanceUpdateListener {
   // resource type -> search param key -> search param
   private static final Map<String, Map<String, CapabilityStatementRestResourceSearchParamComponent>> params =

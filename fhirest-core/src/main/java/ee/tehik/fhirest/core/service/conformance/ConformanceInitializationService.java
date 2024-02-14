@@ -14,7 +14,6 @@ package ee.tehik.fhirest.core.service.conformance;
 
 import ee.tehik.fhirest.core.api.conformance.ConformanceUpdateListener;
 import ee.tehik.fhirest.core.service.conformance.loader.ConformanceLoader;
-import jakarta.inject.Singleton;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -23,11 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r5.model.CapabilityStatement;
 import org.hl7.fhir.r5.model.Resource;
 import org.hl7.fhir.r5.model.TerminologyCapabilities;
+import org.springframework.stereotype.Component;
 
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 @Slf4j
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class ConformanceInitializationService {
   private final List<ConformanceUpdateListener> conformanceUpdateListeners;

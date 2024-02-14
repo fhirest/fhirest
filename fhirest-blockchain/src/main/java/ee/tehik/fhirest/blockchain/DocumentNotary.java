@@ -16,7 +16,7 @@ import ee.tehik.fhirest.core.api.resource.ResourceAfterSaveInterceptor;
 import ee.tehik.fhirest.core.model.ResourceVersion;
 import ee.tehik.fhirest.core.util.JsonUtil;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
-import io.micronaut.context.annotation.Value;
+import jakarta.inject.Inject;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,11 +24,11 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.concurrent.CompletableFuture;
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 class DocumentNotary extends ResourceAfterSaveInterceptor {
   @Value("${gateway.endpoint}")
   private String gwEndpoint;

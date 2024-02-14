@@ -16,13 +16,13 @@ import ee.tehik.fhirest.core.api.conformance.ConformanceUpdateListener;
 import ee.tehik.fhirest.core.service.conformance.HapiContextHolder;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
 import java.util.List;
-import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r5.model.Resource;
 import org.hl7.fhir.r5.utils.FHIRPathEngine;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class FhirPath implements ConformanceUpdateListener {
   private FHIRPathEngine engine;

@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,9 +31,10 @@ import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Singleton
+@Component
 public class ResourceFormatService {
   private final List<ResourceRepresentation> representations;
   private final ContentTypeService justForBeanInit; //needed

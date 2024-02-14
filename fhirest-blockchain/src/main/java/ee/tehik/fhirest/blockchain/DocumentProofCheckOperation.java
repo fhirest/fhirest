@@ -18,13 +18,13 @@ import ee.tehik.fhirest.core.model.ResourceVersion;
 import ee.tehik.fhirest.core.service.resource.ResourceService;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.Parameters;
 import org.hl7.fhir.r5.model.ResourceType;
 import org.hl7.fhir.r5.model.StringType;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class DocumentProofCheckOperation implements InstanceOperationDefinition {
   private final DocumentNotary notary;

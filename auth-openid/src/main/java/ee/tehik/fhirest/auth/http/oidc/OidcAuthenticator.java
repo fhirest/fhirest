@@ -17,11 +17,11 @@ import ee.tehik.fhirest.auth.http.AuthenticationProvider;
 import ee.tehik.fhirest.auth.http.HttpAuthorization;
 import ee.tehik.fhirest.rest.model.FhirestRequest;
 import java.util.List;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
 //TODO: .well-known
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class OidcAuthenticator implements AuthenticationProvider {
   private OidcUserProvider oidcUserProvider;

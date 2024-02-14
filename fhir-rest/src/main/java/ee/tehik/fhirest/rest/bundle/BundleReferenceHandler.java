@@ -21,7 +21,6 @@ import ee.tehik.fhirest.core.service.resource.ResourceSearchService;
 import ee.tehik.fhirest.core.service.resource.ResourceService;
 import ee.tehik.fhirest.core.util.ResourceUtil;
 import ee.tehik.fhirest.structure.util.ResourcePropertyUtil;
-import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,8 +36,9 @@ import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Reference;
 import org.hl7.fhir.r5.model.Resource;
 import org.hl7.fhir.r5.model.UriType;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class BundleReferenceHandler {
   private final ResourceService resourceService;

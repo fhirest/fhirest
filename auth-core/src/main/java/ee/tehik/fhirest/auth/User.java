@@ -14,25 +14,12 @@
 
 import java.util.Map;
 import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class User {
   private Map<String, Object> claims;
   private Set<String> scopes;
-
-  public Map<String, Object> getClaims() {
-    return claims;
-  }
-
-  public void setClaims(Map<String, Object> claims) {
-    this.claims = claims;
-  }
-
-  public Set<String> getScopes() {
-    return scopes;
-  }
-
-  public void setScopes(Set<String> scopes) {
-    this.scopes = scopes;
-  }
-
 }

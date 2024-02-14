@@ -29,6 +29,10 @@ public class PgTransactionManager extends TransactionAspectSupport implements Tr
   }
 
   @Override
+  public void afterPropertiesSet() {
+  }
+
+  @Override
   public TransactionRef requireNewTransaction() {
     DefaultTransactionAttribute txAttr = new DefaultTransactionAttribute(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
     TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, "requireNewTransaction");

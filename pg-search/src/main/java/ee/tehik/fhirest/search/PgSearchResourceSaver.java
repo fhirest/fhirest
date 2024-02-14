@@ -17,9 +17,9 @@ import ee.tehik.fhirest.core.api.resource.ResourceAfterSaveInterceptor;
 import ee.tehik.fhirest.core.model.ResourceId;
 import ee.tehik.fhirest.core.model.ResourceVersion;
 import ee.tehik.fhirest.search.index.IndexService;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class PgSearchResourceSaver extends ResourceAfterSaveInterceptor implements ResourceAfterDeleteInterceptor {
   private IndexService indexService;
 

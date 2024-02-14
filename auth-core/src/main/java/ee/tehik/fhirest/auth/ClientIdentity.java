@@ -13,9 +13,9 @@
 package ee.tehik.fhirest.auth;
 
 
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class ClientIdentity {
   private final ThreadLocal<User> context = new InheritableThreadLocal<>();
 

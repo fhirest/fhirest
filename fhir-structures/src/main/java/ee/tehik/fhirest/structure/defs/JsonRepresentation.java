@@ -14,7 +14,6 @@ package ee.tehik.fhirest.structure.defs;
 
 import ee.tehik.fhirest.structure.api.ParseException;
 import ee.tehik.fhirest.structure.api.ResourceRepresentation;
-import jakarta.inject.Singleton;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -25,8 +24,9 @@ import org.hl7.fhir.r5.formats.IParser;
 import org.hl7.fhir.r5.formats.IParser.OutputStyle;
 import org.hl7.fhir.r5.formats.JsonParser;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class JsonRepresentation implements ResourceRepresentation {
 
   @Override

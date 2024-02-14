@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -18,7 +18,7 @@ import org.hl7.fhir.r5.model.Bundle;
 import org.hl7.fhir.r5.model.Resource;
 
 @Slf4j
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class ConformanceFileImportService {
   private final ConformanceSaveService conformanceSaveService;

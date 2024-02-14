@@ -16,10 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@Singleton
+@Component
 public class ResourceStructureRepository {
   private static Map<String, Long> RESOURCE_TYPES = new HashMap<>();
   @Inject

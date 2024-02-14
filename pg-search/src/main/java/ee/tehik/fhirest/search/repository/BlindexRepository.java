@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-@Singleton
+@Component
 public class BlindexRepository {
   private static final Map<String, Map<String, Blindex>> INDEXES = new HashMap<>();
   @Inject

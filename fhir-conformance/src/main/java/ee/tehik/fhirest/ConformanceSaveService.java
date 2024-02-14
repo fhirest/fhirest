@@ -8,13 +8,13 @@ import ee.tehik.fhirest.core.model.VersionId;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
 import java.util.Date;
 import java.util.List;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r5.model.Resource;
 
 @Slf4j
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class ConformanceSaveService {
   private final ResourceStorage storehouse;

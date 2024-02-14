@@ -18,9 +18,9 @@ import ee.tehik.fhirest.core.model.VersionId;
 import ee.tehik.fhirest.core.service.resource.ResourceService;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
-import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.stereotype.Component;
 
 /**
  * XXX
@@ -30,7 +30,7 @@ import org.hl7.fhir.r5.model.Resource;
  *
  * ponies
  */
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class StuResourceService {
   private final ResourceService resourceService;

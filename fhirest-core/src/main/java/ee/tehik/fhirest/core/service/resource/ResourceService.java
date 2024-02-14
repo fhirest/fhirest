@@ -23,10 +23,10 @@ import ee.tehik.fhirest.core.util.ResourceUtil;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import ee.tehik.fhirest.tx.TransactionService;
 import java.util.List;
-import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class ResourceService {
   private final ResourceStorageService storageService;

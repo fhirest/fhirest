@@ -12,7 +12,6 @@
  */
 package ee.tehik.fhirest.rest.util;
 
-import io.micronaut.http.HttpHeaders;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -26,13 +25,6 @@ public final class PreferredReturn {
 
   private PreferredReturn() {
     //
-  }
-
-  public static String parse(HttpHeaders headers) {
-    if (headers == null) {
-      return null;
-    }
-    return parse(headers.get("Prefer"));
   }
 
   public static String parse(Map<String, List<String>> headers) {

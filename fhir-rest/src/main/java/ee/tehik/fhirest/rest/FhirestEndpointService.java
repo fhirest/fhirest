@@ -14,19 +14,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import jakarta.inject.Named;;
-import jakarta.inject.Singleton;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
 
-@Named("default")
 @Slf4j
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class FhirestEndpointService {
   private final List<FhirestRequestExecutionInterceptor> interceptors;

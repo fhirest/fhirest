@@ -56,15 +56,13 @@ function startfhirest() {
   echo "starting app..."
   export DB_URL="jdbc:postgresql://localhost:$DB_PORT/fhirestdb"
   [[ -f '/.dockerenv' ]] && export DB_URL="jdbc:postgresql://172.17.0.1:$DB_PORT/fhirestdb"
-  export APP_PORT=$APP_PORT
+  export SERVER_PORT=$APP_PORT
   >test-reports/server.log
-  ../gradlew run 2>&1 | tee test-reports/server.log &
+  ../gradlew bootRun 2>&1 | tee test-reports/server.log &
   PID=$!
 
-#  while ! grep -m1 'Startup completed' < test-reports/server.log; do sleep 1; done
-#  ../etc/download-fhir-definitions.sh "http://localhost:$APP_PORT" || finish 1
-
   while true; do
+    sleep 1
     if ! ps -p $PID >/dev/null 2>&1; then exit 1; fi
     if ! grep -m1 'conformance loaded' < test-reports/server.log; then continue; fi
     if ! grep -m1 'blindex initialization finished' < test-reports/server.log; then continue; fi
@@ -76,16 +74,3 @@ function startfhirest() {
 
 main "$@"
 
-
-
-
-
-
-#  while true; do
-#    if ! ps -p $PID > /dev/null; then
-#      echo 'app failed to start...'
-#      finish 1
-#    fi
-#    curl "http://localhost:$APP_PORT/Patient" -s -o /dev/null -f && break
-#    sleep 1
-#  done;

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import static java.util.stream.Collectors.joining;
 
 @Slf4j
-@Singleton
+@Component
 public class ReferenceIndexRepository extends TypeIndexRepository<Value> {
 
   @Override

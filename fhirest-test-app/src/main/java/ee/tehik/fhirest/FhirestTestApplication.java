@@ -1,10 +1,12 @@
 package ee.tehik.fhirest;
 
-import io.micronaut.runtime.Micronaut;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class FhirestTestApplication {
 
   public static void main(String[] args) {
-    Micronaut.run(FhirestTestApplication.class);
+    SpringApplication.run(FhirestTestApplication.class, args);
   }
 }

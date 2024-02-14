@@ -4,6 +4,5 @@ dependencies {
   api project(':tx-manager')
   api project(':fhirest-core')
 
-  implementation "io.micronaut:micronaut-management"
-  implementation "io.micronaut:micronaut-http-server"
+  implementation 'org.springframework.boot:spring-boot-starter-web'
 }

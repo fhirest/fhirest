@@ -137,7 +137,7 @@ public class SqlBuilder implements Serializable {
   }
 
   public boolean isEmpty() {
-    return sb.length() == 0;
+    return sb.isEmpty();
   }
 
   public String getSql() {

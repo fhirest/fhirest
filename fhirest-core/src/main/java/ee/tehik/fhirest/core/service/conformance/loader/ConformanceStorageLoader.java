@@ -3,13 +3,13 @@ package ee.tehik.fhirest.core.service.conformance.loader;
 import ee.tehik.fhirest.core.service.resource.ResourceSearchService;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
 import java.util.List;
-import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class ConformanceStorageLoader implements ConformanceLoader {
 

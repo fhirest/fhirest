@@ -16,10 +16,10 @@ import ee.tehik.fhirest.core.api.conformance.ConformanceUpdateListener;
 import ee.tehik.fhirest.core.service.conformance.ConformanceHolder;
 import ee.tehik.fhirest.store.repository.ResourceFunctionsRepository;
 import java.util.List;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class ResourceInitializer implements ConformanceUpdateListener {
   private final ResourceFunctionsRepository resourceFunctionsRepository;

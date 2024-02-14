@@ -8,7 +8,8 @@ import ee.tehik.fhirest.rest.model.FhirestResponse;
 import ee.tehik.fhirest.rest.util.PreferredReturn;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
-import io.micronaut.http.context.ServerRequestContext;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.Bundle;
@@ -17,6 +18,10 @@ import org.hl7.fhir.r5.model.OperationOutcome;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public abstract class BaseFhirResourceServer implements FhirResourceServer {
+  @Inject
+  private HttpServletRequest request;
+  @Inject
+  private ServerUriHelper serverUriHelper;
   @Override
   public abstract String getTargetType();
 
@@ -117,22 +122,21 @@ public abstract class BaseFhirResourceServer implements FhirResourceServer {
   }
 
   protected String uri(ResourceVersion version, FhirestRequest req) {
-    //don't like the import
-    return req.getServerUri() + "/" + RuleThemAllFhirController.FHIR_ROOT + "/" + version.getReference();
+    return serverUriHelper.getServerUri() + "/" + RuleThemAllFhirController.FHIR_ROOT + "/" + version.getReference();
   }
 
   protected void addPagingLinks(Bundle bundle, Integer count, Integer page, FhirestRequest req) {
     if (count == 0) {
       return;
     }
-    String pageUrl = req.getServerHost() + ServerRequestContext.currentRequest().orElseThrow().getPath();
-    String queryString = ServerRequestContext.currentRequest().orElseThrow().getUri().getRawQuery();
+    String pageUrl = serverUriHelper.getServerHost() + request.getRequestURI();
+    String queryString = request.getQueryString(); //TODO: migronaut
     queryString = StringUtils.isEmpty(queryString) ? "" : RegExUtils.removePattern(queryString, "[&?]?_page=[0-9]+");
     pageUrl += StringUtils.isEmpty(queryString) ? "?_page=" : ("?" + queryString + "&_page=");
 
     bundle.addLink().setRelation(LinkRelationTypes.SELF).setUrl(pageUrl + page);
     bundle.addLink().setRelation(LinkRelationTypes.FIRST).setUrl(pageUrl + 1);
-    bundle.addLink().setRelation(LinkRelationTypes.LAST).setUrl(pageUrl + ((int) Math.ceil((double) bundle.getTotal() / count)));
+    bundle.addLink().setRelation(LinkRelationTypes.LAST).setUrl(pageUrl + Math.max(1, (int) Math.ceil((double) bundle.getTotal() / count)));
     if (page > 1) {
       bundle.addLink().setRelation(LinkRelationTypes.PREVIOUS).setUrl(pageUrl + (page - 1));
     }

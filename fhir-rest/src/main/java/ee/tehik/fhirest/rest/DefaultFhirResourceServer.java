@@ -21,8 +21,6 @@ import ee.tehik.fhirest.rest.util.BundleUtil;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.inject.Singleton;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,10 +39,12 @@ import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Parameters;
 import org.hl7.fhir.r5.model.Resource;
 import org.hl7.fhir.r5.model.ResourceType;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Named("default")
-@Singleton
+@Primary
+@Component
 public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   public static final String DEFAULT = "default";
   @Inject

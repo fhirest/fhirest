@@ -20,21 +20,23 @@ import ee.tehik.fhirest.core.model.search.HistorySearchCriterion;
 import ee.tehik.fhirest.core.util.JsonUtil;
 import ee.tehik.fhirest.store.api.PgResourceFilter;
 import ee.tehik.fhirest.util.sql.SqlBuilder;
-import io.micronaut.context.annotation.Primary;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;;
-import jakarta.inject.Singleton;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.joining;
 
+;
+
 @Primary
-@Singleton
+@Component
 public class ResourceRepository {
   private final JdbcTemplate jdbcTemplate;
   @Inject
@@ -49,31 +51,19 @@ public class ResourceRepository {
     return String.valueOf(jdbcTemplate.queryForObject("select nextval('store.resource_id_seq')", Long.class));
   }
 
-  public void create(ResourceVersion version, List<VersionId> profiles) {
+  public void create(ResourceVersion version, List<String> profiles) {
     if (version.getId().getResourceId() == null) {
       version.getId().setResourceId(getNextResourceId());
     }
-    List<Long> profileUids = getUids(profiles);
-    String sql = "INSERT INTO store.resource (type, id, version, author, content, profiles, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb, ?::bigint[], ?)";
+    String sql = "INSERT INTO store.resource (type, id, version, author, content, profiles, sys_status) VALUES (?,?,?,?::jsonb,?::jsonb, ?::text[], ?)";
     jdbcTemplate.update(sql,
         version.getId().getResourceType(),
         version.getId().getResourceId(),
         version.getId().getVersion(),
         JsonUtil.toJson(version.getAuthor()),
         version.getContent() == null ? null : version.getContent().getValue(),
-        CollectionUtils.isEmpty(profileUids) ? null : "{" + profileUids.stream().map(Object::toString).collect(joining(",")) + "}",
+        CollectionUtils.isEmpty(profiles) ? null : "{" + String.join(",", profiles) + "}",
         version.isDeleted() ? "C" : "A");
-  }
-
-  public List<Long> getUids(List<VersionId> ids) {
-    if (CollectionUtils.isEmpty(ids)) {
-      return List.of();
-    }
-    SqlBuilder sb = new SqlBuilder();
-    sb.append("SELECT uid FROM store.resource r WHERE sys_status = 'A'");
-    sb.append(" and (type, id, version) in (").append(ids.stream().map(id -> "(?,?,?)").collect(joining(","))).append(")");
-    ids.forEach(id -> sb.add(id.getResourceType(), id.getResourceId(), id.getVersion()));
-    return jdbcTemplate.queryForList(sb.getSql(), Long.class, sb.getParams());
   }
 
   public Integer getLastVersion(ResourceId id) {

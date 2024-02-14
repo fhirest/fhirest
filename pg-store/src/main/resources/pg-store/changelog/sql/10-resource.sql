@@ -11,6 +11,7 @@ create table store.resource (
   updated       timestamptz not null default now(),
   author        jsonb,
   content       jsonb,
+  profiles      text[],
   sys_status    char(1) not null default 'A',
   constraint resource_id_not_empty check (id != '')
 ) PARTITION BY LIST (type);
@@ -23,8 +24,4 @@ SELECT setval('store.resource_id_seq', nextval('store.resource_key_seq'));
 
 --changeset fhirest:resource_updated_index
 create index on store.resource(updated);
---
-
---changeset fhirest:add-profile
-alter table store.resource add column profiles bigint[]; --references store.resource(uid)
 --

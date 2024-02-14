@@ -25,10 +25,6 @@ import ee.tehik.fhirest.rest.util.PreferredReturn;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
 import ee.tehik.fhirest.tx.TransactionService;
-import io.micronaut.http.HttpRequest;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.context.ServerRequestContext;
-import jakarta.inject.Singleton;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -45,8 +41,10 @@ import org.hl7.fhir.r5.model.OperationOutcome;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Resource;
 import org.hl7.fhir.r5.model.UriType;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class BundleService implements BundleSaveHandler {
   private final ResourceSearchService searchService;
@@ -172,9 +170,6 @@ public class BundleService implements BundleSaveHandler {
 
   private FhirestRequest buildRequest(BundleEntryComponent entry) {
     FhirestRequest req = new FhirestRequest();
-    HttpRequest<Object> request = ServerRequestContext.currentRequest().orElseThrow();
-    req.setServerUri(serverUriHelper.buildServerUri(request));
-    req.setServerHost(serverUriHelper.getHost(request));
     String method = entry.getRequest().getMethod().toCode();
     req.setTransactionMethod(method);
     URI uri;
@@ -190,10 +185,9 @@ public class BundleService implements BundleSaveHandler {
     }
     req.setType(StringUtils.substringBefore(uri.getPath(), "/"));
     req.setPath(StringUtils.removeStart(uri.getPath(), req.getType()));
-    req.setUri(uri.toString());
     req.putQuery(uri.getQuery());
     req.putHeader("If-None-Exist", entry.getRequest().getIfNoneExist());
-    req.setContentType(MediaType.APPLICATION_JSON_TYPE);
+    req.setContentType(MediaType.APPLICATION_JSON);
     if (entry.getResource() != null) {
       req.setBody(resourceFormatService.compose(entry.getResource(), "json").getValue());
     }

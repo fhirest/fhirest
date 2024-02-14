@@ -23,10 +23,10 @@ import ee.tehik.fhirest.tx.TransactionService;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import jakarta.inject.Singleton;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class ResourceStorageService {
   private final Map<String, ResourceStorage> storages;
   private final TransactionService tx;

@@ -1,15 +1,22 @@
 plugins {
   id 'maven-publish'
-  id("org.owasp.dependencycheck") version "8.4.2"
-  id 'io.micronaut.minimal.library' version "4.1.2"
-  id 'io.micronaut.minimal.application' version "4.1.2"
+  id "org.owasp.dependencycheck" version "8.4.2"
+  id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group "ee.tehik.fhirest"
 
+
 allprojects {
   apply plugin: "java-library"
   apply plugin: "org.owasp.dependencycheck"
+  apply plugin: "io.spring.dependency-management"
+
+  dependencyManagement {
+    imports {
+      mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+    }
+  }
 
   version rootProject.version
   group rootProject.group
@@ -29,11 +36,10 @@ allprojects {
     annotationProcessor "org.projectlombok:lombok:1.18.30"
     compileOnly "org.projectlombok:lombok:1.18.30"
 
-    implementation "io.micronaut:micronaut-inject"
-    implementation "io.micronaut:micronaut-runtime"
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
     implementation 'jakarta.annotation:jakarta.annotation-api:2.1.1'
-    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
     implementation "org.apache.commons:commons-collections4:4.4"
     implementation "org.apache.commons:commons-lang3:3.13.0"
@@ -43,15 +49,6 @@ allprojects {
 
 subprojects { Project project ->
   apply plugin: "maven-publish"
-  apply plugin: "io.micronaut.minimal.library"
-
-  micronaut {
-    version "${micronautVersion}"
-    processing {
-      incremental(true)
-      annotations("ee.tehik.fhirest.*")
-    }
-  }
 
   java {
     withSourcesJar()

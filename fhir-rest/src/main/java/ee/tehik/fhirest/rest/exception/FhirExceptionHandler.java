@@ -15,12 +15,8 @@ package ee.tehik.fhirest.rest.exception;
 import ee.tehik.fhirest.core.exception.FhirException;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
-import io.micronaut.http.HttpRequest;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.HttpStatus;
-import io.micronaut.http.MutableHttpResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -28,16 +24,20 @@ import org.hl7.fhir.r5.model.CodeableConcept;
 import org.hl7.fhir.r5.model.OperationOutcome;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.joining;
 
 @Slf4j
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class FhirExceptionHandler {
   private final ResourceFormatService resourceFormatService;
 
-  public HttpResponse<?> handle(HttpRequest request, Throwable e) {
+  public ResponseEntity<String> handle(HttpServletRequest request, Throwable e) {
     Throwable root = ExceptionUtils.getRootCause(e);
 
     if (e instanceof FhirException) {
@@ -50,11 +50,11 @@ public class FhirExceptionHandler {
     log.error("Fhir error occurred", e);
     OperationOutcome outcome = new OperationOutcome();
     outcome.addIssue().setCode(IssueType.EXCEPTION).setDetails(new CodeableConcept().setText(e.getMessage())).setSeverity(IssueSeverity.ERROR);
-    return toResponse(request, outcome, HttpStatus.INTERNAL_SERVER_ERROR.getCode());
+    return toResponse(request, outcome, HttpStatus.INTERNAL_SERVER_ERROR.value());
   }
 
 
-  private HttpResponse toResponse(HttpRequest<?> request, FhirException e) {
+  private ResponseEntity<String> toResponse(HttpServletRequest request, FhirException e) {
     log(e);
 
     OperationOutcome outcome = new OperationOutcome();
@@ -64,16 +64,14 @@ public class FhirExceptionHandler {
     return toResponse(request, outcome, e.getStatusCode());
   }
 
-  protected MutableHttpResponse<?> toResponse(HttpRequest<?> request, OperationOutcome outcome, int statusCode) {
-    List<String> ct = request.getHeaders().get("Accept") == null ? List.of() : List.of(request.getHeaders().get("Accept").split(","));
+  protected ResponseEntity<String> toResponse(HttpServletRequest request, OperationOutcome outcome, int statusCode) {
+    List<String> ct = request.getHeader("Accept") == null ? List.of() : List.of(request.getHeader("Accept").split(","));
     String accept = resourceFormatService.findSupported(ct).stream().findFirst().orElse("application/json");
     ResourceContent c = resourceFormatService.compose(outcome, accept);
 
-    MutableHttpResponse<?> response = HttpResponse.status(HttpStatus.valueOf(statusCode));
-    response.body(c.getValue());
-    String contentType = c.getContentType();
-    response.contentType(toHttpContentType(contentType));
-    return response;
+    return ResponseEntity.status(HttpStatus.valueOf(statusCode))
+        .header(HttpHeaders.CONTENT_TYPE, toHttpContentType(c.getContentType()))
+        .body(c.getValue());
   }
 
   private static String toHttpContentType(String fhirContentType) {

@@ -3,7 +3,6 @@ package ee.tehik.fhirest.rest.model;
 import ee.tehik.fhirest.core.model.VersionId;
 import ee.tehik.fhirest.core.util.ResourceUtil;
 import ee.tehik.fhirest.rest.FhirestEndpointService.FhirestEnabledOperation;
-import io.micronaut.http.MediaType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -14,6 +13,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 
 @Getter
 @Setter
@@ -25,9 +25,6 @@ public class FhirestRequest {
   private String path;
   private Map<String, List<String>> parameters = new LinkedHashMap<>();
   private Map<String, List<String>> headers = new LinkedHashMap<>();
-  private String uri;
-  private String serverUri;
-  private String serverHost;
   private String body;
   private List<MediaType> accept;
   private MediaType contentType;
@@ -48,7 +45,7 @@ public class FhirestRequest {
   }
 
   public String getContentTypeName() {
-    return contentType == null ? null : contentType.getName();
+    return contentType == null ? null : contentType.toString();
   }
 
   public void setPath(String path) {
@@ -68,11 +65,11 @@ public class FhirestRequest {
       return;
     }
     if (name.equalsIgnoreCase("Accept")) {
-      setAccept(List.of(MediaType.of(value.split(","))));
+      setAccept(MediaType.parseMediaTypes(value));
       return;
     }
     if (name.equalsIgnoreCase("Content-Type")) {
-      setContentType(MediaType.of(value));
+      setContentType(MediaType.valueOf(value));
       return;
     }
     headers.computeIfAbsent(name, x -> new ArrayList<>()).add(value);

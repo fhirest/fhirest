@@ -13,7 +13,6 @@
 package ee.tehik.fhirest.structure.defs;
 
 import ee.tehik.fhirest.structure.api.ResourceRepresentation;
-import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,9 @@ import org.hl7.fhir.r5.formats.IParser.OutputStyle;
 import org.hl7.fhir.r5.formats.JsonParser;
 import org.hl7.fhir.r5.model.DomainResource;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class HtmlRepresentation implements ResourceRepresentation {
 

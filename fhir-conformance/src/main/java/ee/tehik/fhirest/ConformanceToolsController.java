@@ -13,35 +13,37 @@
 package ee.tehik.fhirest;
 
 import ee.tehik.fhirest.core.service.conformance.ConformanceInitializationService;
-import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.QueryValue;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 //TODO: auth. check resource types?
-@Controller("/conformance-tools")
+@Controller()
+@RequestMapping("/conformance-tools")
 @RequiredArgsConstructor
 public class ConformanceToolsController {
   private final ConformanceFileImportService conformanceFileImportService;
   private final ConformanceDownloadService conformanceDownloadService;
   private final ConformanceInitializationService conformanceInitializationService;
 
-  @Post("/import-file")
-  public HttpResponse<?> importFile(@QueryValue String file) {
+  @PostMapping("/import-file")
+  public ResponseEntity<?> importFile(@RequestParam String file) {
     conformanceFileImportService.importFromFile(file);
-    return HttpResponse.ok();
+    return ResponseEntity.ok().build();
   }
 
-  @Post("/import-url")
-  public HttpResponse<?> importUrl(@QueryValue String url) {
+  @PostMapping("/import-url")
+  public ResponseEntity<?> importUrl(@RequestParam String url) {
     conformanceDownloadService.importFromUrl(url);
-    return HttpResponse.ok();
+    return ResponseEntity.ok().build();
   }
 
-  @Post("/refresh")
-  public HttpResponse<?> refreshConformance() {
+  @PostMapping("/refresh")
+  public ResponseEntity<?> refreshConformance() {
     conformanceInitializationService.refresh();
-    return HttpResponse.ok();
+    return ResponseEntity.ok().build();
   }
 }

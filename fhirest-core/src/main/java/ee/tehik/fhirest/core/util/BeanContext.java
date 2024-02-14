@@ -1,13 +1,14 @@
 package ee.tehik.fhirest.core.util;
 
-import io.micronaut.context.annotation.Context;
 import java.util.Collection;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
-@Context
+@Component
 public class BeanContext {
-  private static io.micronaut.context.BeanContext ctx;
+  private static ApplicationContext ctx;
 
-  public BeanContext(io.micronaut.context.BeanContext ctx) {
+  public BeanContext(ApplicationContext ctx) {
     BeanContext.ctx = ctx;
   }
 
@@ -16,6 +17,6 @@ public class BeanContext {
   }
 
   public static <T> Collection<T> getBeans(Class<T> clazz) {
-    return ctx.getBeansOfType(clazz);
+    return ctx.getBeansOfType(clazz).values();
   }
 }

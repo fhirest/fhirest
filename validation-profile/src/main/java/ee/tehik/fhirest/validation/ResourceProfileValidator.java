@@ -22,9 +22,7 @@ import ee.tehik.fhirest.core.model.ResourceId;
 import ee.tehik.fhirest.core.service.conformance.HapiContextHolder;
 import ee.tehik.fhirest.structure.api.ResourceContent;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
-import io.micronaut.context.annotation.Requires;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -33,11 +31,13 @@ import org.hl7.fhir.r5.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
 
-@Requires(property = "fhirest.validation-profile.enabled", value = io.micronaut.core.util.StringUtils.TRUE, defaultValue = io.micronaut.core.util.StringUtils.TRUE)
-@Singleton
+@ConditionalOnProperty(value = "fhirest.validation-profile.enabled", havingValue = "true", matchIfMissing = true)
+@Component
 public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor implements OperationInterceptor {
   @Inject
   private ResourceFormatService resourceFormatService;

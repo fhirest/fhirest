@@ -1,11 +1,10 @@
 package ee.tehik.fhirest.rest;
 
-import io.micronaut.http.HttpRequest;
-import io.micronaut.http.server.HttpServerConfiguration;
-import io.micronaut.http.server.util.HttpHostResolver;
-import jakarta.inject.Singleton;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * don't forget to add nginx proxypass conf:
@@ -13,26 +12,44 @@ import org.apache.commons.lang3.StringUtils;
  * proxy_set_header X-Forwarded-Host $http_host/path;
  * proxy_set_header X-Forwarded-Proto $scheme;
  */
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class ServerUriHelper {
+  private final ServletContext servletContext;
+  private final HttpServletRequest request;
 
-  private final HttpHostResolver httpHostResolver;
-  private final HttpServerConfiguration httpServerConfiguration;
-
-  public String buildServerUri(HttpRequest<?> request) {
-    String contextPath = httpServerConfiguration.getContextPath();
-    contextPath = contextPath != null ? StringUtils.prependIfMissing(contextPath, "/") : "";
-    contextPath = StringUtils.removeEnd(contextPath, "/");
-    return httpHostResolver.resolve(request) + contextPath;
+  /**
+   * @return schema://host:port/context-path
+   */
+  public String getServerUri() {
+    String contextPath = getContextPath();
+    return StringUtils.removeEnd(getServerHost() + "/" + contextPath, "/");
   }
 
+  /**
+   * @return schema://host:port
+   */
+  public String getServerHost() {
+    return createHost(request.getScheme(), request.getServerName(), request.getServerPort());
+  }
+
+  /**
+   * @return configured spring server context path
+   */
   public String getContextPath() {
-    String contextPath = httpServerConfiguration.getContextPath();
-    return contextPath != null ? StringUtils.removeStart(contextPath, "/") : "";
+    String contextPath = StringUtils.defaultString(servletContext.getContextPath());
+    return StringUtils.strip(contextPath, "/");
   }
 
-  public String getHost(HttpRequest<?> request) {
-    return httpHostResolver.resolve(request);
+
+  private String createHost(String scheme, String host, Integer port) {
+    scheme = scheme == null ? "http" : scheme;
+    host = host == null ? "localhost" : host;
+    if (port != null && port != 80 && port != 443) {
+      return scheme + "://" + host + ":" + port;
+    }
+    return scheme + "://" + host;
   }
+
+
 }

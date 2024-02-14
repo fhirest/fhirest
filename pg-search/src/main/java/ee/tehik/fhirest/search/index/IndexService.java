@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import jakarta.inject.Singleton;
+import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
 
-@Singleton
+@Component
 public class IndexService {
   private final SearchIndexRepository searchIndexRepository;
   private final Map<String, TypeIndexRepository> indexRepos;

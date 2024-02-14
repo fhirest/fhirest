@@ -25,7 +25,6 @@ import ee.tehik.fhirest.rest.model.FhirestResponse;
 import ee.tehik.fhirest.rest.util.BundleUtil;
 import ee.tehik.fhirest.structure.service.ResourceFormatService;
 import jakarta.inject.Provider;
-import jakarta.inject.Singleton;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +33,10 @@ import org.hl7.fhir.r5.model.Bundle;
 import org.hl7.fhir.r5.model.Bundle.BundleType;
 import org.hl7.fhir.r5.model.CodeableConcept;
 import org.hl7.fhir.r5.model.OperationOutcome;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Singleton
+@Component
 @RequiredArgsConstructor
 public class FhirRootServer {
   private final Provider<FhirestEndpointInitializer> restResourceInitializer;

@@ -12,13 +12,11 @@
  */
 package ee.tehik.fhirest.core.service.conformance;
 
-import io.micronaut.context.annotation.Context;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Configuration;
 
 @Slf4j
-@Context
-@RequiredArgsConstructor
+@Configuration
 public class ConformanceInitializer {
 
   public ConformanceInitializer(ConformanceInitializationService conformanceInitializationService) {

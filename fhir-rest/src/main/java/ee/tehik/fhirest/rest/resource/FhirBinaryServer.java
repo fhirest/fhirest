@@ -4,11 +4,11 @@ import ee.tehik.fhirest.core.exception.FhirException;
 import ee.tehik.fhirest.rest.DefaultFhirResourceServer;
 import ee.tehik.fhirest.rest.model.FhirestRequest;
 import ee.tehik.fhirest.rest.model.FhirestResponse;
-import jakarta.inject.Singleton;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.ResourceType;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
 public class FhirBinaryServer extends DefaultFhirResourceServer {
 
   @Override
