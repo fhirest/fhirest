@@ -14,36 +14,36 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PgCoreDatabaseConfig {
 
-  @Bean("defaultDsCfg")
+  @Bean
   @ConditionalOnProperty("spring.datasource.default.url")
   @ConfigurationProperties("spring.datasource.default")
   public DataSourceProperties defaultDataSourceProperties() {
     return new DataSourceProperties();
   }
 
-  @Bean("defaultDs")
-  @ConditionalOnBean(value = DataSourceProperties.class, name = "defaultDsCfg")
-  public DataSource defaultDataSource(@Named("defaultDsCfg") DataSourceProperties properties) {
+  @Bean
+  @ConditionalOnBean(value = DataSourceProperties.class, name = "defaultDataSourceProperties")
+  public DataSource defaultDataSource(@Named("defaultDataSourceProperties") DataSourceProperties properties) {
     return properties.initializeDataSourceBuilder().build();
   }
 
 
-  @Bean("adminDsCfg")
+  @Bean
   @ConditionalOnProperty("spring.datasource.admin.url")
   @ConfigurationProperties("spring.datasource.admin")
   public DataSourceProperties adminDataSourceProperties() {
     return new DataSourceProperties();
   }
 
-  @Bean("adminDs")
-  public DataSource adminDataSource(@Named("adminDsCfg") Optional<DataSourceProperties> properties,
-                                    @Named("defaultDs") Optional<DataSource> defaultDs) {
+  @Bean
+  public DataSource adminDataSource(@Named("adminDataSourceProperties") Optional<DataSourceProperties> properties,
+                                    @Named("defaultDataSource") Optional<DataSource> defaultDs) {
     return properties.map(p -> (DataSource) p.initializeDataSourceBuilder().build()).or(() -> defaultDs).orElse(null);
   }
 
   @Bean
-  @ConditionalOnBean(value = DataSourceProperties.class, name = "defaultDsCfg")
-  public PgTransactionManager transactionManager(@Named("defaultDs") DataSource dataSource) {
+  @ConditionalOnBean(value = DataSource.class, name = "defaultDataSource")
+  public PgTransactionManager defaultTransactionManager(@Named("defaultDataSource") DataSource dataSource) {
     return new PgTransactionManager(dataSource);
   }
 

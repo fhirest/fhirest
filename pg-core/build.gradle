@@ -3,6 +3,5 @@ dependencies {
 
   api "org.postgresql:postgresql:${postgresqlVersion}"
   api 'org.springframework.boot:spring-boot-starter-jdbc'
-//  implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
-
+  implementation "org.liquibase:liquibase-core"
 }

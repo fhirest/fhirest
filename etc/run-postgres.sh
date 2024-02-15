@@ -11,7 +11,7 @@ docker run -d \
  --name $CONTAINER_NAME \
  -e POSTGRES_PASSWORD=postgres \
  -p $PORT:5432 \
- postgres:14
+ postgres:16
 
 sleep 3
 docker exec -i $CONTAINER_NAME psql -U postgres <<-EOSQL

@@ -17,16 +17,10 @@ spring:
       maxActive: 1
       driverClassName: org.postgresql.Driver
       type: org.springframework.jdbc.datasource.SimpleDriverDataSource
-
-  liquibase:
-    enabled: true
-    url: ${spring.datasource.admin.url}
-    user: ${spring.datasource.admin.username}
-    password: ${spring.datasource.admin.password}
-    default-schema: 'public'
-    change-log: 'classpath:changelog.yml'
-    parameters:
-      app-username: ${spring.datasource.default.username}
+      liquibase:
+        change-log: 'classpath:changelog.yml'
+        parameters:
+          app-username: ${spring.datasource.default.username}
 
 
 management:

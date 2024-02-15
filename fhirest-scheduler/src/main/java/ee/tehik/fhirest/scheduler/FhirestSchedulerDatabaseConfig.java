@@ -15,24 +15,22 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @Configuration
 public class FhirestSchedulerDatabaseConfig {
 
-
-  @Bean("schedulerAppDsCfg")
+  @Bean
   @ConditionalOnProperty("spring.datasource.scheduler-app.url")
   @ConfigurationProperties("spring.datasource.scheduler-app")
   public DataSourceProperties schedulerAppDataSourceProperties() {
     return new DataSourceProperties();
   }
 
-  @Bean("schedulerAppDs")
-  public DataSource scheduerAppDataSource(@Named("schedulerAppDsCfg") Optional<DataSourceProperties> properties,
-                                          @Named("defaultDs") Optional<DataSource> defaultDs) {
+  @Bean
+  public DataSource schedulerAppDataSource(@Named("schedulerAppDataSourceProperties") Optional<DataSourceProperties> properties,
+                                          @Named("defaultDataSource") Optional<DataSource> defaultDs) {
     return properties.map(p -> (DataSource) p.initializeDataSourceBuilder().build()).or(() -> defaultDs).orElseThrow();
   }
 
 
   @Bean
-  @Named("schedulerAppJdbcTemplate")
-  public JdbcTemplate schedulerAppJdbcTemplate(@Named("schedulerAppDs") DataSource ds) {
+  public JdbcTemplate schedulerAppJdbcTemplate(@Named("schedulerAppDataSource") DataSource ds) {
     return new JdbcTemplate(ds);
   }
 

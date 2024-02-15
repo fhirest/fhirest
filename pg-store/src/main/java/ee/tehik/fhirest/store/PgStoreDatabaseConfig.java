@@ -15,48 +15,46 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @Configuration
 public class PgStoreDatabaseConfig {
 
-  @Bean("storeAppDsCfg")
+  @Bean
   @ConditionalOnProperty("spring.datasource.store-app.url")
   @ConfigurationProperties("spring.datasource.store-app")
   public DataSourceProperties storeAppDataSourceProperties() {
     return new DataSourceProperties();
   }
 
-  @Bean("storeAppDs")
-  public DataSource storeAppDataSource(@Named("storeAppDsCfg") Optional<DataSourceProperties> properties,
-                                       @Named("defaultDs") Optional<DataSource> defaultDs) {
+  @Bean
+  public DataSource storeAppDataSource(@Named("storeAppDataSourceProperties") Optional<DataSourceProperties> properties,
+                                       @Named("defaultDataSource") Optional<DataSource> defaultDs) {
     return properties.map(p -> (DataSource) p.initializeDataSourceBuilder().build()).or(() -> defaultDs).orElseThrow();
   }
 
-  @Bean("storeAdminDsCfg")
+  @Bean
   @ConditionalOnProperty("spring.datasource.store-admin.url")
   @ConfigurationProperties("spring.datasource.store-admin")
   public DataSourceProperties storeAdminDataSourceProperties() {
     return new DataSourceProperties();
   }
 
-  @Bean("storeAdminDs")
-  public DataSource storeAdminDataSource(@Named("storeAdminDsCfg") Optional<DataSourceProperties> properties,
-                                         @Named("adminDs") Optional<DataSource> adminDs) {
+  @Bean
+  public DataSource storeAdminDataSource(@Named("storeAdminDataSourceProperties") Optional<DataSourceProperties> properties,
+                                         @Named("adminDataSource") Optional<DataSource> adminDs) {
     return properties.map(p -> (DataSource) p.initializeDataSourceBuilder().build()).or(() -> adminDs).orElseThrow();
   }
 
 
   @Bean
-  @Named("storeAppJdbcTemplate")
-  public JdbcTemplate storeAppJdbcTemplate(@Named("storeAppDs") DataSource ds) {
+  public JdbcTemplate storeAppJdbcTemplate(@Named("storeAppDataSource") DataSource ds) {
     return new JdbcTemplate(ds);
   }
 
   @Bean
-  @Named("storeAdminJdbcTemplate")
-  public JdbcTemplate storeAdminJdbcTemplate(@Named("storeAdminDs") DataSource ds) {
+  public JdbcTemplate storeAdminJdbcTemplate(@Named("storeAdminDataSource") DataSource ds) {
     return new JdbcTemplate(ds);
   }
 
   @Bean
   @ConditionalOnProperty("spring.datasource.store-app.url")
-  public PgTransactionManager transactionManager(@Named("storeAppDs") DataSource ds) {
+  public PgTransactionManager storeTransactionManager(@Named("storeAppDataSource") DataSource ds) {
     return new PgTransactionManager(ds);
   }
 }

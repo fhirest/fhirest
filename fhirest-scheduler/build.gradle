@@ -1,4 +1,6 @@
 dependencies {
   api project(':pg-core')
   api project(':fhirest-core')
+
+  implementation "org.liquibase:liquibase-core"
 }

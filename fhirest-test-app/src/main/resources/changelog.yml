@@ -8,6 +8,6 @@ databaseChangeLog:
   - include:
       file: pg-search/changelog/changelog.xml
       relativeToChangelogFile: false
-#  - include:
-#      file: pg-fhirest-scheduler/changelog/changelog.xml
-#      relativeToChangelogFile: false
+  - include:
+      file: pg-fhirest-scheduler/changelog/changelog.xml
+      relativeToChangelogFile: false

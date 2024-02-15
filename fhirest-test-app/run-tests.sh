@@ -11,25 +11,12 @@ function main() {
 
   makemeadb
   startfhirest
-  runtests
+  ./run-newman.sh "http://localhost:$APP_PORT/fhir"
   exitcode=$?
 
   echo 'done'
   [[ $exitcode -eq 0 ]] && echo "tests OK" || echo "tests FAILED"
   finish $exitcode
-}
-
-function runtests() {
-    cd postman
-    for t in ./*; do
-      newman run $t \
-        --env-var "fhirest=http://localhost:$APP_PORT/fhir" \
-        --env-var "access_token=yupi"
-      r=$?
-      [[ $r -ne 0 ]] && break
-    done
-    cd -
-    return $r
 }
 
 function ctrlc() {
@@ -48,7 +35,7 @@ function finish() {
 function makemeadb() {
   echo "creating database..."
   docker rm -vf $DB_DOCKER_NAME >/dev/null 2>&1
-  ../etc/run-postgres.sh $DB_DOCKER_NAME $DB_PORT || exit 1
+  ../etc/run-poostgres.sh $DB_DOCKER_NAME $DB_PORT || exit 1
   echo "database created."
 }
 
