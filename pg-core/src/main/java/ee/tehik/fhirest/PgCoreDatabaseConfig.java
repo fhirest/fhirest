@@ -3,6 +3,7 @@ package ee.tehik.fhirest;
 import jakarta.inject.Named;
 import java.util.Optional;
 import javax.sql.DataSource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -12,7 +13,15 @@ import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
+@RequiredArgsConstructor
 public class PgCoreDatabaseConfig {
+
+  @Bean
+  @ConditionalOnProperty("spring.datasource.url")
+  @ConfigurationProperties("spring.datasource")
+  public DataSourceProperties springDataSourceProperties() {
+    return new DataSourceProperties();
+  }
 
   @Bean
   @ConditionalOnProperty("spring.datasource.default.url")
@@ -22,11 +31,12 @@ public class PgCoreDatabaseConfig {
   }
 
   @Bean
-  @ConditionalOnBean(value = DataSourceProperties.class, name = "defaultDataSourceProperties")
-  public DataSource defaultDataSource(@Named("defaultDataSourceProperties") DataSourceProperties properties) {
-    return properties.initializeDataSourceBuilder().build();
+  public DataSource defaultDataSource(@Named("defaultDataSourceProperties") Optional<DataSourceProperties> defaultProps,
+                                      @Named("springDataSourceProperties") Optional<DataSourceProperties> springProps) {
+    return defaultProps.map(p -> (DataSource) p.initializeDataSourceBuilder().build())
+        .or(() -> springProps.map(p -> (DataSource) p.initializeDataSourceBuilder().build()))
+        .orElse(null);
   }
-
 
   @Bean
   @ConditionalOnProperty("spring.datasource.admin.url")
