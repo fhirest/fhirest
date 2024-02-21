@@ -1,5 +1,9 @@
 name: Build
-on: [workflow_dispatch,push]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '**'
 
 jobs:
   build:
