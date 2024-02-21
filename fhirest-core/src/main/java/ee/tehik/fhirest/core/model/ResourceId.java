@@ -12,14 +12,14 @@
  */
  package ee.tehik.fhirest.core.model;
 
-import org.apache.commons.lang3.Validate;
+import java.util.Objects;
 
 public class ResourceId {
   private String resourceId;
   private String resourceType;
 
   public ResourceId(String resourceType) {
-    Validate.notNull(resourceType);
+    Objects.requireNonNull(resourceType);
     this.resourceType = resourceType;
   }
 

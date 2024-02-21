@@ -18,15 +18,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
 public final class JsonUtil {
-  private static Gson gson;
+  private static final Gson gson;
 
   static {
     GsonBuilder builder = new GsonBuilder();
@@ -48,11 +48,7 @@ public final class JsonUtil {
   }
 
   public static Map<String, Object> fromJson(byte[] json) {
-    try {
-      return fromJson(new String(json, "UTF8"));
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
-    }
+    return fromJson(new String(json, StandardCharsets.UTF_8));
   }
 
   public static Stream<Object> fhirpathSimple(String json, String path) {
@@ -63,6 +59,7 @@ public final class JsonUtil {
     return jsonObject == null ? Stream.empty() : read(jsonObject, path);
   }
 
+  @SuppressWarnings("unchecked")
   private static Stream<Object> read(Object jsonObject, String path) {
     if (jsonObject == null) {
       return Stream.empty();
