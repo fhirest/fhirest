@@ -46,7 +46,8 @@ jobs:
         with:
           node-version: '20'
       - run: npm install -g newman
-      - run: fhirest-test-app/run-tests.sh
+      - working-directory: fhirest-test-app
+        run: ./run-tests.sh
 
       - uses: actions/upload-artifact@v4
         with:
