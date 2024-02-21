@@ -46,8 +46,7 @@ jobs:
         with:
           node-version: '20'
       - run: npm install -g newman
-      - working-directory: kefhir-test-app
-        run: ./run-tests.sh
+      - run: fhirest-test-app/run-tests.sh
 
       - uses: actions/upload-artifact@v4
         with:
