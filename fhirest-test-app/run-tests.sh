@@ -35,7 +35,7 @@ function finish() {
 function makemeadb() {
   echo "creating database..."
   docker rm -vf $DB_DOCKER_NAME >/dev/null 2>&1
-  ../etc/run-poostgres.sh $DB_DOCKER_NAME $DB_PORT || exit 1
+  ../etc/run-postgres.sh $DB_DOCKER_NAME $DB_PORT || exit 1
   echo "database created."
 }
 
