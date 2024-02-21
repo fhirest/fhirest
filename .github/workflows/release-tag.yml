@@ -1,10 +1,8 @@
-name: Release snapshot
+name: Release Tag
 on:
-  workflow_run:
-    workflows: ["Build"]
-    branches: [master]
-    types:
-      - completed
+  push:
+    tags:
+      - '*'
 
 permissions:
   contents: read
@@ -25,7 +23,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3.1.0
 
       - name: Publish package
-        run: ./gradlew publish
+        run: ./gradlew publish -Pversion="$GITHUB_REF_NAME"
         env:
           GITHUB_USER: ${{ env.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
