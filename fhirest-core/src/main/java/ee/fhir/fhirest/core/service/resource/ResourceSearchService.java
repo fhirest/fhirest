@@ -14,6 +14,7 @@ package ee.fhir.fhirest.core.service.resource;
 
 import ee.fhir.fhirest.core.api.resource.ResourceBeforeSearchInterceptor;
 import ee.fhir.fhirest.core.api.resource.ResourceSearchHandler;
+import ee.fhir.fhirest.core.exception.FhirException;
 import ee.fhir.fhirest.core.exception.FhirServerException;
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
+import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
@@ -43,7 +45,7 @@ import static java.util.stream.Collectors.toMap;
 @Component
 public class ResourceSearchService {
   private static final String INCLUDE_ALL = "*";
-  
+
   private final Map<String, ResourceSearchHandler> searchHandlers;
   private final List<ResourceBeforeSearchInterceptor> beforeSearchInterceptors;
   private final ResourceStorageService storageService;
@@ -99,6 +101,9 @@ public class ResourceSearchService {
       String searchParam = includeTokens[1];
       String targetType = includeTokens[2];
       List<String> expressions = findReferenceParams(resourceType, searchParam);
+      if (CollectionUtils.isEmpty(expressions)) {
+        throw new FhirException(400, IssueType.INVALID, "Could not find SearchParameter with code '" + searchParam + "' for resource '" + resourceType + "'");
+      }
       List<ResourceVersion> entries = new ArrayList<>(result.getEntries());
       if ("iterate".equals(ip.getModifier())) {
         entries.addAll(result.getIncludes());
