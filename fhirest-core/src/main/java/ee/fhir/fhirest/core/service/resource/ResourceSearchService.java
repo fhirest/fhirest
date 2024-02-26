@@ -35,8 +35,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.r5.model.Enumeration;
 import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.hl7.fhir.r5.model.SearchParameter;
 import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
@@ -45,6 +47,7 @@ import static java.util.stream.Collectors.toMap;
 @Component
 public class ResourceSearchService {
   private static final String INCLUDE_ALL = "*";
+  private static final String ITERATE = "iterate";
 
   private final Map<String, ResourceSearchHandler> searchHandlers;
   private final List<ResourceBeforeSearchInterceptor> beforeSearchInterceptors;
@@ -100,12 +103,12 @@ public class ResourceSearchService {
       String resourceType = includeTokens[0];
       String searchParam = includeTokens[1];
       String targetType = includeTokens[2];
-      List<String> expressions = findReferenceParams(resourceType, searchParam);
+      List<String> expressions = findReferenceParams(resourceType, searchParam).map(SearchParameter::getExpression).toList();
       if (CollectionUtils.isEmpty(expressions)) {
         throw new FhirException(400, IssueType.INVALID, "Could not find SearchParameter with code '" + searchParam + "' for resource '" + resourceType + "'");
       }
       List<ResourceVersion> entries = new ArrayList<>(result.getEntries());
-      if ("iterate".equals(ip.getModifier())) {
+      if (ITERATE.equals(ip.getModifier())) {
         entries.addAll(result.getIncludes());
       }
       List<ResourceId> resourceIds = new ArrayList<>();
@@ -123,7 +126,6 @@ public class ResourceSearchService {
   }
 
   private void revInclude(SearchResult result, SearchCriterion criteria) {
-    //TODO: :iterate
     if (CollectionUtils.isEmpty(criteria.getResultParams(SearchCriterion._REVINCLUDE))) {
       return;
     }
@@ -139,11 +141,26 @@ public class ResourceSearchService {
       if (searchParam.equals(INCLUDE_ALL)) {
         throw new FhirServerException(501, "revinclude '*' not currently supported");
       }
-      if (targetType != null && !targetType.equals(criteria.getType())) {
+      List<String> references = entryRefs;
+      if (!ITERATE.equals(ip.getModifier()) && targetType != null && !targetType.equals(criteria.getType())) {
         return;
       }
+      if (ITERATE.equals(ip.getModifier())) {
+        List<String> referenceTypes = findReferenceParams(resourceType, searchParam)
+            .flatMap(sp -> sp.getTarget().stream()).map(Enumeration::getCode)
+            .filter(t -> targetType == null || t.equals(targetType))
+            .toList();
+        if (CollectionUtils.isEmpty(referenceTypes)) {
+          return;
+        }
+        references = result.getIncludes().stream().filter(r -> referenceTypes.contains(r.getId().getResourceType()))
+            .map(e -> e.getId().getResourceReference()).toList();
+        if (CollectionUtils.isEmpty(references)) {
+          return;
+        }
+      }
       Map<String, List<String>> revSearch = new HashMap<>(1);
-      revSearch.put(searchParam, Collections.singletonList(StringUtils.join(entryRefs, ",")));
+      revSearch.put(searchParam, Collections.singletonList(StringUtils.join(references, ",")));
       revSearch.put(SearchCriterion._COUNT, Collections.singletonList("1000"));// would kill search anyway if more
       result.addIncludes(search(resourceType, revSearch).getEntries());
     }));
@@ -163,13 +180,11 @@ public class ResourceSearchService {
     return fhirPath.<org.hl7.fhir.r5.model.Reference>evaluate(entry.getContent().getValue(), expr).stream();
   }
 
-  private List<String> findReferenceParams(String resourceType, String param) {
+  private Stream<SearchParameter> findReferenceParams(String resourceType, String param) {
     return ConformanceHolder.getSearchParams(resourceType)
         .stream()
         .filter(sp -> param.equals(INCLUDE_ALL) || sp.getCode().equals(param))
-        .filter(sp -> sp.getType() == SearchParamType.REFERENCE)
-        .map(sp -> sp.getExpression())
-        .collect(toList());
+        .filter(sp -> sp.getType() == SearchParamType.REFERENCE);
   }
 
 }

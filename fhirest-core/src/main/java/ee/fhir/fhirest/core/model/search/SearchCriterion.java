@@ -38,7 +38,7 @@ public class SearchCriterion {
   private List<QueryParam> chains;
   private List<QueryParam> conditions;
   private List<QueryParam> resultParams;
-  private Map<String, List<String>> rawParams;
+  private final Map<String, List<String>> rawParams;
 
   public SearchCriterion(String type, List<QueryParam> params, Map<String, List<String>> rawParams) {
     this.type = type;
