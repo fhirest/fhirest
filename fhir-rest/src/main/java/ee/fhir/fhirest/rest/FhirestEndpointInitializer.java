@@ -13,22 +13,26 @@
 package ee.fhir.fhirest.rest;
 
 import ee.fhir.fhirest.core.api.conformance.ConformanceUpdateListener;
+import ee.fhir.fhirest.core.api.resource.BaseOperationDefinition;
 import ee.fhir.fhirest.core.api.resource.InstanceOperationDefinition;
 import ee.fhir.fhirest.core.api.resource.TypeOperationDefinition;
 import ee.fhir.fhirest.core.model.InteractionType;
 import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r5.model.CapabilityStatement;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestComponent;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceOperationComponent;
 import org.hl7.fhir.r5.model.CapabilityStatement.ResourceVersionPolicy;
 import org.hl7.fhir.r5.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r5.model.CapabilityStatement.SystemRestfulInteraction;
+import org.hl7.fhir.r5.model.OperationDefinition;
 import org.hl7.fhir.r5.model.StructureDefinition;
 import org.springframework.stereotype.Component;
 
@@ -44,8 +48,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
   private final DefaultFhirResourceServer defaultResourceServer;
   private final FhirRootServer rootServer;
 
-  private final List<InstanceOperationDefinition> instanceOperations;
-  private final List<TypeOperationDefinition> typeOperations;
+  private final List<BaseOperationDefinition> operations;
 
   private CapabilityStatement capability;
 
@@ -74,7 +77,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
     if (capability == null || CollectionUtils.isEmpty(definitions)) {
       return null;
     }
-    List<String> defined = definitions.stream().map(d -> d.getName()).toList();
+    List<String> defined = definitions.stream().map(StructureDefinition::getName).toList();
 
     // multiple capabilities. how should we handle these?
     CapabilityStatement capabilityStatement = capability.copy();
@@ -91,7 +94,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
       rest.setInteraction(rest.getInteraction()
           .stream()
           .filter(i -> interactions.contains(i.getCode().toCode()))
-          .collect(toList()));
+          .toList());
       rest.getResource().forEach(rr -> rr.setReferencePolicy(Collections.emptyList()));
     });
 
@@ -102,13 +105,68 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
    * remove unimplemented operations
    */
   private void prepareOperations(CapabilityStatementRestComponent rest) {
-    rest.getResource().forEach(r -> {
-      List<String> implementedOperations = Stream.concat(
-          instanceOperations.stream().filter(o -> o.getResourceType().equals(r.getType())).map(InstanceOperationDefinition::getOperationName),
-          typeOperations.stream().filter(o -> o.getResourceType().equals(r.getType())).map(TypeOperationDefinition::getOperationName)
-      ).toList();
-      r.setOperation(r.getOperation().stream().filter(o -> implementedOperations.contains(o.getName())).toList());
-    });
+    rest.getResource().forEach(this::prepareOperationsForResource);
+  }
+
+  private void prepareOperationsForResource(CapabilityStatementRestResourceComponent r) {
+    Map<String, List<BaseOperationDefinition>> opsByName = operations.stream()
+        .filter(o -> o.getResourceType().equals(r.getType()))
+        .collect(Collectors.groupingBy(BaseOperationDefinition::getOperationName));
+
+    r.setOperation(r.getOperation().stream().filter(operationComponent -> {
+      OperationDefinition operationDefinition = ConformanceHolder.getOperationDefinition(operationComponent.getDefinition());
+      List<BaseOperationDefinition> implementations = opsByName.getOrDefault(operationComponent.getName(), List.of());
+      opsByName.remove(operationComponent.getName());
+      return validateOperation(r.getType(), operationComponent, operationDefinition, implementations);
+    }).toList());
+
+    opsByName.entrySet().forEach(e ->
+        log.debug("Operation '{}' with implementation '{}' is present for resource {}, but it missing in CapabilityStatement", e.getKey(), e.getValue(), r.getType())
+    );
+  }
+
+  private boolean validateOperation(
+      String resourceType,
+      CapabilityStatementRestResourceOperationComponent operationComponent,
+      OperationDefinition operationDefinition,
+      List<BaseOperationDefinition> impls
+  ) {
+    if (operationDefinition == null) {
+      log.error("Missing OperationDefinition for referenced in CapabilityStatement operation {} for resource {}",
+          operationComponent.getDefinition(), resourceType);
+      return false;
+    }
+
+    boolean validType = true;
+    if (operationDefinition.getType()) {
+      List<BaseOperationDefinition> typeImpls = impls.stream()
+          .filter(TypeOperationDefinition.class::isInstance)
+          .toList();
+      validType = validateOperation(typeImpls, operationComponent.getDefinition(), resourceType);
+    }
+
+    boolean validInstance = true;
+    if (operationDefinition.getInstance()) {
+      List<BaseOperationDefinition> instanceImpls = impls.stream()
+          .filter(InstanceOperationDefinition.class::isInstance)
+          .toList();
+      validInstance = validateOperation(instanceImpls, operationComponent.getDefinition(), resourceType);
+    }
+
+    return validType && validInstance;
+  }
+
+  private boolean validateOperation(List<BaseOperationDefinition> implTypes, String opName, String resourceType) {
+    if (implTypes.isEmpty()) {
+      log.error("Cannot find implementation for declared in capability statement operation '{}'", opName);
+      return false;
+    }
+
+    if (implTypes.size() > 1) {
+      log.debug("There is {} implementations for operation '{}' for resource '{}'", implTypes, opName, resourceType);
+    }
+    log.trace("Beans {} are bound to operation '{}' for resource '{}'", implTypes, opName, resourceType);
+    return true;
   }
 
   private void start(CapabilityStatementRestComponent rest) {

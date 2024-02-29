@@ -15,12 +15,7 @@
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.structure.api.ResourceContent;
 
-public interface InstanceOperationDefinition {
-
-  String getResourceType();
-
-  String getOperationName();
-
+public interface InstanceOperationDefinition extends BaseOperationDefinition {
   /**
    * @return Parameters or Resource
    */

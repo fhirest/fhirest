@@ -14,12 +14,7 @@
 
 import ee.fhir.fhirest.structure.api.ResourceContent;
 
-public interface TypeOperationDefinition {
-
-  String getResourceType();
-
-  String getOperationName();
-
+public interface TypeOperationDefinition extends BaseOperationDefinition {
   /**
    * @return Parameters or Resource
    */
