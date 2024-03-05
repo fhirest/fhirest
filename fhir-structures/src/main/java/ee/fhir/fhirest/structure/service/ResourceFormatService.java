@@ -63,7 +63,7 @@ public class ResourceFormatService {
 
   public ResourceContent compose(Resource resource, String... mimes) {
     //XXX: default json if empty?
-    return compose(resource, mimes == null ? List.of("json") : List.of(mimes));
+    return compose(resource, mimes == null || mimes.length == 0 ? List.of("json") : List.of(mimes));
   }
 
   public ResourceContent compose(Resource resource, List<String> mimes) {

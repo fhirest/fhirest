@@ -16,7 +16,6 @@ import ee.fhir.fhirest.core.api.resource.ResourceBeforeSearchInterceptor;
 import ee.fhir.fhirest.core.api.resource.ResourceSearchHandler;
 import ee.fhir.fhirest.core.exception.FhirException;
 import ee.fhir.fhirest.core.exception.FhirServerException;
-import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.core.model.VersionId;
 import ee.fhir.fhirest.core.model.search.SearchCriterion;
@@ -81,7 +80,7 @@ public class ResourceSearchService {
     }
     beforeSearchInterceptors.forEach(i -> i.handle(criteria));
     SearchResult result = searchHandler.search(criteria);
-    List<ResourceId> loadIds = result.getEntries().stream().filter(e -> e.getContent() == null).map(e -> (ResourceId) e.getId()).collect(toList());
+    List<VersionId> loadIds = result.getEntries().stream().filter(e -> e.getContent() == null).map(ResourceVersion::getId).collect(toList());
     Map<String, ResourceVersion> versions = storageService.load(loadIds).stream().collect(toMap(v -> v.getId().getResourceReference(), v -> v));
     result.getEntries()
         .stream()
@@ -111,7 +110,7 @@ public class ResourceSearchService {
       if (ITERATE.equals(ip.getModifier())) {
         entries.addAll(result.getIncludes());
       }
-      List<ResourceId> resourceIds = new ArrayList<>();
+      List<VersionId> resourceIds = new ArrayList<>();
       entries.stream()
           .filter(e -> e.getId().getResourceType().equals(resourceType))
           .forEach(entry -> expressions.stream()

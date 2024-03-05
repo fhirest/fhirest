@@ -32,7 +32,7 @@ public interface ResourceStorage {
 
   ResourceVersion load(VersionId id);
 
-  List<ResourceVersion> load(List<ResourceId> ids);
+  List<ResourceVersion> load(List<VersionId> ids);
 
   List<ResourceVersion> loadHistory(HistorySearchCriterion criteria);
 

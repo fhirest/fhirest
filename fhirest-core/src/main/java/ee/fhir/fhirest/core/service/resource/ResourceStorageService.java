@@ -48,8 +48,8 @@ public class ResourceStorageService {
     return version;
   }
 
-  public List<ResourceVersion> load(List<ResourceId> ids) {
-    Map<String, List<ResourceId>> typeIds = ids.stream().collect(Collectors.groupingBy(i -> i.getResourceType()));
+  public List<ResourceVersion> load(List<VersionId> ids) {
+    Map<String, List<VersionId>> typeIds = ids.stream().collect(Collectors.groupingBy(i -> i.getResourceType()));
     return typeIds.keySet().stream().flatMap(type -> getStorage(type).load(typeIds.get(type)).stream()).collect(Collectors.toList());
   }
 

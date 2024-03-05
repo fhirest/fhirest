@@ -25,10 +25,10 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CacheManager implements AutoCloseable {
+public class FhirestCacheManager implements AutoCloseable {
   private final org.ehcache.CacheManager manager = CacheManagerBuilder.newCacheManagerBuilder().build();
 
-  public CacheManager() {
+  public FhirestCacheManager() {
     manager.init();
   }
 

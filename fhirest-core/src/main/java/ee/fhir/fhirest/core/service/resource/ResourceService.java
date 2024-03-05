@@ -66,7 +66,7 @@ public class ResourceService {
     return storageService.load(id);
   }
 
-  public List<ResourceVersion> load(List<ResourceId> ids) {
+  public List<ResourceVersion> load(List<VersionId> ids) {
     return storageService.load(ids);
   }
 

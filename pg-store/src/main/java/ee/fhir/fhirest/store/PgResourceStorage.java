@@ -97,7 +97,7 @@ public class PgResourceStorage implements ResourceStorage {
   }
 
   @Override
-  public List<ResourceVersion> load(List<ResourceId> ids) {
+  public List<ResourceVersion> load(List<VersionId> ids) {
     List<ResourceVersion> versions = resourceRepository.load(ids);
     versions.forEach(v -> decorate(v));
     return versions;

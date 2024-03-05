@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a1782c93-b8c9-43ac-8171-aac4dbde84cb",
+		"_postman_id": "2c1f3e3e-b645-406f-88c7-fe657bfc16d8",
 		"name": "45-search-_revinclude",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "2623563"
@@ -62,9 +62,10 @@
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
 							"    pm.expect(pm.response.json().total).to.eql(1);",
-							"    pm.expect(pm.response.json().entry.length).to.eql(2);",
-							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"enc100\");",
-							"    pm.expect(pm.response.json().entry[1].resource.id).to.eql(\"observation100\");",
+							"    pm.expect(pm.response.json().entry.length).to.eql(3);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
+							"    pm.expect(pm.response.json().entry[1].resource.id).to.eql(\"enc100\");",
+							"    pm.expect(pm.response.json().entry[2].resource.id).to.eql(\"observation100\");",
 							"});",
 							"",
 							"",
@@ -95,20 +96,24 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{fhirest}}/Encounter?_id=enc100&_revinclude=Observation:encounter",
+					"raw": "{{fhirest}}/Patient?_id=ps100&_revinclude=Encounter:subject&_revinclude:iterate=Observation:encounter",
 					"host": [
 						"{{fhirest}}"
 					],
 					"path": [
-						"Encounter"
+						"Patient"
 					],
 					"query": [
 						{
 							"key": "_id",
-							"value": "enc100"
+							"value": "ps100"
 						},
 						{
 							"key": "_revinclude",
+							"value": "Encounter:subject"
+						},
+						{
+							"key": "_revinclude:iterate",
 							"value": "Observation:encounter"
 						}
 					]
@@ -163,7 +168,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{fhirest}}/Encounter?_id=enc100&_revinclude=Observation:encounter",
+					"raw": "{{fhirest}}/Encounter?_id=enc100&_revinclude=Observation:encounter&_revinclude:iterate=Observation:encounter",
 					"host": [
 						"{{fhirest}}"
 					],
@@ -177,6 +182,10 @@
 						},
 						{
 							"key": "_revinclude",
+							"value": "Observation:encounter"
+						},
+						{
+							"key": "_revinclude:iterate",
 							"value": "Observation:encounter"
 						}
 					]
