@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,7 +25,7 @@ public class FhirestRequest {
   private String type;
   private String path;
   private Map<String, List<String>> parameters = new LinkedHashMap<>();
-  private Map<String, List<String>> headers = new LinkedHashMap<>();
+  private final Map<String, List<String>> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
   private String body;
   private List<MediaType> accept;
   private MediaType contentType;
