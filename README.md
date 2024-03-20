@@ -5,10 +5,25 @@ ESTFHIR is an open-source FHIR server managed by the ESTHIR community. It is dev
 
 ## 2. Release history
 
+> **Release** - Release number
+> 
+> **Current version** - means the release branch
+
+
 | Release | Version | Status | 
 | ------- | ------- | ------ |
+| 0.1     | xx.xx   | Latest |
 
 ## 3. Components
+
+The ESTFHIR FHIR server is open-source software that uses the following components:
+
+| Component | What it does | Repo | 
+| ------- | ------- | ------ |
+| Component x | Description of component   | Repo link |
+| Component x | Description of component   | Repo link |
+| Component x | Description of component   | Repo link |
+
 ## 4. Get started
 ### 4.1 Installation
 ### 4.2 Documentation
