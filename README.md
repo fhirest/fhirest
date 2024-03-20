@@ -1,9 +1,13 @@
 # FhirEST
 ## 1. Introduction
 
-
+ESTFHIR is an open-source FHIR server managed by the ESTHIR community. It is developed under a xx licence. 
 
 ## 2. Release history
+
+| Release | Version | Status | 
+| ------- | ------- | ------ |
+
 ## 3. Components
 ## 4. Get started
 ### 4.1 Installation
