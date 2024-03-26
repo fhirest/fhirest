@@ -4,11 +4,13 @@ import jakarta.inject.Named;
 import java.util.Optional;
 import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 
@@ -31,6 +33,7 @@ public class PgCoreDatabaseConfig {
   }
 
   @Bean
+  @Conditional({OnDefaultDatasourceProperties.class})
   public DataSource defaultDataSource(@Named("defaultDataSourceProperties") Optional<DataSourceProperties> defaultProps,
                                       @Named("springDataSourceProperties") Optional<DataSourceProperties> springProps) {
     return defaultProps.map(p -> (DataSource) p.initializeDataSourceBuilder().build())
@@ -55,6 +58,20 @@ public class PgCoreDatabaseConfig {
   @ConditionalOnBean(value = DataSource.class, name = "defaultDataSource")
   public PgTransactionManager defaultTransactionManager(@Named("defaultDataSource") DataSource dataSource) {
     return new PgTransactionManager(dataSource);
+  }
+
+  private static class OnDefaultDatasourceProperties extends AnyNestedCondition {
+
+    OnDefaultDatasourceProperties() {
+      super(ConfigurationPhase.REGISTER_BEAN);
+    }
+
+    @ConditionalOnBean(value = DataSourceProperties.class, name = "defaultDataSourceProperties")
+    static class OnDefaultDsProps {}
+
+    @ConditionalOnBean(value = DataSourceProperties.class, name = "springDataSourceProperties")
+    static class OnSpringDsProps {}
+
   }
 
 }
