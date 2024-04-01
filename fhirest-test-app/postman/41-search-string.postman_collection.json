@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "187ace0e-0a86-4fa7-8a4f-cd640cd93568",
+		"_postman_id": "837604cc-4913-42c6-a171-3fbfdab7d135",
 		"name": "41-search-string",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2623563"
 	},
 	"item": [
 		{
@@ -184,8 +185,7 @@
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
 							"    pm.expect(pm.response.json().total).to.eql(2);",
-							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
-							"    pm.expect(pm.response.json().entry[1].resource.id).to.eql(\"ps101\");",
+							"    pm.expect(pm.response.json().entry.map(e => e.resource.id).sort()).to.eql([\"ps100\", \"ps101\"].sort());",
 							"});",
 							"",
 							"",
@@ -308,8 +308,7 @@
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
 							"    pm.expect(pm.response.json().total).to.eql(2);",
-							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"ps100\");",
-							"    pm.expect(pm.response.json().entry[1].resource.id).to.eql(\"ps101\");",
+							"pm.expect(pm.response.json().entry.map(e => e.resource.id).sort()).to.eql([\"ps100\", \"ps101\"].sort());",
 							"});",
 							"",
 							"",

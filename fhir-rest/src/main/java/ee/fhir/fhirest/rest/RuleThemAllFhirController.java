@@ -38,7 +38,6 @@ import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.stereotype.Controller;
@@ -94,7 +93,7 @@ public class RuleThemAllFhirController {
     if (resp.getBody() == null) {
       return r.build();
     }
-    List<String> accepts = req.getAccept().stream().map(MediaType::toString).toList();
+    List<String> accepts = req.getAccept().stream().map(mt -> mt.getType() + "/" + mt.getSubtype()).toList();
     String accept = resourceFormatService.findSupported(accepts).get(0);
     ResourceContent formatted = format(resp.getBody(), accept);
     if ("true".equals(req.getParameter(PRETTY))) {

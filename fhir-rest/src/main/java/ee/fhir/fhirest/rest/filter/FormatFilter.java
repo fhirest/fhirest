@@ -36,7 +36,7 @@ public class FormatFilter implements FhirestRequestFilter {
     if (req.getAccept().size() == 1 && req.getAccept().get(0).toString().equals(MediaType.ALL.toString()) && req.getContentType() != null) {
       req.setAccept(List.of(req.getContentType(), MediaType.ALL));
     }
-    if (resourceFormatService.findSupported(req.getAccept().stream().map(MediaType::toString).toList()).isEmpty()) {
+    if (resourceFormatService.findSupported(req.getAccept().stream().map(mt -> mt.getType() + "/" + mt.getSubtype()).toList()).isEmpty()) {
       throw new FhirException(406, IssueType.INVALID, "unsupported Accept");
     }
   }

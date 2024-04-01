@@ -18,6 +18,7 @@ import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -54,7 +55,7 @@ public final class SearchCriterionBuilder {
     if (params == null || params.isEmpty()) {
       return new SearchCriterion(resourceType, List.of(), params);
     }
-    params = new HashMap<>(params);
+    params = new LinkedHashMap<>(params);
     params.remove("");
     params.remove(null);// well this is strange
     params.keySet().removeAll(SearchCriterion.ignoreParamKeys);
