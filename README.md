@@ -4,13 +4,15 @@
 FHIREST is an open-source FHIR server managed by the FHIREST community. It is developed under a xx licence. 
 
 ## 2. Release history
-
+> FHIREST using Semantic versioning https://semver.org/
 > **Release** - Release number
 > 
 > **Current version** - means the release branch
-> Semantic versioning https://semver.org/
+> 
 > **Supported FHIR version** - Supported FHIR versions
+> 
 > **Spring version** - minimum version of spring framework
+> 
 > **Java version** - Current FHIREST Java version
 
 
@@ -20,13 +22,23 @@ FHIREST is an open-source FHIR server managed by the FHIREST community. It is de
 
 ## 3. Components
 
-The ESTFHIR FHIR server is open-source software that uses the following components:
+The ESTFHIR FHIR server is open-source software that uses the following components. 
+
+### 3.1 FHIREST core components 
 
 | Component | What it does | Repo | 
 | ------- | ------- | ------ |
 | Component x | Description of component   | Repo link |
 | Component x | Description of component   | Repo link |
 | Component x | Description of component   | Repo link |
+
+### 3.2 FHIREST other components
+
+| Component | What it does | Repo | 
+| ------- | ------- | ------ |
+| HAPI FHIR | Description of component   | Repo link |
+| Springboot| Description of component   | Repo link |
+
 
 ## 4. Get started
 ### 4.1 Installation
