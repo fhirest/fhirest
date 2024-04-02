@@ -8,11 +8,15 @@ FHIREST is an open-source FHIR server managed by the FHIREST community. It is de
 > **Release** - Release number
 > 
 > **Current version** - means the release branch
+> Semantic versioning https://semver.org/
+> **Supported FHIR version** - Supported FHIR versions
+> **Spring version** - minimum version of spring framework
+> **Java version** - Current FHIREST Java version
 
 
-| Release | Version | Status | 
-| ------- | ------- | ------ |
-| 0.1     | xx.xx   | Latest |
+| Release | Version | Supported FHIR version | Spring version | Java Version |
+| ------- | ------- | ---------------------- | -------------- | ------------ |
+| 1.0     | 1.0.1   | R5 (conformance), R4                 |         3.2    |       17     |
 
 ## 3. Components
 
