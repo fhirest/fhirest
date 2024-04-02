@@ -42,11 +42,16 @@ The ESTFHIR FHIR server is open-source software that uses the following componen
 
 ## 4. Get started
 ### 4.1 Installation
-### 4.2 Documentation
+#### 4.1.1 Demo application
+For demo application setup, [see instructions ](https://github.com/fhirest/fhirest-examples/tree/master/fhirest-demo)
+
+#### 4.1.2 ESTFHIR application
+
+
 ## 5. Get Involved
 ### 5.1 Features request, bug reporting
 
-If you find any bug in the ESTFHIR product or have a new feature request, please insert it via [git issues](https://github.com/fhirest/fhirest/issues/new/choose). The ESTFHIR community maintainers will review the inserted issues regularly. If the request is a critical, please add the name of the project and contact details to the description and send an e-mail to fhirest@tehik.ee
+If you find any bug in the ESTFHIR product or have a new feature request, please insert it via [git issues](https://github.com/fhirest/fhirest/issues/new/choose). The ESTFHIR community maintainers will review the inserted issues regularly. If the request is critical, please add the name of the project and contact details to the description and send an e-mail to fhirest@tehik.ee
 
 ### 5.2 Contributing guidelines
 
