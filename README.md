@@ -47,6 +47,10 @@ The ESTFHIR FHIR server is open-source software that uses the following componen
 ### 5.1 Features request, bug reporting
 ### 5.2 Contributing guidelines
 ### 5.3 Code of Conduct
+
+< The ESTFHIR project non functional requirements are listed here: https://www.tehik.ee/sites/default/files/2023-11/TEHIK%20Mittefunktsionaalsed%20nouded%20arenduste....pdf 
+
+
 ## 6. Licence
 
 ### 4.2 Documentation
