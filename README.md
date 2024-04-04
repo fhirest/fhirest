@@ -26,11 +26,28 @@ The ESTFHIR FHIR server is open-source software that uses the following componen
 
 ### 3.1 FHIREST core components 
 
-| Component | What it does | Repo | 
-| ------- | ------- | ------ |
-| Component x | Description of component   | Repo link |
-| Component x | Description of component   | Repo link |
-| Component x | Description of component   | Repo link |
+| Component                     | What it does                                                                                 |
+|-------------------------------|----------------------------------------------------------------------------------------------|
+| fhirest-core                  | Core module, responsible for fhir resouce lifecycle, conformance initialization              |
+| fhir-structures               | Responsible for parsing and composing fhir resources into different formats (json, xml, ...) |
+| fhir-rest                     | Provides fhir REST interfaces                                                                |
+| fhir-conformance              | Provides possibilities to load initial conformance resources                                 |
+| tx-manager                    | Database transaction support                                                                 |
+| fhirest-scheduler             | Provides possibilities to perform some actions on resource at some given time in the future  |
+| pg-core                       | PostgreSQL core: unitilities, configurations                                                 |
+| pg-store                      | Fhir resource storage PostgreSQL implementation                                              |
+| pg-search                     | Fhir resource search PostgreSQL implementation                                               |
+| validation-profile            | Resource profile validations                                                                 |
+| openapi                       | Provides Openapi support                                                                     |
+| feature-confitional-reference | Adds conditional reference support to all resources and interactions                         |
+| operation-patient-everything  | Implementation of Patient $everything operation                                              |
+| fhirest-blockchain            | Example implementation of resource forward to some blockchain                                |
+| auth-core                     |                                                                                              |
+| auth-openid                   |                                                                                              |
+| auth-rest                     |                                                                                              |
+| auth-smart                    |                                                                                              |
+| auth-yupi                     |                                                                                              |
+| fhirest-test-app              | Simple application to run FhirEST                                                            |
 
 ### 3.2 FHIREST other components
 
