@@ -15,6 +15,7 @@ package ee.fhir.fhirest.rest.feature;
 import ee.fhir.fhirest.core.api.resource.OperationInterceptor;
 import ee.fhir.fhirest.core.api.resource.ResourceBeforeSaveInterceptor;
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.search.SearchCriterion;
 import ee.fhir.fhirest.core.model.search.SearchCriterionBuilder;
@@ -25,11 +26,10 @@ import ee.fhir.fhirest.structure.service.ResourceFormatService;
 import ee.fhir.fhirest.structure.util.ResourcePropertyUtil;
 import jakarta.inject.Inject;
 import jakarta.inject.Provider;
-import org.springframework.stereotype.Component;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Reference;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.stereotype.Component;
 
 /**
  * https://www.hl7.org/fhir/http.html#transaction
@@ -78,7 +78,7 @@ public class ResourceConditionalReferenceFeature extends ResourceBeforeSaveInter
     criteria.getResultParams().clear();
     SearchResult result = resourceSearchService.get().search(criteria);
     if (result.getTotal() != 1) {
-      throw new FhirException(400, IssueType.PROCESSING, "found " + result.getTotal() + " resources by " + uri);
+      throw new FhirException(FhirestIssue.FEST_002, "uri", uri, "total", result.getTotal());
     }
     reference.setReference(result.getEntries().get(0).getId().getResourceReference());
   }

@@ -56,7 +56,7 @@ public abstract class DefaultExpressionProvider extends ExpressionProvider {
         .map(e -> RegExUtils.removeFirst(e, resourceType + "\\."))
         .collect(toList());
     if (paths.isEmpty()) {
-      throw new FhirServerException(500, "config problem. path empty for param " + key);
+      throw new FhirServerException("config problem. path empty for param " + key);
     }
     return paths;
   }

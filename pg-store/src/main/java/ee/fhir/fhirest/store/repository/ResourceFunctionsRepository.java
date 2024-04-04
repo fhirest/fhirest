@@ -12,9 +12,11 @@
  */
 package ee.fhir.fhirest.store.repository;
 
-import jakarta.inject.Named;;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Named;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+
+;
 
 @Component
 public class ResourceFunctionsRepository {

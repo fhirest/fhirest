@@ -1,11 +1,11 @@
 package ee.fhir.fhirest.scheduler;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.Date;
 import java.util.List;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;;
-import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JobRepository {

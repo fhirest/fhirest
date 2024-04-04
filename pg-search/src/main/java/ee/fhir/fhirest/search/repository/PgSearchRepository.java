@@ -18,13 +18,13 @@ import ee.fhir.fhirest.core.model.search.SearchCriterion;
 import ee.fhir.fhirest.search.api.PgResourceSearchFilter;
 import ee.fhir.fhirest.search.sql.SearchSqlUtil;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.List;
 import java.util.Optional;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;;
-import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component

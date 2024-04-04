@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -78,6 +79,10 @@ public class FhirestRequest {
 
   public String getParameter(String name) {
     return parameters.containsKey(name) && !parameters.get(name).isEmpty() ? parameters.get(name).get(0) : null;
+  }
+
+  public String getParametersString() {
+    return parameters.entrySet().stream().flatMap(e -> e.getValue().stream().map(v -> e.getKey() + "=" + v)).collect(Collectors.joining("&"));
   }
 
   public void putParameter(String name, String value) {

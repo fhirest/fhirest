@@ -13,6 +13,7 @@
 package ee.fhir.fhirest.rest.bundle;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.VersionId;
 import ee.fhir.fhirest.core.model.search.SearchCriterion;
@@ -32,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.Bundle;
 import org.hl7.fhir.r5.model.Bundle.BundleEntryRequestComponent;
 import org.hl7.fhir.r5.model.Bundle.HTTPVerb;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Reference;
 import org.hl7.fhir.r5.model.Resource;
 import org.hl7.fhir.r5.model.UriType;
@@ -110,7 +110,7 @@ public class BundleReferenceHandler {
     params.put(SearchCriterion._COUNT, Collections.singletonList("1"));
     SearchResult result = resourceSearchService.search(type, params);
     if (result.getTotal() > 1) {
-      throw new FhirException(400, IssueType.PROCESSING, "was expecting 1 or 0 resources. found " + result.getTotal());
+      throw new FhirException(FhirestIssue.FEST_002, "uri", url, "total", result.getTotal());
     }
     return result.getTotal() == 1 ? result.getEntries().get(0).getId() : null;
   }

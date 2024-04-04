@@ -14,6 +14,7 @@ package ee.fhir.fhirest.core.service.resource;
 
 import ee.fhir.fhirest.core.api.resource.ResourceStorage;
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.core.model.VersionId;
@@ -23,7 +24,6 @@ import ee.fhir.fhirest.tx.TransactionService;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,7 +32,7 @@ public class ResourceStorageService {
   private final TransactionService tx;
 
   public ResourceStorageService(List<ResourceStorage> storages, TransactionService tx) {
-    this.storages = storages.stream().collect(Collectors.toMap(s -> s.getResourceType(), s -> s));
+    this.storages = storages.stream().collect(Collectors.toMap(ResourceStorage::getResourceType, s -> s));
     this.tx = tx;
   }
 
@@ -43,13 +43,13 @@ public class ResourceStorageService {
   public ResourceVersion load(VersionId id) {
     ResourceVersion version = getStorage(id.getResourceType()).load(id);
     if (version == null) {
-      throw new FhirException(404, IssueType.NOTFOUND, id.getReference() + " not found");
+      throw new FhirException(FhirestIssue.FEST_028, "ref", id.getReference());
     }
     return version;
   }
 
   public List<ResourceVersion> load(List<VersionId> ids) {
-    Map<String, List<VersionId>> typeIds = ids.stream().collect(Collectors.groupingBy(i -> i.getResourceType()));
+    Map<String, List<VersionId>> typeIds = ids.stream().collect(Collectors.groupingBy(ResourceId::getResourceType));
     return typeIds.keySet().stream().flatMap(type -> getStorage(type).load(typeIds.get(type)).stream()).collect(Collectors.toList());
   }
 

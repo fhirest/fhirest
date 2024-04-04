@@ -18,12 +18,14 @@ import ee.fhir.fhirest.core.api.resource.OperationInterceptor;
 import ee.fhir.fhirest.core.api.resource.ResourceBeforeSaveInterceptor;
 import ee.fhir.fhirest.core.exception.FhirException;
 import ee.fhir.fhirest.core.exception.FhirServerException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.service.conformance.HapiContextHolder;
 import ee.fhir.fhirest.structure.api.ResourceContent;
 import ee.fhir.fhirest.structure.service.ResourceFormatService;
 import jakarta.inject.Inject;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r5.model.CodeableConcept;
@@ -36,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
 
+@Slf4j
 @ConditionalOnProperty(value = "fhirest.validation-profile.enabled", havingValue = "true", matchIfMissing = true)
 @Component
 public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor implements OperationInterceptor {
@@ -75,20 +78,19 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
     try {
       return resourceFormatService.parse(content);
     } catch (Exception e) {
-      throw new FhirException(400, IssueType.STRUCTURE, "error during resource parse: " + e.getMessage());
+      throw new FhirException(FhirestIssue.FEST_021, "message", e.getMessage());
     }
   }
 
   private void validateType(String expectedType, String resourceType) {
     if (!resourceType.equals(expectedType)) {
-      String msg = "was expecting " + expectedType + " but found " + resourceType;
-      throw new FhirException(400, IssueType.INVALID, msg);
+      throw new FhirException(FhirestIssue.FEST_022, "expected", expectedType, "actual", resourceType);
     }
   }
 
   private void validateProfile(ResourceContent content) {
     if (hapiContextHolder.getHapiContext() == null) {
-      throw new FhirServerException(500, "fhir context initialization error");
+      throw new FhirServerException("fhir context initialization error");
     }
     try {
       List<SingleValidationMessage> errors = hapiContextHolder.getValidator().validateWithResult(content.getValue()).getMessages();
@@ -105,9 +107,10 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
       }
     } catch (Exception e) {
       if (e instanceof FHIRException) {
-        throw new FhirException(500, IssueType.INVALID, e.getMessage());
+        throw new FhirException(FhirestIssue.FEST_023, "message", e.getMessage());
       }
-      throw new RuntimeException("exception during profile validation: " + e.getMessage(), e);
+      log.error("exception during profile validation", e);
+      throw new FhirServerException("exception during profile validation: " + e.getMessage());
     }
   }
 

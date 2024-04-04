@@ -13,6 +13,7 @@
 package ee.fhir.fhirest.search.sql.params;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.search.QueryParam;
 import ee.fhir.fhirest.search.sql.SearchPrefix;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
@@ -20,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public class NumberExpressionProvider extends DefaultExpressionProvider {
   private static final String[] operators = {null, SearchPrefix.le, SearchPrefix.lt, SearchPrefix.ge, SearchPrefix.gt, SearchPrefix.ne};
@@ -54,8 +54,7 @@ public class NumberExpressionProvider extends DefaultExpressionProvider {
     if (prefix.getPrefix().equals(SearchPrefix.ge)) {
       return new SqlBuilder("upper(i.range) > ? ", number);
     }
-
-    throw new FhirException(400, IssueType.INVALID, "prefix " + prefix.getPrefix() + " not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "prefix " + prefix.getPrefix());
   }
 
   @Override

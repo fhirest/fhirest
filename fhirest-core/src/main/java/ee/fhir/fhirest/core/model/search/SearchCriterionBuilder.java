@@ -13,6 +13,7 @@
 package ee.fhir.fhirest.core.model.search;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.service.conformance.CapabilitySearchConformance;
 import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceSearchParamComponent;
 import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.SearchParameter;
 
 import static java.util.stream.Collectors.toList;
@@ -44,7 +44,7 @@ public final class SearchCriterionBuilder {
     Stream.of(query.split("&")).forEach(q -> {
       String[] qr = q.split("=");
       if (qr.length != 2) {
-        throw new FhirException(400, IssueType.PROCESSING, "invalid query parameter: '" + q + "' in '?" + query + "'");
+        throw new FhirException(FhirestIssue.FEST_016, "param", q, "query", query);
       }
       params.computeIfAbsent(qr[0], (a) -> new ArrayList<>()).add(qr[1]);
     });
@@ -99,7 +99,7 @@ public final class SearchCriterionBuilder {
         targetResourceTypes.retainAll(Collections.singletonList(modifier));
       }
       if (targetResourceTypes.isEmpty()) {
-        throw new FhirException(400, IssueType.PROCESSING, key + ":" + modifier + "not defined");
+        throw new FhirException(FhirestIssue.FEST_017, "key", key, "modifier", modifier);
       }
       targetResourceTypes.forEach(rt -> forge.nextLink(buildForge(remainder, rt)));
     }
@@ -111,12 +111,10 @@ public final class SearchCriterionBuilder {
                                String key,
                                String modifier) {
     if (conformance == null) {
-      String details = "search parameter '" + key + "' not supported by conformance";
-      throw new FhirException(400, IssueType.NOTSUPPORTED, details);
+      throw new FhirException(FhirestIssue.FEST_018, "param", key);
     }
     if (!validateModifier(conformance, sp, modifier)) {
-      String details = "modifier '" + modifier + "' not supported by conformance for '" + key + "'";
-      throw new FhirException(400, IssueType.NOTSUPPORTED, details);
+      throw new FhirException(FhirestIssue.FEST_019, "modifier", modifier, "param", key);
     }
   }
 
@@ -128,7 +126,7 @@ public final class SearchCriterionBuilder {
     }
     if (conformance.getType() == SearchParamType.REFERENCE) {
       return CollectionUtils.isEmpty(sp.getTarget())
-          || sp.getTarget().stream().anyMatch(t -> t.getCode().equals(modifier));
+             || sp.getTarget().stream().anyMatch(t -> t.getCode().equals(modifier));
     }
     // FIXME gone from searchparameters?
     return true;

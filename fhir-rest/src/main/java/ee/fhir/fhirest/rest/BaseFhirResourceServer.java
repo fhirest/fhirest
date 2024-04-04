@@ -1,6 +1,7 @@
 package ee.fhir.fhirest.rest;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.core.util.DateUtil;
 import ee.fhir.fhirest.rest.model.FhirestRequest;
@@ -15,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.Bundle;
 import org.hl7.fhir.r5.model.Bundle.LinkRelationTypes;
 import org.hl7.fhir.r5.model.OperationOutcome;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public abstract class BaseFhirResourceServer implements FhirResourceServer {
   @Inject
@@ -27,72 +27,72 @@ public abstract class BaseFhirResourceServer implements FhirResourceServer {
 
   @Override
   public FhirestResponse read(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse vread(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse create(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse update(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse conditionalUpdate(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse delete(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse history(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse historyType(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse search(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse search_(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse instanceOperation(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse instanceOperation_(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse typeOperation(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
   @Override
   public FhirestResponse typeOperation_(FhirestRequest req) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "interaction not supported");
   }
 
 

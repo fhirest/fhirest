@@ -13,6 +13,7 @@
 package ee.fhir.fhirest.search.sql.params;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.search.QueryParam;
 import ee.fhir.fhirest.core.util.DateUtil;
 import ee.fhir.fhirest.search.sql.SearchPrefix;
@@ -25,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 import static java.util.stream.Collectors.toList;
 
@@ -83,8 +83,7 @@ public class DateExpressionProvider extends DefaultExpressionProvider {
     if (prefix.getPrefix().equals(SearchPrefix.ge)) {
       return "(" + field + " && " + search + " OR " + field + " >> " + search + ")";
     }
-
-    throw new FhirException(400, IssueType.INVALID, "prefix " + prefix.getPrefix() + " not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "prefix " + prefix.getPrefix());
   }
 
   private static String range(String value) {
@@ -103,7 +102,7 @@ public class DateExpressionProvider extends DefaultExpressionProvider {
         return "search.range('" + date + "', '" + interval + "')";
       }
     } catch (DateTimeParseException e) {
-      throw new FhirException(400, IssueType.INVALID, "invalid or unsupported date format: " + value);
+      throw new FhirException(FhirestIssue.FEST_032, "date", value);
     }
   }
 

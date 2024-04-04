@@ -1,11 +1,11 @@
 package ee.fhir.fhirest.rest.filter;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.rest.model.FhirestRequest;
 import ee.fhir.fhirest.structure.service.ResourceFormatService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,7 @@ public class FormatFilter implements FhirestRequestFilter {
     String format = req.getParameter(FORMAT);
     if (format != null) {
       String mime = resourceFormatService.findPresenter(format).map(p -> p.getMimeTypes().get(0))
-          .orElseThrow(() -> new FhirException(406, IssueType.INVALID, "unsupported _format"));
+          .orElseThrow(() -> new FhirException(FhirestIssue.FEST_005));
       req.setAccept(List.of(MediaType.valueOf(mime)));
       req.setContentType(MediaType.valueOf(mime));
       req.getParameters().remove(FORMAT);
@@ -37,7 +37,7 @@ public class FormatFilter implements FhirestRequestFilter {
       req.setAccept(List.of(req.getContentType(), MediaType.ALL));
     }
     if (resourceFormatService.findSupported(req.getAccept().stream().map(mt -> mt.getType() + "/" + mt.getSubtype()).toList()).isEmpty()) {
-      throw new FhirException(406, IssueType.INVALID, "unsupported Accept");
+      throw new FhirException(FhirestIssue.FEST_003);
     }
   }
 }

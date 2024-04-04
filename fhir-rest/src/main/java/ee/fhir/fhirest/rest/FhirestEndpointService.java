@@ -1,6 +1,7 @@
 package ee.fhir.fhirest.rest;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.rest.filter.FhirestRequestExecutionInterceptor;
 import ee.fhir.fhirest.rest.interaction.FhirInteraction;
 import ee.fhir.fhirest.rest.interaction.InteractionUtil;
@@ -18,10 +19,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.springframework.stereotype.Component;
-
-import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Component
@@ -42,8 +40,8 @@ public class FhirestEndpointService {
         // example: Patient/_history vs Patient/123, operations vs compartments
     ).findFirst().orElse(null);
     if (op == null) {
-      throw new FhirException(406, IssueType.NOTSUPPORTED,
-          "could not find matching enabled interaction for: " + request.getMethod() + " " + StringUtils.defaultString(request.getType()) + "/" + request.getPath());
+      throw new FhirException(FhirestIssue.FEST_020, "interaction",
+          request.getMethod() + " " + StringUtils.defaultString(request.getType()) + "/" + request.getPath());
     }
     return op;
   }
@@ -65,7 +63,7 @@ public class FhirestEndpointService {
   }
 
   private void addOperation(String type, List<Method> methods, Object service) {
-    List<FhirestEnabledOperation> ops = methods.stream().map(m -> new FhirestEnabledOperation(m, service)).collect(toList());
+    List<FhirestEnabledOperation> ops = methods.stream().map(m -> new FhirestEnabledOperation(m, service)).toList();
     this.operations.computeIfAbsent(type, x -> new ArrayList<>()).addAll(ops);
   }
 

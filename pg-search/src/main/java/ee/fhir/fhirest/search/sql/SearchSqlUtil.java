@@ -12,7 +12,7 @@
  */
  package ee.fhir.fhirest.search.sql;
 
-import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirServerException;
 import ee.fhir.fhirest.core.model.search.QueryParam;
 import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
 import ee.fhir.fhirest.search.sql.params.CompositeExpressionProvider;
@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public final class SearchSqlUtil {
   private static final Map<String, ExpressionProvider> specialParams;
@@ -69,8 +68,7 @@ public final class SearchSqlUtil {
       return specialParams.get(key).makeExpression(param, alias);
     }
     if (!providers.containsKey(param.getType())) {
-      String details = "'" + param.getType() + "' search parameter type not implemented";
-      throw new FhirException(400, IssueType.NOTSUPPORTED, details);
+      throw new FhirServerException("'" + param.getType() + "' search parameter type not implemented");
     }
     return providers.get(param.getType()).makeExpression(param, alias);
   }
@@ -87,8 +85,8 @@ public final class SearchSqlUtil {
       return specialParams.get(value).order(param.getResourceType(), value, alias, direction);
     }
     if (!providers.containsKey(type)) {
-      String details = String.format("'%s' search parameter type not implemented", param.getType());
-      throw new FhirException(400, IssueType.NOTSUPPORTED, details);
+      throw new FhirServerException(String.format("'%s' search parameter type not implemented", param.getType()));
+
     }
     return providers.get(type).order(param.getResourceType(), value, alias, direction).append(direction);
   }

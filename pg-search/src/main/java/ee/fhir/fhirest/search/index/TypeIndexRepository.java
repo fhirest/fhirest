@@ -15,10 +15,10 @@ package ee.fhir.fhirest.search.index;
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.search.model.Blindex;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.List;
 import java.util.stream.Stream;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 

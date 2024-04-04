@@ -16,6 +16,7 @@ import ee.fhir.fhirest.core.api.resource.ResourceBeforeSearchInterceptor;
 import ee.fhir.fhirest.core.api.resource.ResourceSearchHandler;
 import ee.fhir.fhirest.core.exception.FhirException;
 import ee.fhir.fhirest.core.exception.FhirServerException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.core.model.VersionId;
 import ee.fhir.fhirest.core.model.search.SearchCriterion;
@@ -36,7 +37,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.Enumeration;
 import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.SearchParameter;
 import org.springframework.stereotype.Component;
 
@@ -76,7 +76,7 @@ public class ResourceSearchService {
   public SearchResult search(SearchCriterion criteria) {
     ResourceSearchHandler searchHandler = getSearchHandler(criteria.getType());
     if (searchHandler == null) {
-      throw new FhirServerException(500, "search module not installed");
+      throw new FhirServerException("search module not installed");
     }
     beforeSearchInterceptors.forEach(i -> i.handle(criteria));
     SearchResult result = searchHandler.search(criteria);
@@ -104,7 +104,7 @@ public class ResourceSearchService {
       String targetType = includeTokens[2];
       List<String> expressions = findReferenceParams(resourceType, searchParam).map(SearchParameter::getExpression).toList();
       if (CollectionUtils.isEmpty(expressions)) {
-        throw new FhirException(400, IssueType.INVALID, "Could not find SearchParameter with code '" + searchParam + "' for resource '" + resourceType + "'");
+        throw new FhirException(FhirestIssue.FEST_024, "param", searchParam, "resource", resourceType);
       }
       List<ResourceVersion> entries = new ArrayList<>(result.getEntries());
       if (ITERATE.equals(ip.getModifier())) {
@@ -138,7 +138,7 @@ public class ResourceSearchService {
       String searchParam = includeTokens[1];
       String targetType = includeTokens[2];
       if (searchParam.equals(INCLUDE_ALL)) {
-        throw new FhirServerException(501, "revinclude '*' not currently supported");
+        throw new FhirException(FhirestIssue.FEST_001, "desc", "revinclude '*' not currently supported");
       }
       List<String> references = entryRefs;
       if (!ITERATE.equals(ip.getModifier()) && targetType != null && !targetType.equals(criteria.getType())) {

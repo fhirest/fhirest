@@ -1,11 +1,11 @@
 package ee.fhir.fhirest.search.sql.specialparams;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.search.QueryParam;
 import ee.fhir.fhirest.search.sql.ExpressionProvider;
 import ee.fhir.fhirest.search.sql.params.DateExpressionProvider;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public class NothingSpecialSpecialParamsProviders {
 
@@ -39,12 +39,12 @@ public class NothingSpecialSpecialParamsProviders {
 
     @Override
     public SqlBuilder makeExpression(QueryParam param, String alias) {
-      throw new FhirException(400, IssueType.NOTSUPPORTED, param.getKey() + " search param not implemented");
+      throw new FhirException(FhirestIssue.FEST_001, param.getKey() + " search param");
     }
 
     @Override
     public SqlBuilder order(String resourceType, String key, String alias, String direction) {
-      throw new FhirException(400, IssueType.NOTSUPPORTED, key + " search param not implemented");
+      throw new FhirException(FhirestIssue.FEST_001, key + " search param");
     }
   }
 }

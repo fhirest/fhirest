@@ -13,6 +13,7 @@
 package ee.fhir.fhirest.search.sql.params;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.search.QueryParam;
 import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
 import ee.fhir.fhirest.search.repository.ResourceStructureRepository;
@@ -27,7 +28,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.Enumeration;
 import org.hl7.fhir.r5.model.Enumerations.VersionIndependentResourceTypesAll;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -45,7 +45,7 @@ public class ReferenceExpressionProvider extends DefaultExpressionProvider {
     String id = StringUtils.contains(v, "/") ? StringUtils.substringAfter(v, "/") : v;
     if (param.getModifier() != null) {
       if (type != null && !param.getModifier().equals(type)) {
-        throw new FhirException(400, IssueType.INVALID, "invalid reference param " + param.getKey());
+        throw new FhirException(FhirestIssue.FEST_034, "value", param.getKey());
       }
       type = param.getModifier();
     }

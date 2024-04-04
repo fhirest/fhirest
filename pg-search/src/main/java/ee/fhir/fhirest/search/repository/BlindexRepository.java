@@ -16,17 +16,17 @@ import ee.fhir.fhirest.PostgresListener.PostgresChangeListener;
 import ee.fhir.fhirest.core.exception.FhirServerException;
 import ee.fhir.fhirest.search.model.Blindex;
 import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;;
-import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 @Component
 public class BlindexRepository {
@@ -50,7 +50,7 @@ public class BlindexRepository {
 
   public static String getIndex(String resourceType, String path) {
     if (!INDEXES.containsKey(resourceType) || !INDEXES.get(resourceType).containsKey(path)) {
-      throw new FhirServerException(500, resourceType + "." + path + " not indexed");
+      throw new FhirServerException(resourceType + "." + path + " not indexed");
     }
     return INDEXES.get(resourceType).get(path).getName();
   }

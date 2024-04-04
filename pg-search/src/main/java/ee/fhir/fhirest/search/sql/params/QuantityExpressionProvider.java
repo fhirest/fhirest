@@ -13,10 +13,10 @@
 package ee.fhir.fhirest.search.sql.params;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.search.QueryParam;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public class QuantityExpressionProvider extends NumberExpressionProvider {
 
@@ -27,7 +27,7 @@ public class QuantityExpressionProvider extends NumberExpressionProvider {
     }
     String[] parts = value.split("\\|");
     if (parts.length != 3 || StringUtils.isEmpty(parts[2])) {
-      throw new FhirException(400, IssueType.INVALID, "invalud Quantity value '" + value + "'");
+      throw new FhirException(FhirestIssue.FEST_032, "value", value);
     }
     SqlBuilder sb = super.makeCondition(param, parts[0]);
     if (StringUtils.isEmpty(parts[1])) {

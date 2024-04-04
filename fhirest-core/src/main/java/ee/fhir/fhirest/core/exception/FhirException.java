@@ -10,12 +10,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package ee.fhir.fhirest.core.exception;
+package ee.fhir.fhirest.core.exception;
 
+import ee.fhir.fhirest.core.util.MapUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import lombok.Getter;
+import org.apache.commons.text.StringSubstitutor;
 import org.hl7.fhir.r5.model.CodeableConcept;
+import org.hl7.fhir.r5.model.Coding;
 import org.hl7.fhir.r5.model.Extension;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
@@ -25,12 +30,21 @@ import org.hl7.fhir.r5.model.StringType;
 
 import static java.util.stream.Collectors.joining;
 
+
+@Getter
 public class FhirException extends RuntimeException {
   private final int httpCode;
-
   private final List<OperationOutcomeIssueComponent> issues;
   private List<Extension> extensions;
   private List<Resource> contained;
+
+  public FhirException(FhirestIssue fi, Object... params) {
+    this(fi, MapUtil.toMap(params));
+  }
+
+  public FhirException(FhirestIssue fi, Map<String, Object> params) {
+    this(fi.getHttpCode(), composeIssue(IssueSeverity.ERROR, fi.getType(), fi.name(), substituteParams(fi.getDescription(), params)));
+  }
 
   public FhirException(int httpCode, IssueType type, String description) {
     this(httpCode, composeIssue(IssueSeverity.ERROR, type, description));
@@ -45,21 +59,9 @@ public class FhirException extends RuntimeException {
     this.issues = issues;
   }
 
-  public int getStatusCode() {
-    return httpCode;
-  }
-
-  public List<OperationOutcomeIssueComponent> getIssues() {
-    return issues;
-  }
-
-  public List<Extension> getExtensions() {
-    return extensions;
-  }
-
   public void addExtension(String url, String value) {
     Extension ext = new Extension();
-    ext.setUrl("fullUrl");
+    ext.setUrl(url);
     ext.setValue(new StringType(value));
     addExtension(ext);
   }
@@ -78,27 +80,25 @@ public class FhirException extends RuntimeException {
     contained.add(resource);
   }
 
-  public List<Resource> getContained() {
-    return contained;
-  }
-
   @Override
   public String getMessage() {
     return issues.stream().map(i -> i.getDetails().getText()).collect(joining(", "));
   }
 
-  protected static OperationOutcomeIssueComponent composeIssue(IssueSeverity severity,
-                                                               IssueType type,
-                                                               String detailsText) {
-    OperationOutcomeIssueComponent issue = new OperationOutcomeIssueComponent();
-    issue.setCode(type);
-    issue.setSeverity(severity);
+  protected static OperationOutcomeIssueComponent composeIssue(IssueSeverity severity, IssueType type, String detailsText) {
+    return composeIssue(severity, type, null, detailsText);
+  }
 
-    CodeableConcept details = new CodeableConcept();
-    details.setText(detailsText);
+  protected static OperationOutcomeIssueComponent composeIssue(IssueSeverity severity, IssueType type, String code, String detailsText) {
+    CodeableConcept details = new CodeableConcept().setText(detailsText);
+    if (code != null) {
+      details.addCoding(new Coding().setCode(code));
+    }
+    return new OperationOutcomeIssueComponent(severity, type).setDetails(details);
+  }
 
-    issue.setDetails(details);
-    return issue;
+  protected static String substituteParams(String text, Map<String, Object> params) {
+    return StringSubstitutor.replace(text, params, "{{", "}}");
   }
 
 }

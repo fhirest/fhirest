@@ -13,9 +13,9 @@
  package ee.fhir.fhirest.search.sql.params;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.search.QueryParam;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public class StringExpressionProvider extends DefaultExpressionProvider {
 
@@ -30,8 +30,7 @@ public class StringExpressionProvider extends DefaultExpressionProvider {
     if (param.getModifier().equals("exact")) {
       return new SqlBuilder("i.string = ?", value);
     }
-
-    throw new FhirException(400, IssueType.INVALID, "modifier " + param.getModifier() + " not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "modifier " + param.getModifier() + " not supported");
   }
 
   @Override

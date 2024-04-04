@@ -16,11 +16,11 @@ import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Named;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component

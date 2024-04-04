@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package ee.fhir.fhirest.core.exception;
+package ee.fhir.fhirest.core.exception;
 
 import org.hl7.fhir.r5.model.OperationOutcome.IssueSeverity;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
@@ -19,6 +19,10 @@ public class FhirServerException extends FhirException {
 
   public FhirServerException(Throwable cause) {
     this(500, cause.getMessage());
+  }
+
+  public FhirServerException(String detail) {
+    this(500, detail);
   }
 
   public FhirServerException(int code, String detail) {

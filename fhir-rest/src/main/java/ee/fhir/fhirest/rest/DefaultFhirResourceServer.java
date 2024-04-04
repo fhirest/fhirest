@@ -1,6 +1,7 @@
 package ee.fhir.fhirest.rest;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.InteractionType;
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
@@ -35,7 +36,6 @@ import org.hl7.fhir.r5.model.Enumerations.FHIRTypes;
 import org.hl7.fhir.r5.model.Enumerations.OperationParameterUse;
 import org.hl7.fhir.r5.model.OperationDefinition;
 import org.hl7.fhir.r5.model.OperationDefinition.OperationDefinitionParameterComponent;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Parameters;
 import org.hl7.fhir.r5.model.Resource;
 import org.hl7.fhir.r5.model.ResourceType;
@@ -89,15 +89,13 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   public FhirestResponse create(FhirestRequest req) {
     String ifNoneExist = req.getHeader("If-None-Exist");
     if (ifNoneExist != null) {
-      ifNoneExist += "&_count=0";
-      SearchCriterion criteria = SearchCriterionBuilder.parse(ifNoneExist, req.getType());
+      SearchCriterion criteria = SearchCriterionBuilder.parse(ifNoneExist + "&_count=0", req.getType());
       SearchResult result = resourceSearchService.search(criteria);
       if (result.getTotal() == 1) {
         return new FhirestResponse(200);
       }
       if (result.getTotal() > 1) {
-        String er = "was expecting 0 or 1 resources. found " + result.getTotal();
-        throw new FhirException(412, IssueType.PROCESSING, er);
+        throw new FhirException(FhirestIssue.FEST_002, "uri", ifNoneExist, "total", result.getTotal());
       }
     }
     ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
@@ -113,7 +111,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
     boolean exists = resourceId != null && resourceSearchService.search(req.getType(), "_id", resourceId, "_count", "0").getTotal() > 0;
     if (!exists && !isUpdateCreateAllowed(req.getType()) && !"POST".equals(req.getTransactionMethod())) {
-      throw new FhirException(400, IssueType.NOTSUPPORTED, "create on update is disabled by conformance");
+      throw new FhirException(FhirestIssue.FEST_006);
     }
     ResourceVersion version = resourceService.save(new VersionId(req.getType(), resourceId, ver), content, InteractionType.UPDATE);
     return exists ? updated(version, req) : created(version, req);
@@ -122,18 +120,18 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   private boolean isUpdateCreateAllowed(String type) {
     CapabilityStatementRestResourceComponent res = ConformanceHolder.getCapabilityResource(type);
     return !res.hasUpdateCreate() || res.getUpdateCreate();
-    // empty updateCreate = allowed. should remove this at some point. added for backwards compatilibility, when this setting did not exists
+    // empty updateCreate = allowed. should remove this at some point. added for backwards compatibility, when this setting did not exist
   }
 
   @Override
   public FhirestResponse conditionalUpdate(FhirestRequest req) {
     if (req.getParameters().isEmpty()) {
-      throw new FhirException(400, IssueType.PROCESSING, "invalid conditional update request");
+      throw new FhirException(FhirestIssue.FEST_007);
     }
     req.getParameters().put(SearchCriterion._COUNT, Collections.singletonList("1"));
     SearchResult result = resourceSearchService.search(req.getType(), req.getParameters());
     if (result.getTotal() > 1) {
-      throw new FhirException(400, IssueType.PROCESSING, "was expecting 1 or 0 resources. found " + result.getTotal());
+      throw new FhirException(FhirestIssue.FEST_002, "uri", req.getParametersString(), "total", result.getTotal());
     }
     String resourceId = result.getTotal() == 1 ? result.getEntries().get(0).getId().getResourceId() : null;
     req.setPath(resourceId);
@@ -151,7 +149,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     VersionId id = req.getReference();
     ResourceVersion version = resourceService.load(id);
     if (version == null) {
-      throw new FhirException(404, IssueType.NOTFOUND, req.getType() + "/" + id.getResourceId() + " not found");
+      throw new FhirException(FhirestIssue.FEST_008, "resource", req.getType() + "/" + id.getResourceId());
     }
     HistorySearchCriterion criteria = new HistorySearchCriterion(id.getResourceType(), id.getResourceId());
     criteria.setSince(req.getParameter(HistorySearchCriterion._SINCE));
@@ -190,10 +188,10 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     String compartment = p[1];
     List<String> compartmentParams = ConformanceHolder.getCompartmentParam(req.getType(), compartment);
     if (CollectionUtils.isEmpty(compartmentParams)) {
-      throw new FhirException(400, IssueType.INVALID, "unknown compartment " + compartment + " for " + req.getType());
+      throw new FhirException(FhirestIssue.FEST_009, "compartment", compartment, "resource", req.getType());
     }
     if (compartmentParams.size() > 1) {
-      throw new FhirException(400, IssueType.NOTSUPPORTED, "multiple compartment params not yet supported");
+      throw new FhirException(FhirestIssue.FEST_001, "desc", "multiple compartment params not yet supported");
     }
     Map<String, List<String>> query = new HashMap<>(req.getParameters());
     query.put(compartmentParams.get(0), List.of(id));
@@ -211,7 +209,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     String resourceId = p[0];
     String operation = p[1];
     if (!operation.startsWith("$")) {
-      throw new FhirException(400, IssueType.INVALID, "operation must start with $");
+      throw new FhirException(FhirestIssue.FEST_010);
     }
     ResourceId id = new ResourceId(req.getType(), resourceId);
 
@@ -229,7 +227,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   public FhirestResponse typeOperation(FhirestRequest req) {
     String operation = req.getPath();
     if (!operation.startsWith("$")) {
-      throw new FhirException(400, IssueType.INVALID, "operation must start with $");
+      throw new FhirException(FhirestIssue.FEST_010);
     }
     ResourceContent content = readOperationParameters(operation, req);
     ResourceContent response = resourceOperationService.runTypeOperation(operation, req.getType(), content);
@@ -241,7 +239,7 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
 
     if (req.getMethod().equals("GET")) {
       if (opDef.getAffectsState()) {
-        throw new FhirException(400, IssueType.INVALID, "Performing an state affecting operation using GET not allowed");
+        throw new FhirException(FhirestIssue.FEST_011);
       }
       Parameters parameters = new Parameters();
       req.getParameters().forEach((k, v) -> parameters.addParameter(k, String.join(",", v)));
@@ -256,11 +254,10 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     List<OperationDefinitionParameterComponent> resourceParams =
         opDef.getParameter().stream().filter(p -> p.getUse() == OperationParameterUse.IN && p.getType() == FHIRTypes.RESOURCE).toList();
     if (body == null && !resourceParams.isEmpty()) {
-      throw new FhirException(400, IssueType.INVALID, "Operation body required");
+      throw new FhirException(FhirestIssue.FEST_012);
     }
     if (body != null && resourceParams.size() != 1) {
-      throw new FhirException(400, IssueType.INVALID,
-          "Operation MAY accept Resource in body only if operation definition has exactly one input parameter whose type is a FHIR Resource");
+      throw new FhirException(FhirestIssue.FEST_013);
     }
     String resourceParameterName = resourceParams.get(0).getName();
 
@@ -273,10 +270,10 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   private static OperationDefinition findOperationDefinition(String operation, FhirestRequest req) {
     CapabilityStatementRestResourceOperationComponent capabilityOp = ConformanceHolder
         .getCapabilityResource(req.getType()).getOperation().stream().filter(op -> ("$" + op.getName()).equals(operation)).findFirst()
-        .orElseThrow(() -> new FhirException(400, IssueType.INVALID, "Operation " + operation + " not defined in capability statement"));
+        .orElseThrow(() -> new FhirException(FhirestIssue.FEST_014, "operation", operation));
     OperationDefinition opDef = ConformanceHolder.getOperationDefinition(capabilityOp.getDefinition());
     if (opDef == null) {
-      throw new FhirException(400, IssueType.INVALID, "Operation " + operation + " not defined");
+      throw new FhirException(FhirestIssue.FEST_015, "operation", operation);
     }
     return opDef;
   }

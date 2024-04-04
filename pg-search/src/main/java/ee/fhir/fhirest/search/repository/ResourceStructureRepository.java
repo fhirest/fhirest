@@ -12,12 +12,14 @@
  */
 package ee.fhir.fhirest.search.repository;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.HashMap;
 import java.util.Map;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;;
-import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+
+;
 
 @Component
 public class ResourceStructureRepository {

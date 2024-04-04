@@ -13,6 +13,7 @@
 package ee.fhir.fhirest.core.service.conformance;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,6 @@ import org.hl7.fhir.r5.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r5.model.CodeSystem;
 import org.hl7.fhir.r5.model.CompartmentDefinition;
 import org.hl7.fhir.r5.model.OperationDefinition;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.SearchParameter;
 import org.hl7.fhir.r5.model.StructureDefinition;
 import org.hl7.fhir.r5.model.TerminologyCapabilities;
@@ -153,8 +153,7 @@ public class ConformanceHolder {
   public static SearchParameter requireSearchParam(String type, String code) {
     SearchParameter param = getSearchParam(type, code);
     if (param == null) {
-      String details = type + "/" + code + " searchparam does not exist in search config";
-      throw new FhirException(400, IssueType.NOTSUPPORTED, details);
+      throw new FhirException(FhirestIssue.FEST_024, "param", code, "resource", type);
     }
     return param;
   }

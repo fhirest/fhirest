@@ -10,12 +10,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package ee.fhir.fhirest.search.sql.params;
+package ee.fhir.fhirest.search.sql.params;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.search.QueryParam;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public class UriExpressionProvider extends DefaultExpressionProvider {
 
@@ -31,7 +31,7 @@ public class UriExpressionProvider extends DefaultExpressionProvider {
       return new SqlBuilder("? like (i.uri || '%')", value); //TODO: probably indexes will not work here
     }
 
-    throw new FhirException(400, IssueType.INVALID, "modifier " + param.getModifier() + " not supported");
+    throw new FhirException(FhirestIssue.FEST_001, "desc", "modifier " + param.getModifier());
   }
 
   @Override

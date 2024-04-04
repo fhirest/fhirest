@@ -13,8 +13,8 @@
  package ee.fhir.fhirest.core.service.resource;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 
 public final class SearchUtil {
   /**
@@ -22,12 +22,11 @@ public final class SearchUtil {
    */
   public static String[] parseInclude(String include) {
     if (include == null) {
-      return null;//fdsfds
+      return null;
     }
     String[] tokens = StringUtils.split(include, ":");
     if (tokens.length < 2 || tokens.length > 3) {
-      String details = "_include parameter invalid. ResourceType:SearchParameter[:targetResourceType]";
-      throw new FhirException(400, IssueType.PROCESSING, details);
+      throw new FhirException(FhirestIssue.FEST_029);
     }
     return new String[] { tokens[0], tokens[1], tokens.length > 2 ? tokens[2] : null };
   }

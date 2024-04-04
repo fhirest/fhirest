@@ -13,6 +13,7 @@
 package ee.fhir.fhirest.search.sql.params;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.search.QueryParam;
 import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
 import ee.fhir.fhirest.search.sql.ExpressionProvider;
@@ -20,7 +21,6 @@ import ee.fhir.fhirest.search.sql.SearchSqlUtil;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.SearchParameter;
 
 import static java.util.stream.Collectors.toList;
@@ -34,7 +34,7 @@ public class CompositeExpressionProvider extends ExpressionProvider {
     List<SqlBuilder> ors = param.getValues().stream().filter(v -> !StringUtils.isEmpty(v)).map(v -> {
       String[] parts = StringUtils.split(v, "$");
       if (parts.length != sp.getComponent().size()) {
-        throw new FhirException(400, IssueType.INVALID, "invalid composite parameter");
+        throw new FhirException(FhirestIssue.FEST_030);
       }
       List<SqlBuilder> ands = sp.getComponent().stream().map(c -> {
         String p = parts[sp.getComponent().indexOf(c)];
@@ -54,6 +54,6 @@ public class CompositeExpressionProvider extends ExpressionProvider {
 
   @Override
   public SqlBuilder order(String resourceType, String key, String alias, String direction) {
-    throw new FhirException(400, IssueType.NOTSUPPORTED, "order by composite param not implemented");
+    throw new FhirException(FhirestIssue.FEST_031);
   }
 }

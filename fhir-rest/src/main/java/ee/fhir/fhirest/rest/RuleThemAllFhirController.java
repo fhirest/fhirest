@@ -12,7 +12,7 @@
  */
 package ee.fhir.fhirest.rest;
 
-import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirServerException;
 import ee.fhir.fhirest.rest.exception.FhirExceptionHandler;
 import ee.fhir.fhirest.rest.filter.FhirestRequestFilter;
 import ee.fhir.fhirest.rest.filter.FhirestResponseFilter;
@@ -34,7 +34,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -116,7 +115,7 @@ public class RuleThemAllFhirController {
       Resource resource = (Resource) body;
       return resourceFormatService.compose(resource, contentType);
     }
-    throw new FhirException(500, IssueType.PROCESSING, "cannot write " + body.getClass());
+    throw new FhirServerException("cannot write " + body.getClass());
   }
 
   private void prettify(ResourceContent content) {

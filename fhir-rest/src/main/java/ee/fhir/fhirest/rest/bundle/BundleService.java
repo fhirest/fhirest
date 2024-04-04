@@ -13,12 +13,12 @@
 package ee.fhir.fhirest.rest.bundle;
 
 import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.search.SearchCriterion;
 import ee.fhir.fhirest.core.model.search.SearchCriterionBuilder;
 import ee.fhir.fhirest.core.model.search.SearchResult;
 import ee.fhir.fhirest.core.service.resource.ResourceSearchService;
 import ee.fhir.fhirest.rest.FhirestEndpointService;
-import ee.fhir.fhirest.rest.ServerUriHelper;
 import ee.fhir.fhirest.rest.model.FhirestRequest;
 import ee.fhir.fhirest.rest.model.FhirestResponse;
 import ee.fhir.fhirest.rest.util.PreferredReturn;
@@ -38,7 +38,6 @@ import org.hl7.fhir.r5.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r5.model.Bundle.LinkRelationTypes;
 import org.hl7.fhir.r5.model.Extension;
 import org.hl7.fhir.r5.model.OperationOutcome;
-import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.hl7.fhir.r5.model.Resource;
 import org.hl7.fhir.r5.model.UriType;
 import org.springframework.http.MediaType;
@@ -52,12 +51,11 @@ public class BundleService implements BundleSaveHandler {
   private final FhirestEndpointService endpointService;
   private final ResourceFormatService resourceFormatService;
   private final TransactionService tx;
-  private final ServerUriHelper serverUriHelper;
 
   @Override
   public Bundle save(Bundle bundle, String prefer) {
     if (bundle.getEntry().stream().anyMatch(e -> !e.hasRequest())) {
-      throw new FhirException(400, IssueType.INVALID, "Bundle.request element required");
+      throw new FhirException(FhirestIssue.FEST_025);
     }
 
     if (bundle.getType() == BundleType.BATCH) {
@@ -70,7 +68,7 @@ public class BundleService implements BundleSaveHandler {
       bundle.getEntry().sort(new EntityMethodOrderComparator()); //moved after replaceIds because incorrect behavior in case of conditional updates
       return transaction(bundle, prefer);
     }
-    throw new FhirException(400, IssueType.INVALID, "only batch or transaction supported");
+    throw new FhirException(FhirestIssue.FEST_026);
   }
 
   private void validateTransaction(Bundle bundle) {
@@ -81,11 +79,10 @@ public class BundleService implements BundleSaveHandler {
         SearchCriterion criteria = SearchCriterionBuilder.parse(ifNoneExist, type);
         SearchResult result = searchService.search(criteria);
         if (result.getTotal() == 1) {
-          entry.getRequest().setMethod(HTTPVerb.NULL); //ignore
+          entry.getRequest().setMethod(HTTPVerb.NULL); // ignore
         }
         if (result.getTotal() > 1) {
-          String msg = "was expecting 0 or 1 resources. found " + result.getTotal();
-          throw new FhirException(412, IssueType.PROCESSING, msg);
+          throw new FhirException(FhirestIssue.FEST_002, "uri", entry.getRequest().getIfNoneExist(), "total", result.getTotal());
         }
       }
     });
@@ -100,7 +97,7 @@ public class BundleService implements BundleSaveHandler {
         FhirException fhirException = findFhirException(e);
         if (fhirException != null) {
           BundleEntryResponseComponent responseEntry = new BundleEntryResponseComponent();
-          responseEntry.setStatus("" + fhirException.getStatusCode());
+          responseEntry.setStatus("" + fhirException.getHttpCode());
           BundleEntryComponent responseBundleEntry = responseBundle.addEntry();
           responseBundleEntry.addLink().setRelation(LinkRelationTypes.ALTERNATE).setUrl(entry.getFullUrl());
           OperationOutcome outcome = new OperationOutcome();
@@ -119,17 +116,14 @@ public class BundleService implements BundleSaveHandler {
   private Bundle transaction(Bundle bundle, String prefer) {
     return tx.transaction(() -> {
       Bundle responseBundle = new Bundle();
-      bundle.getEntry().stream().forEach(entry -> {
+      bundle.getEntry().forEach(entry -> {
         try {
           responseBundle.addEntry(perform(entry, prefer));
         } catch (Exception e) {
           FhirException fhirException = findFhirException(e);
           if (fhirException != null) {
             fhirException.addExtension("fullUrl", entry.getFullUrl());
-            fhirException.getIssues().forEach(i -> {
-              String expr = "Bundle.entry[" + bundle.getEntry().indexOf(entry) + "]";
-              i.addExpression(expr);
-            });
+            fhirException.getIssues().forEach(i -> i.addExpression("Bundle.entry[" + bundle.getEntry().indexOf(entry) + "]"));
           }
           throw e;
         }
@@ -145,9 +139,6 @@ public class BundleService implements BundleSaveHandler {
       return new BundleEntryComponent().setResponse(new BundleEntryResponseComponent().setStatus("200"));
     }
     FhirestRequest req = buildRequest(entry);
-    if (StringUtils.isEmpty(req.getType())) {
-      throw new FhirException(400, IssueType.PROCESSING, "what are you trying to do, mister?");
-    }
     req.setOperation(endpointService.findOperation(req));
     FhirestResponse resp = endpointService.execute(req);
 
@@ -182,6 +173,9 @@ public class BundleService implements BundleSaveHandler {
       String url = entry.getRequest().getUrl();
       url = url.replaceAll("\\|", URLEncoder.encode("|", StandardCharsets.UTF_8));
       uri = URI.create(url);
+    }
+    if (StringUtils.isEmpty(uri.getPath())) {
+      throw new FhirException(FhirestIssue.FEST_027, "uri", uri);
     }
     req.setType(StringUtils.substringBefore(uri.getPath(), "/"));
     req.setPath(StringUtils.removeStart(uri.getPath(), req.getType()));

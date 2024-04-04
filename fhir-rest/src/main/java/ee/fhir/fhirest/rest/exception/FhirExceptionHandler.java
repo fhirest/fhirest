@@ -61,7 +61,7 @@ public class FhirExceptionHandler {
     outcome.setExtension(e.getExtensions());
     outcome.setIssue(e.getIssues());
     outcome.setContained(e.getContained());
-    return toResponse(request, outcome, e.getStatusCode());
+    return toResponse(request, outcome, e.getHttpCode());
   }
 
   protected ResponseEntity<String> toResponse(HttpServletRequest request, OperationOutcome outcome, int statusCode) {
@@ -80,8 +80,8 @@ public class FhirExceptionHandler {
 
   private static void log(FhirException e) {
     String issues = e.getIssues().stream().map(i -> i.getDetails().getText()).collect(joining(", "));
-    String msg = "Status " + e.getStatusCode() + " = " + issues;
-    if (e.getStatusCode() >= 500) {
+    String msg = "Status " + e.getHttpCode() + " = " + issues;
+    if (e.getHttpCode() >= 500) {
       log.error(msg);
     } else {
       log.info(msg);
