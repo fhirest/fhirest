@@ -164,9 +164,9 @@ public class BundleService implements BundleSaveHandler {
     String method = entry.getRequest().getMethod().toCode();
     req.setTransactionMethod(method);
     URI uri;
-    Extension transactionGeneratedId = entry.getRequest().getExtensionByUrl("urn:fhirest-transaction-generated-id");
-    if (method.equals("POST") && transactionGeneratedId != null) {
-      req.setMethod("PUT");
+    Extension transactionGeneratedId = entry.getRequest().getExtensionByUrl(BundleReferenceHandler.URN__GENERATED_ID);
+    if (method.equals(HTTPVerb.POST.toCode()) && transactionGeneratedId != null) {
+      req.setMethod(HTTPVerb.PUT.toCode());
       uri = URI.create(((UriType) transactionGeneratedId.getValue()).getValue());
     } else {
       req.setMethod(method);

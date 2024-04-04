@@ -41,6 +41,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class BundleReferenceHandler {
+  public static final String URN__GENERATED_ID = "urn:fhirest-transaction-generated-id";
   private final ResourceService resourceService;
   private final ResourceSearchService resourceSearchService;
 
@@ -71,8 +72,7 @@ public class BundleReferenceHandler {
       if (request.getMethod() == HTTPVerb.POST) {
         String ref = generateNewId(entry.getResource().getResourceType().name());
         referenceIds.put(entry.getFullUrl(), ref);
-        request.addExtension("urn:fhirest-transaction-generated-id", new UriType(ref));
-        return;
+        request.addExtension(URN__GENERATED_ID, new UriType(ref));
       }
     });
 

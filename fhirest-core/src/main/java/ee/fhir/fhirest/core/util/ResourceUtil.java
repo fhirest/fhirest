@@ -10,8 +10,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package ee.fhir.fhirest.core.util;
+package ee.fhir.fhirest.core.util;
 
+import ee.fhir.fhirest.core.exception.FhirException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.VersionId;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -25,16 +27,16 @@ public final class ResourceUtil {
   }
 
   public static VersionId parseReference(String uri) {
-    if (StringUtils.isEmpty(uri) || uri.startsWith("#")) {
-      return null;
-    }
+    Validate.isTrue(StringUtils.isNotEmpty(uri));
     String[] tokens = StringUtils.split(uri, "/");
     VersionId id = new VersionId(tokens[0]);
     if (tokens.length > 1) {
       id.setResourceId(tokens[1]);
     }
     if (tokens.length > 3) {
-      Validate.isTrue(HISTORY.equals(tokens[2]));
+      if (!HISTORY.equals(tokens[2])) {
+        throw new FhirException(FhirestIssue.FEST_036, "ref", uri);
+      }
       id.setVersion(Integer.valueOf(tokens[3]));
     }
     return id;
