@@ -12,7 +12,6 @@ import static java.util.stream.Collectors.toList;
 @Component
 @RequiredArgsConstructor
 public class ConformanceStorageLoader implements ConformanceLoader {
-
   private final ResourceSearchService resourceSearchService;
   private final ResourceFormatService resourceFormatService;
 

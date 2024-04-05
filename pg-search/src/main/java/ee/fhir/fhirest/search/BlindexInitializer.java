@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,6 +35,7 @@ import org.hl7.fhir.r5.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
 import org.hl7.fhir.r5.model.SearchParameter;
 import org.postgresql.util.PSQLException;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
@@ -46,10 +46,10 @@ public class BlindexInitializer {
   private final IndexService indexService;
   private final StructureDefinitionHolder structureDefinitionHolder;
 
-  public Object execute() {
+  public void execute() {
     if (CollectionUtils.isEmpty(ConformanceHolder.getDefinitions()) || ConformanceHolder.getCapabilityStatement() == null) {
       log.error("blindex: will not run. conformance not yet initialized");
-      return null;
+      return;
     }
 
     log.info("refreshing search indexes...");
@@ -62,8 +62,8 @@ public class BlindexInitializer {
             .collect(Collectors.toMap(Blindex::getKey, b -> b, (b1, b2) -> b1));
     Map<String, Blindex> current = blindexRepository.loadIndexes().stream().collect(Collectors.toMap(Blindex::getKey, b -> b));
     Map<String, Blindex> drop = new HashMap<>(current);
-    create.keySet().forEach(c -> drop.remove(c));
-    current.keySet().forEach(c -> create.remove(c));
+    create.keySet().forEach(drop::remove);
+    current.keySet().forEach(create::remove);
     log.debug("currently indexed: " + current);
     log.debug("need to create: " + create);
     log.debug("need to remove: " + drop);
@@ -71,14 +71,14 @@ public class BlindexInitializer {
     drop(drop.values());
     blindexRepository.refreshCache();
     log.info("blindex initialization finished");
-    return null;
+    return;
   }
 
   private List<SearchParameter> findCapabilityDefinedParameters() {
     List<String> resourceTypes = List.of("http://hl7.org/fhir/StructureDefinition/DomainResource", "http://hl7.org/fhir/StructureDefinition/Resource");
     List<String> defined = ConformanceHolder.getDefinitions().stream()
         .filter(def -> def.getBaseDefinition() != null && resourceTypes.contains(def.getBaseDefinition()))
-        .map(def -> def.getName()).collect(Collectors.toList());
+        .map(def -> def.getName()).toList();
     Map<String, SearchParameter> spDefinitions = ConformanceHolder.getSearchParams().values().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
 
     return ConformanceHolder.getCapabilityStatement().getRest().stream().filter(r -> r.getMode() == RestfulCapabilityMode.SERVER).flatMap(rest -> {
@@ -110,7 +110,7 @@ public class BlindexInitializer {
         if (structureDefinitionHolder.getStructureElements().get(b.getResourceType()).get(b.getPath()).stream()
             .anyMatch(el -> {
               return List.of("canonical", "id", "Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType())
-                  || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri")); //TODO
+                     || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri")); //TODO
             })) {
           log.debug("failed " + b.getKey() + ": " + " not configures");
           errors.add(b.getKey() + ": " + " not configures");
@@ -128,6 +128,9 @@ public class BlindexInitializer {
     });
     if (!errors.isEmpty()) {
       log.info("failed to create " + errors.size() + " indexes");
+    }
+    if (!createdIndexed.isEmpty()) {
+      log.info("created " + createdIndexed.size() + " indexes");
     }
     recalculate(createdIndexed);
   }

@@ -11,5 +11,6 @@ BEGIN
   EXECUTE FORMAT('create table search.%I partition of search.resource for values in (%L)', _tbl_name, (select search.resource_type_id(_type)));
   EXECUTE FORMAT('create unique index on search.%I (resource_type, resource_id) where active = true', _tbl_name);
   EXECUTE FORMAT('create index on search.%I (last_updated) where active = true', _tbl_name);
+  EXECUTE FORMAT('alter table search.%I add primary key (sid)', _tbl_name);
 END;
 $$ LANGUAGE plpgsql;

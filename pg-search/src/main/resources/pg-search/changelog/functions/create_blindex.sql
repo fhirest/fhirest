@@ -29,6 +29,7 @@ BEGIN
   end if;
 
   EXECUTE FORMAT('create table search.%I partition of search.%I for values in (%L)', _idx_name, _base_idx, _blindex.id);
+  EXECUTE FORMAT('alter table search.%I add constraint fk_%s_%s foreign key (sid) references search.%I(sid)', _idx_name, _idx_name, lower(_resource_type), lower(_resource_type));
   return _blindex;
 END;
 $$ LANGUAGE plpgsql VOLATILE;
