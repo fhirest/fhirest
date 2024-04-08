@@ -39,6 +39,9 @@ Or run them manually using Postman. Collections available at `fhirest-test-app/p
 Logging
 ---------------
 * Slf4j should be used for logging
+* One event per log
+* Empty parameters should be replaced with a placeholder
+* All errors should be logged
 
 example
 ```
@@ -63,10 +66,10 @@ Coding rules
 * It should be possible to define different database users for database structure modifications and for basic usage 
 * Database changes should be automated
 * If any cryptographic algorithm is used, it should be configurable and replaceable
-
 * All code, comments, scripts etc. should be written in English
 * All variables, type and function names should be meaningful
 * Unused code should be removed
+* Dependencies used should not have EOL sooner, than 2 years
 * Code should be runnable on high availability distributed environment with multiple instances
     * Applicaiton should be horizontally scalable
     * Application should be stateless
@@ -77,3 +80,9 @@ Coding rules
     * Application should be scalable both in data size and user count
     * All api interfaces should be high availability capable
     * Application should run on infrastructure with load balancers
+* Database rules
+  * Table relations should use foreign keys
+  * Foreign keys should be indexed
+  * Parameter binding should be used in queries
+  * Database object names should be meaningful
+
