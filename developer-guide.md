@@ -34,6 +34,8 @@ Fhir integration tests can be executed using the script
 ./fhirest-test-app/run-tests.sh
 ```
 
+Or run them manually using Postman. Collections available at `fhirest-test-app/postman`
+
 Logging
 ---------------
 * Slf4j should be used for logging
