@@ -14,6 +14,8 @@ Project can be built using Java 17 and gradle
 Running
 ---------------
 Although FhirEST is a library, for testing purposes it has a runnable application
+1. Create a database. See `etc/run-postgres.sh`
+2. Run
 ```
 ./gradlew bootRun
 ```
@@ -71,7 +73,7 @@ Coding rules
 * Unused code should be removed
 * Dependencies used should not have EOL sooner, than 2 years
 * Code should be runnable on high availability distributed environment with multiple instances
-    * Applicaiton should be horizontally scalable
+    * Application should be horizontally scalable
     * Application should be stateless
     * Application should be runnable on different domains and different environments
     * All configurations should be configurable at runtime
