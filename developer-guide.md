@@ -34,6 +34,21 @@ Fhir integration tests can be executed using the script
 ./fhirest-test-app/run-tests.sh
 ```
 
+Logging
+---------------
+* Slf4j should be used for logging
+
+example
+```
+@Slf4j
+<...>
+log.info("your log");
+```
+
+Run `etc/collect-logs.sh` to collect all logs.
+See `etc/logs.md` for a collected list of all logs
+Example logback configuration `fhirest-test-app/src/main/resources/logback.xml`
+
 Coding rules
 ---------------
 
@@ -46,7 +61,7 @@ Coding rules
 * It should be possible to define different database users for database structure modifications and for basic usage 
 * Database changes should be automated
 * If any cryptographic algorithm is used, it should be configurable and replaceable
-* Log4j should be used for logging
+
 * All code, comments, scripts etc. should be written in English
 * All variables, type and function names should be meaningful
 * Unused code should be removed
