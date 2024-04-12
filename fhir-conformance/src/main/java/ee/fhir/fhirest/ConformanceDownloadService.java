@@ -72,9 +72,8 @@ public class ConformanceDownloadService implements ConformanceUpdateListener {
   }
 
   private void unzip(File zip, File outputDir) {
-    try {
-      log.info("unzipping " + zip.getName() + " to " + outputDir.getAbsolutePath());
-      ZipFile zipFile = new ZipFile(zip);
+    log.info("unzipping " + zip.getName() + " to " + outputDir.getAbsolutePath());
+    try (ZipFile zipFile = new ZipFile(zip)) {
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
       while (entries.hasMoreElements()) {
         ZipEntry entry = entries.nextElement();
@@ -87,7 +86,7 @@ public class ConformanceDownloadService implements ConformanceUpdateListener {
         }
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 
