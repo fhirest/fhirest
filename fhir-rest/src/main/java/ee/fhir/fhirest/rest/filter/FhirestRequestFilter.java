@@ -19,9 +19,12 @@ public interface FhirestRequestFilter {
   Integer READ = 20;
   Integer VALIDATE = 30;
 
+  /**
+   * Less = earlier
+   */
   default Integer getOrder() {
     return 40;
-  };
+  }
 
   void handleRequest(FhirestRequest request);
 }

@@ -20,6 +20,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class User {
+  private String name;
   private Map<String, Object> claims;
   private Set<String> scopes;
 }

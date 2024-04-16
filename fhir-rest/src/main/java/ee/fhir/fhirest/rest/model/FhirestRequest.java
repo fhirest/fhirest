@@ -85,6 +85,13 @@ public class FhirestRequest {
     return parameters.entrySet().stream().flatMap(e -> e.getValue().stream().map(v -> e.getKey() + "=" + v)).collect(Collectors.joining("&"));
   }
 
+  public String getFhirUrlString() {
+    String url = (getType() == null ? "" : "/" + getType()) +
+                 (StringUtils.isEmpty(getPath()) ? "" : "/" + getPath()) +
+                 (getParameters().isEmpty() ? "" : "?" + getParametersString());
+    return StringUtils.isEmpty(url) ? "/" : url;
+  }
+
   public void putParameter(String name, String value) {
     if (name != null && value != null) {
       parameters.computeIfAbsent(name, x -> new ArrayList<>()).add(value);

@@ -47,7 +47,7 @@ public class FhirExceptionHandler {
       return toResponse(request, (FhirException) root);
     }
 
-    log.error("Fhir error occurred", e);
+    log.error("Unknown exception occurred", e);
     OperationOutcome outcome = new OperationOutcome();
     outcome.addIssue().setCode(IssueType.EXCEPTION).setDetails(new CodeableConcept().setText(e.getMessage())).setSeverity(IssueSeverity.ERROR);
     return toResponse(request, outcome, HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -80,7 +80,7 @@ public class FhirExceptionHandler {
 
   private static void log(FhirException e) {
     String issues = e.getIssues().stream().map(i -> i.getDetails().getText()).collect(joining(", "));
-    String msg = "Status " + e.getHttpCode() + " = " + issues;
+    String msg = "Status: " + e.getHttpCode() + "; Issues: " + issues;
     if (e.getHttpCode() >= 500) {
       log.error(msg);
     } else {

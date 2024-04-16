@@ -13,7 +13,6 @@
 package ee.fhir.fhirest.auth.http;
 
 import ee.fhir.fhirest.auth.ClientIdentity;
-import ee.fhir.fhirest.auth.User;
 import ee.fhir.fhirest.core.exception.FhirException;
 import ee.fhir.fhirest.rest.filter.FhirestRequestFilter;
 import ee.fhir.fhirest.rest.filter.FhirestResponseFilter;
@@ -21,10 +20,12 @@ import ee.fhir.fhirest.rest.model.FhirestRequest;
 import ee.fhir.fhirest.rest.model.FhirestResponse;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.springframework.stereotype.Component;
+
+import static ee.fhir.fhirest.rest.model.FhirestRequestProperties.USERNAME;
 
 @RequiredArgsConstructor
 @Component
@@ -58,8 +59,10 @@ public class HttpAuthInterceptor implements FhirestRequestFilter, FhirestRespons
       throw new IllegalStateException("context cleanup not worked, panic");
     }
 
-    User user = authenticators.stream().map(a -> a.autheticate(request)).filter(Objects::nonNull).findFirst().orElse(null);
-    clientIdentity.set(user);
+    authenticators.stream().map(a -> a.autheticate(request)).filter(Objects::nonNull).findFirst().ifPresent(user -> {
+      clientIdentity.set(user);
+      request.getProperties().put(USERNAME, user.getName());
+    });
 
     if (!clientIdentity.isAuthenticated()) {
       log.debug("could not authenticate. tried services: " + authenticators);

@@ -1,3 +1,6 @@
 dependencies {
   api project(':auth-rest')
+  implementation("com.auth0:java-jwt:4.0.0")
+  implementation('com.auth0:jwks-rsa:0.22.1')
+  implementation "org.ehcache:ehcache:${ehcacheVersion}"
 }

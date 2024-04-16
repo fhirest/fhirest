@@ -14,6 +14,9 @@ package ee.fhir.fhirest.core.service.cache;
 
 import jakarta.annotation.PreDestroy;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.ehcache.Cache;
@@ -27,40 +30,39 @@ import org.springframework.stereotype.Component;
 @Component
 public class FhirestCacheManager implements AutoCloseable {
   private final org.ehcache.CacheManager manager = CacheManagerBuilder.newCacheManagerBuilder().build();
+  private final Map<String, FhirestCache> caches = new HashMap<>();
 
   public FhirestCacheManager() {
     manager.init();
   }
 
-  public Cache<String, Object> registerCache(String name, int maxEntries, long ttlSeconds) {
+  public FhirestCache registerCache(String name, int maxEntries, long ttlSeconds) {
     CacheConfigurationBuilder<String, Object> builder = CacheConfigurationBuilder
         .newCacheConfigurationBuilder(String.class, Object.class, ResourcePoolsBuilder.heap(maxEntries));
     builder.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(ttlSeconds)));
     if (getCache(name) != null) {
       manager.removeCache(name);
     }
-    return manager.createCache(name, builder.build());
+    Cache<String, Object> cache = manager.createCache(name, builder.build());
+    FhirestCache fhirestCache = new FhirestCache(cache);
+    caches.put(name, fhirestCache);
+    return fhirestCache;
   }
 
-  public Cache<String, Object> getCache(String cacheName) {
-    return manager.getCache(cacheName, String.class, Object.class);
+  public FhirestCache getCache(String cacheName) {
+    return caches.get(cacheName);
   }
 
-  @SuppressWarnings("unchecked")
   public <V> V get(String cacheName, String key, Supplier<V> computeFn) {
-    Cache<String, Object> cache = getCache(cacheName);
-    if (!cache.containsKey(key)) {
-      V value = computeFn.get();
-      if (value == null) {
-        return null;
-      }
-      cache.put(key, value);
-    }
-    return (V) cache.get(key);
+    return caches.get(cacheName).get(key, computeFn);
+  }
+
+  public <V> CompletableFuture<V> getCf(String cacheName, String key, Supplier<CompletableFuture<V>> computeFn) {
+    return caches.get(cacheName).getCf(key, computeFn);
   }
 
   public void remove(String cacheName, String key) {
-    getCache(cacheName).remove(key);
+    caches.get(cacheName).remove(key);
   }
 
   @PreDestroy

@@ -16,6 +16,9 @@ import ee.fhir.fhirest.rest.model.FhirestRequest;
 import ee.fhir.fhirest.rest.model.FhirestResponse;
 
 public interface FhirestResponseFilter {
+  /**
+   * Less = later
+   */
   default Integer getOrder() {
     return 40;
   }

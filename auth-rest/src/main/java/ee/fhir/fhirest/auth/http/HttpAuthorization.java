@@ -10,20 +10,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package ee.fhir.fhirest.auth.http;
+package ee.fhir.fhirest.auth.http;
 
-import java.io.UnsupportedEncodingException;
+import ee.fhir.fhirest.rest.model.FhirestRequest;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
+import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import static java.util.stream.Collectors.toList;
-
+@Getter
 public class HttpAuthorization {
+  public static final String AUTHORIZATION = "Authorization";
+  public static final String BEARER = "Bearer";
+  public static final String BASIC = "Basic";
+
   private final String type;
   private final String credential;
 
@@ -36,6 +42,10 @@ public class HttpAuthorization {
     this.credential = credential;
   }
 
+  public static List<HttpAuthorization> readAuthorizations(FhirestRequest request) {
+    return parse(request.getHeaders().get(AUTHORIZATION));
+  }
+
   public static List<HttpAuthorization> parse(Collection<String> headers) {
     if (CollectionUtils.isEmpty(headers)) {
       return Collections.emptyList();
@@ -43,7 +53,7 @@ public class HttpAuthorization {
     return headers.stream()
         .filter(h -> !StringUtils.isEmpty(h))
         .flatMap(h -> Stream.of(h.split(",")))
-        .map(a -> a.trim())
+        .map(String::trim)
         .map(auth -> {
           String[] parts = auth.split("\\s");
           if (parts.length < 2) {
@@ -51,16 +61,8 @@ public class HttpAuthorization {
           }
           return new HttpAuthorization(parts[0], parts[1]);
         })
-        .filter(a -> a != null)
-        .collect(toList());
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public String getCredential() {
-    return credential;
+        .filter(Objects::nonNull)
+        .toList();
   }
 
   public boolean isType(String type) {
@@ -69,8 +71,8 @@ public class HttpAuthorization {
 
   public String getCredentialDecoded() {
     try {
-      return new String(Base64.getDecoder().decode(credential), "UTF8");
-    } catch (IllegalArgumentException | UnsupportedEncodingException e) {
+      return new String(Base64.getDecoder().decode(credential), StandardCharsets.UTF_8);
+    } catch (IllegalArgumentException e) {
       return credential;
     }
   }

@@ -17,9 +17,9 @@ import ee.fhir.fhirest.core.exception.FhirException;
 import ee.fhir.fhirest.rest.filter.FhirestRequestExecutionInterceptor;
 import ee.fhir.fhirest.rest.model.FhirestRequest;
 import java.util.Set;
-import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
@@ -38,7 +38,7 @@ public class SmartAuthHttpInterceptor implements FhirestRequestExecutionIntercep
 
     Set<String> clientScopes = clientIdentity.get().getScopes();
     if (clientScopes == null || clientScopes.stream()
-        .map(s -> new SmartScope(s))
+        .map(SmartScope::new)
         .noneMatch(s -> isScopeAllowed(s, resourceType, interaction))) {
       throw new FhirException(403, IssueType.FORBIDDEN, resourceType + "." + interaction + " not allowed");
     }

@@ -27,6 +27,9 @@ public final class ResourceUtil {
   }
 
   public static VersionId parseReference(String uri) {
+//    if (StringUtils.isEmpty(uri) || uri.startsWith("#")) {
+//      return null;
+//    }
     Validate.isTrue(StringUtils.isNotEmpty(uri));
     String[] tokens = StringUtils.split(uri, "/");
     VersionId id = new VersionId(tokens[0]);
