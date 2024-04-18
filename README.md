@@ -2,11 +2,11 @@
 
 ## 1. Introduction
 
-FHIREST is an open-source FHIR server managed by the FHIREST community. It is developed under a xx licence.
+FhirEST is an open-source FHIR server managed by the FhirEST community. It is developed under a xx licence.
 
 ## 2. Release history
 
-> FHIREST using Semantic versioning https://semver.org/
+> FhirEST using Semantic versioning https://semver.org/
 > **Release** - Release number
 >
 > **Current version** - means the release branch
@@ -15,7 +15,7 @@ FHIREST is an open-source FHIR server managed by the FHIREST community. It is de
 >
 > **Spring version** - minimum version of spring framework
 >
-> **Java version** - Current FHIREST Java version
+> **Java version** - Current FhirEST Java version
 
 | Release | Version | Supported FHIR version | Spring version | Java Version |
 |---------|---------|------------------------|----------------|--------------|
@@ -25,7 +25,7 @@ FHIREST is an open-source FHIR server managed by the FHIREST community. It is de
 
 The ESTFHIR FHIR server is open-source software that uses the following components.
 
-### 3.1. FHIREST core components
+### 3.1. FhirEST core components
 
 FhirEST provides several Java modules that may be embedded into the source code of your application as libraries.
 
@@ -178,8 +178,8 @@ spring:
 
 ### 5.1 Features request, bug reporting
 
-If you find any bug in the ESTFHIR product or have a new feature request, please insert it
-via [git issues](https://github.com/fhirest/fhirest/issues/new/choose). The ESTFHIR community maintainers will review the inserted issues regularly. If the
+If you find any bug in the FhirEST product or have a new feature request, please insert it
+via [git issues](https://github.com/fhirest/fhirest/issues/new/choose). The FhirEST community maintainers will review the inserted issues regularly. If the
 request is critical, please add the name of the project and contact details to the description and send an e-mail to fhirest@tehik.ee
 
 ### 5.2 Contributing
