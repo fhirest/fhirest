@@ -23,7 +23,7 @@ FhirEST is an open-source FHIR server managed by the FhirEST community. It is de
 
 ## 3. Components
 
-The ESTFHIR FHIR server is open-source software that uses the following components.
+The FhirEST FHIR server is open-source software that uses the following components.
 
 ### 3.1. FhirEST core components
 
