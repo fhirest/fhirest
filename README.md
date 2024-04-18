@@ -182,14 +182,11 @@ If you find any bug in the ESTFHIR product or have a new feature request, please
 via [git issues](https://github.com/fhirest/fhirest/issues/new/choose). The ESTFHIR community maintainers will review the inserted issues regularly. If the
 request is critical, please add the name of the project and contact details to the description and send an e-mail to fhirest@tehik.ee
 
-### 5.2 Contributing guidelines
+### 5.2 Contributing
+TODO: link contribution.md
 
-Create a pull request..
-
-### 5.3 Code of Conduct
-
-The ESTFHIR project non-functional requirements are listed
-here: https://www.tehik.ee/sites/default/files/2023-11/TEHIK%20Mittefunktsionaalsed%20nouded%20arenduste....pdf
+### 5.3 Developing
+[Developer Guide](https://github.com/fhirest/fhirest/blob/master/developer-guide.md)
 
 ## 6. Licence
 
