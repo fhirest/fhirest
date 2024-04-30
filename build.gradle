@@ -61,6 +61,7 @@ subprojects { Project project ->
   }
 
   signing {
+    required {false} // sign only if configured
     if (System.getenv('GPG_KEY')) {
       def signingKey = System.getenv("GPG_KEY")
       def signingPassword = System.getenv("GPG_PASS")
