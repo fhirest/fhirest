@@ -1,3 +1,6 @@
+
+description = "FhirEST module - Provides Openapi support"
+
 dependencies {
   api project(':fhir-structures')
   api project(':fhirest-core')

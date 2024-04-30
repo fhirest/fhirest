@@ -1,3 +1,6 @@
+
+description = "FhirEST module - Fhir resource storage PostgreSQL implementation"
+
 dependencies {
   api project(':auth-core')
   api project(':pg-core')

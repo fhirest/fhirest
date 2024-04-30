@@ -1,2 +1,5 @@
+
+description = "FhirEST module - common authentication objects"
+
 dependencies {
 }

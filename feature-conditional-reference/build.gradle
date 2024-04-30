@@ -1,3 +1,6 @@
+
+description = "FhirEST module - Adds conditional reference support to all resources and interactions"
+
 dependencies {
   api project(':fhir-rest')
 }

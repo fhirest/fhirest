@@ -16,8 +16,6 @@ import jakarta.inject.Named;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-;
-
 @Component
 public class ResourceFunctionsRepository {
   private final JdbcTemplate adminJdbcTemplate;

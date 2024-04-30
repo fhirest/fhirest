@@ -1,2 +1,5 @@
+
+description = "FhirEST module - Database transaction support"
+
 dependencies {
 }

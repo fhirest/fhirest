@@ -29,3 +29,8 @@ bootRun {
   }
 }
 
+tasks.withType(PublishToMavenRepository).configureEach { it.enabled = false }
+tasks.withType(PublishToMavenLocal).configureEach { it.enabled = false }
+//uploadArchives.enabled = false
+
+

@@ -1,11 +1,11 @@
 plugins {
   id 'maven-publish'
+  id 'signing'
   id "org.owasp.dependencycheck" version "8.4.2"
   id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group "ee.fhir.fhirest"
-
 
 allprojects {
   apply plugin: "java-library"
@@ -49,24 +49,62 @@ allprojects {
 
 subprojects { Project project ->
   apply plugin: "maven-publish"
+  apply plugin: "signing"
 
   java {
     withSourcesJar()
+    withJavadocJar()
   }
 
-  publishing {
-    publications {
-      mavenJava(MavenPublication) {
-        artifactId = project.name
-        from components.java
-      }
+  tasks.withType(Javadoc).configureEach {
+    options.addStringOption('Xdoclint:-missing', '-quiet')
+  }
+
+  signing {
+    if (System.getenv('GPG_KEY')) {
+      def signingKey = System.getenv("GPG_KEY")
+      def signingPassword = System.getenv("GPG_PASS")
+      useInMemoryPgpKeys(signingKey, signingPassword)
     }
-    repositories {
-      maven {
-        url = uri("https://maven.pkg.github.com/fhirest/fhirest")
-        credentials {
-          username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USER")
-          password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+    sign publishing.publications
+  }
+
+  afterEvaluate { // afterEvaluate needed to read variable values from subproject (like project.description)
+    publishing {
+      publications {
+        mavenJava(MavenPublication) {
+          artifactId = project.name
+          from components.java
+          pom {
+            name = project.name
+            description = project.description
+            url = 'https://github.com/fhirest/fhirest'
+            scm {
+              url = 'https://github.com/fhirest/fhirest'
+              connection = "scm:git:https://github.com/fhirest/fhirest.git"
+              developerConnection = "scm:git:git@github.com:fhirest/fhirest.git"
+            }
+            developers {
+              developer {
+                name = 'FhirEST Community'
+              }
+            }
+            licenses {
+              license {
+                name = 'MIT'
+                url = 'https://github.com/fhirest/fhirest/blob/master/LICENSE.md'
+              }
+            }
+          }
+        }
+      }
+      repositories {
+        maven {
+          url = uri("https://maven.pkg.github.com/fhirest/fhirest")
+          credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USER")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+          }
         }
       }
     }

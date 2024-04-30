@@ -1,3 +1,6 @@
+
+description = "FhirEST module - PostgreSQL core: unitilities, configurations"
+
 dependencies {
   api project(':tx-manager')
 

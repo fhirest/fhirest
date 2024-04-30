@@ -1,4 +1,6 @@
 
+description = "FhirEST module - Provides fhir REST interfaces"
+
 dependencies {
   api project(':fhir-structures')
   api project(':tx-manager')

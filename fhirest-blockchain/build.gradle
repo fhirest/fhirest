@@ -1,3 +1,6 @@
+
+description = "FhirEST module - Example implementation of resource forward to some blockchain"
+
 dependencies {
   api project(':fhirest-core')
 }

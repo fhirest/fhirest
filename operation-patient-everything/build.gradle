@@ -1,3 +1,6 @@
+
+description = "FhirEST module - Implementation of Patient 'everything' operation"
+
 dependencies {
     api project(':fhirest-core')
     api project(':fhir-rest')

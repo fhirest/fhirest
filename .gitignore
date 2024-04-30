@@ -4,6 +4,7 @@ bin/
 out/
 .gradle/
 .DS_Store
+publish/
 
 ### STS ###
 .apt_generated

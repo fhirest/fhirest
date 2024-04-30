@@ -1,3 +1,6 @@
+
+description = "FhirEST module - Resource profile validations"
+
 dependencies {
   api project(':fhirest-core')
   api project(':fhir-structures')

@@ -1,3 +1,6 @@
+
+description = "FhirEST module - responsible for parsing and composing fhir resources into different formats"
+
 dependencies {
   api "ca.uhn.hapi.fhir:hapi-fhir-base:$hapiVersion"
   api "ca.uhn.hapi.fhir:hapi-fhir-structures-r5:$hapiVersion"

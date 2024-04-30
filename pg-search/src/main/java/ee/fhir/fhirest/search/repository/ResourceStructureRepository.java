@@ -19,8 +19,6 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-;
-
 @Component
 public class ResourceStructureRepository {
   private static Map<String, Long> RESOURCE_TYPES = new HashMap<>();
