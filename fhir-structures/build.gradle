@@ -10,6 +10,7 @@ dependencies {
   }
 
   implementation "org.ehcache:ehcache:${ehcacheVersion}"
+  implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
