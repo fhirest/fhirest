@@ -4,6 +4,16 @@ Depends on pg-store module and uses same database schema and connections.
 After every resource save, a hash is calculated and saved based on user configuration and previous hash, thus providing with a chain of hashes for every resource.
 For hash calculation [Postgresql pgcrypto](https://www.postgresql.org/docs/current/pgcrypto.html) module is used.
 
+## Usage
+1. Add gradle dependency for `fhirest-hashchain`
+```
+implementation "ee.fhir.fhirest:fhirest-hashchain:${fhirestVersion}"
+```
+2. Include changeset in main liquibase 
+```
+fhirest-hashchain/changelog/changelog.yml
+```
+
 ## Configuration
 Hashing algorithm and resource values are configurable in table `store.hashchain_config`.  
 Do not update any rows, if some hashes are already generated. Change `sys_status` to some other value and add new row with new configuration.  
@@ -13,6 +23,8 @@ Configuration options:
 * `algorithm` - hashing algorithm. See [Postgresql pgcrypto](https://www.postgresql.org/docs/current/pgcrypto.html) for supported values.  
 * `version` - version of internal hashing algorithm (values to consider for digesting).
   * Currently supported versions: `v1` 
+
+Default configuration for `sha256` will be added by liquibase.
 
 ## Validation
 `select * from store.validate_resource_hash(xxx)`, where `xxx` is `store.resource.uid` value  
