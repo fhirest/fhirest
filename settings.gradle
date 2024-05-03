@@ -16,10 +16,11 @@ include 'pg-search'
 
 include 'validation-profile'
 include 'feature-conditional-reference'
-include 'fhirest-blockchain'
 include 'fhirest-scheduler'
 include 'openapi'
 include 'operation-patient-everything'
+include 'fhirest-blockchain'
+include 'fhirest-hashchain'
 
 include 'fhirest-test-app'
 

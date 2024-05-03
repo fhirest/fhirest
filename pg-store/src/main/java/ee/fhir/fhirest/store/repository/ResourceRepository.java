@@ -46,8 +46,6 @@ import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.joining;
 
-;
-
 @Primary
 @Component
 public class ResourceRepository {

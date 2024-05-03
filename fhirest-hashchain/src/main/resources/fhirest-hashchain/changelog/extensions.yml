@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: extensions
+      author: fhirest-hashchain
+      sql:
+        CREATE EXTENSION IF NOT EXISTS pgcrypto SCHEMA public;
+
