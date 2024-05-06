@@ -1,0 +1,9 @@
+
+description = "FhirEST module - stamps all resource versions into a chain for data verification. Depends on pg-store module"
+
+dependencies {
+  api project(':fhirest-core')
+  api project(':pg-store')
+  implementation "org.springframework.retry:spring-retry"
+  implementation "org.springframework.boot:spring-boot-starter-aop"
+}

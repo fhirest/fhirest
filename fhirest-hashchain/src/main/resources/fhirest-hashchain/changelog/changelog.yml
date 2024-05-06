@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - include:
+      file: extensions.yml
+      relativeToChangelogFile: true
+  - include:
+      file: sql/10-hashchain_config.sql
+      relativeToChangelogFile: true
+  - include:
+      file: sql/20-hashchain.sql
+      relativeToChangelogFile: true
+  - changeSet:
+      id: hashchain-functions-1
+      runOnChange: true
+      author: fhirest-hashchain
+      changes:
+      - sqlFile:
+          splitStatements: false
+          relativeToChangelogFile: true
+          path: functions/calculate_hash_v1.sql
+      - sqlFile:
+          splitStatements: false
+          relativeToChangelogFile: true
+          path: functions/calculate_hashchain.sql
+      - sqlFile:
+          splitStatements: false
+          relativeToChangelogFile: true
+          path: functions/store_hashchain.sql
+      - sqlFile:
+          splitStatements: false
+          relativeToChangelogFile: true
+          path: functions/validate_resource_hash.sql
+  - include:
+      file: init.sql
+      relativeToChangelogFile: true

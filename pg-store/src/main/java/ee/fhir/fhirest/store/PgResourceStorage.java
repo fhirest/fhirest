@@ -68,8 +68,8 @@ public class PgResourceStorage implements ResourceStorage {
     ResourceContent cont = content.getContentType().contains("json") ? content : toJson(content);
     ResourceVersion version = new ResourceVersion(new VersionId(id), cont);
     version.getId().setVersion(resourceRepository.getLastVersion(id) + 1);
-    if (clientIdentity.get() != null) {
-      version.setAuthor(clientIdentity.get().getClaims());
+    if (clientIdentity.get() != null && clientIdentity.get().getName() != null) {
+      version.setAuthor(Map.of("name", clientIdentity.get().getName()));
     }
     resourceRepository.create(version, findProfiles(version));
     return load(version.getId());

@@ -16,6 +16,7 @@ dependencies {
   implementation project(':fhirest-scheduler')
   implementation project(':operation-patient-everything')
   implementation project(':openapi')
+//  implementation project(':fhirest-hashchain')
 //  implementation project(':auth-openid')
 
   implementation 'org.springframework.boot:spring-boot-starter'
