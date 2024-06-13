@@ -42,7 +42,7 @@ public class SmartScope {
     int s = scope.indexOf("/");
     int d = scope.indexOf(".");
 
-    if (s <= 0 || d <= s || d == scope.length()) {
+    if (s <= 0 || d <= s) {
       throw new FhirException(400, IssueType.PROCESSING, "invalid auth scope arg");
     }
 

@@ -29,27 +29,28 @@ The FhirEST FHIR server is open-source software that uses the following componen
 
 FhirEST provides several Java modules that may be embedded into the source code of your application as libraries.
 
-| Component                     | What it does                                                                                 |
-|-------------------------------|----------------------------------------------------------------------------------------------|
-| fhirest-core                  | Core module, responsible for fhir resouce lifecycle, conformance initialization              |
-| fhir-structures               | Responsible for parsing and composing fhir resources into different formats (json, xml, ...) |
-| fhir-rest                     | Provides fhir REST interfaces                                                                |
-| fhir-conformance              | Provides possibilities to load initial conformance resources                                 |
-| tx-manager                    | Database transaction support                                                                 |
-| fhirest-scheduler             | Provides possibilities to perform some actions on resource at some given time in the future  |
-| pg-core                       | PostgreSQL core: unitilities, configurations                                                 |
-| pg-store                      | Fhir resource storage PostgreSQL implementation                                              |
-| pg-search                     | Fhir resource search PostgreSQL implementation                                               |
-| validation-profile            | Resource profile validations                                                                 |
-| openapi                       | Provides Openapi support                                                                     |
-| feature-confitional-reference | Adds conditional reference support to all resources and interactions                         |
-| operation-patient-everything  | Implementation of Patient $everything operation                                              |
-| fhirest-blockchain            | Example implementation of resource forward to some blockchain                                |
-| auth-core                     | Common authentication objects                                                                |
-| auth-rest                     | Base interfaces for adding authentication to rest endpoints                                  |
-| auth-openid                   | Simple oauth implementation                                                                  |
-| auth-smart                    | smart-app-launch implementation                                                              |
-| fhirest-test-app              | Simple application to run FhirEST                                                            |
+| Component                                                        | What it does                                                                                 |
+|------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
+| [fhirest-core](./fhirest-core)                                   | Core module, responsible for fhir resource lifecycle, conformance initialization             |
+| [fhir-structures](./fhir-structures)                             | Responsible for parsing and composing fhir resources into different formats (json, xml, ...) |
+| [fhir-rest](./fhir-rest)                                         | Provides fhir REST interfaces                                                                |
+| [fhir-conformance](./fhir-conformance)                           | Provides possibilities to load initial conformance resources                                 |
+| [tx-manager](./tx-manager)                                       | Database transaction support                                                                 |
+| [fhirest-scheduler](./fhirest-scheduler)                         | Provides possibilities to perform some actions on resource at some given time in the future  |
+| [pg-core](./pg-core)                                             | PostgreSQL core: utilities, configurations                                                   |
+| [pg-store](./pg-store)                                           | Fhir resource storage PostgreSQL implementation                                              |
+| [pg-search](./pg-search)                                         | Fhir resource search PostgreSQL implementation                                               |
+| [validation-profile](./validation-profile)                       | Resource profile validations                                                                 |
+| [openapi](./openapi)                                             | Provides Openapi support                                                                     |
+| [feature-conditional-reference](./feature-conditional-reference) | Adds conditional reference support to all resources and interactions                         |
+| [operation-patient-everything](./operation-patient-everything)   | Implementation of Patient $everything operation                                              |
+| [fhirest-hashchain](./fhirest-hashchain)                         | Timestamps all reasources in a hash chain                                                    |
+| [fhirest-blockchain](./fhirest-blockchain)                       | Example implementation of resource forward to some blockchain                                |
+| [auth-core](./auth-core)                                         | Common authentication objects                                                                |
+| [auth-rest](./auth-rest)                                         | Base interfaces for adding authentication to rest endpoints                                  |
+| [auth-openid](./auth-openid)                                     | Simple oauth implementation                                                                  |
+| [auth-smart](./auth-smart)                                       | smart-app-launch implementation                                                              |
+| [fhirest-test-app](./fhirest-test-app)                           | Simple application to run FhirEST                                                            |
 
 ### 3.2. FhirEST other components
 
@@ -69,31 +70,44 @@ To run example applications, follow the instructions under the corresponding pro
 
 #### 4.2. Using the libraries
 
-FhirEST modules are published as artifacts to GitHub Packages registry. To access and use them in your project:
+FhirEST modules are published to:
 
-* Using a build tool of your choice, declare Maven repository with URL `https://maven.pkg.github.com/fhirest/fhirest`. For detailed instructions, refer to official guides:
-  * [Maven](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package)
-  * [Gradle](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package)
-* GitHub Packages requires authentication using a personal access token (classic) with at least `read:packages` scope to install packages. For detailed instructions, refer to official guides:
-  * [Maven](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-with-a-personal-access-token)
-  * [Gradle](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#authenticating-with-a-personal-access-token)
+* Maven Central: **releases**
+* GitHub Packages registry: **snapshots** and **releases**.
+
+##### 4.2.1 Maven Central
+
+* Simply refer to https://mvnrepository.com/artifact/ee.fhir.fhirest for a list of available packages and versions
+
+##### 4.2.2 Github Packages
+
+* Using a build tool of your choice, declare Maven repository with URL `https://maven.pkg.github.com/fhirest/fhirest`. For detailed instructions, refer to
+  official guides:
+    * [Maven](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package)
+    * [Gradle](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package)
+* GitHub Packages requires authentication using a personal access token (classic) with at least `read:packages` scope to install packages. For detailed
+  instructions, refer to official guides:
+    * [Maven](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-with-a-personal-access-token)
+    * [Gradle](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#authenticating-with-a-personal-access-token)
 * Example config using `build.gradle` (Gradle Groovy) where the personal token is provided through environment variables `GITHUB_USER` and `GITHUB_TOKEN`:
 
 ```groovy
 maven {
-    url = uri("https://maven.pkg.github.com/fhirest/fhirest")
-    credentials {
-      username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USER")
-      password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-    }
+  url = uri("https://maven.pkg.github.com/fhirest/fhirest")
+  credentials {
+    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USER")
+    password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
   }
+}
 ```
 
-* Based on the requirements of your project, choose and add components as dependencies to your project from the [package index](https://github.com/orgs/fhirest/packages?repo_name=fhirest).
+* Based on the requirements of your project, choose and add components as dependencies to your project from
+  the [package index](https://github.com/orgs/fhirest/packages?repo_name=fhirest).
 
 #### 4.3. Quickstart
 
-The quickest way to get started is to clone and inspect the [demo project](https://github.com/fhirest/fhirest-examples/tree/master/fhirest-demo) or use it as a starter. It provides a minimal setup with necessary dependency management and configurations already set up for the following components:
+The quickest way to get started is to clone and inspect the [demo project](https://github.com/fhirest/fhirest-examples/tree/master/fhirest-demo) or use it as a
+starter. It provides a minimal setup with necessary dependency management and configurations already set up for the following components:
 
 ```groovy
 implementation "ee.fhir.fhirest:fhirest-core:${fhirestVersion}"
@@ -112,17 +126,10 @@ implementation "ee.fhir.fhirest:openapi:${fhirestVersion}"
 
 #### 4.4.1. Resource persistence and search
 
-FhirEST `pg-store` and `pg-search` components provide FHIR resource storage and search implementation. If either of these components are found on the classpath, then the following must be provided and configured:
-1. PostgreSQL database connection
-   1. Role-based configuration
-      1. `spring.datasource.default` - datasource credentials for reading and inserting resources
-      2. `spring.datasource.admin` - credentials for altering the database, e.g. for running migration scripts, adding/removing new resource definitions or updating indexes
-   2. Schema-based configuration
-      1. `spring.datasource.store-app` - reading and inserting stored resources
-      2. `spring.datasource.search-app` - reading and inserting search indexing related data 
-      3. `spring.datasource.store-admin` - altering resource storage tables
-      4. `spring.datasource.search-admin` - altering index storage tables
+FhirEST [pg-store](./pg-store) and [pg-search](./pg-search) components provide FHIR resource storage and search implementation.
+See these modules configuration guides to set up datasources. 
 
+Simple configuration example with two users:
 ```yml
 # example application.yml
 spring:
@@ -146,10 +153,11 @@ spring:
         parameters:
           app-username: ${spring.datasource.default.username}
 ```
+
 2. Path to Liquibase changelog file
 
 ```xml
-<!-- example changelog.xml -->
+<!-- example changelog.yml -->
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -163,16 +171,6 @@ spring:
 </databaseChangeLog>
 ```
 
-#### 4.4.2. Conformance
-
-#### 4.4.3. REST API
-
-#### 4.4.4. Validation
-
-#### 4.4.5. Authentication
-
-#### 4.4.6. Scheduler
-
 
 ## 5. Get Involved
 
@@ -183,9 +181,11 @@ via [git issues](https://github.com/fhirest/fhirest/issues/new/choose). The Fhir
 request is critical, please add the name of the project and contact details to the description and send an e-mail to fhirest@tehik.ee
 
 ### 5.2 Contributing
+
 TODO: link contribution.md
 
 ### 5.3 Developing
+
 [Developer Guide](https://github.com/fhirest/fhirest/blob/master/developer-guide.md)
 
 ## 6. Licence
