@@ -2,6 +2,7 @@ server:
   port: 8181
 
 spring:
+  datasource:
     default:
       url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
       username: ${DB_APP_USER:fhirest_app}
@@ -21,7 +22,7 @@ spring:
         parameters:
           app-username: ${spring.datasource.default.username}
 
-
+#  spring:
 #    datasource:
 #      url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
 #      username: ${DB_APP_USER:fhirest_app}
