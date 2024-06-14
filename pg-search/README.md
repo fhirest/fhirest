@@ -1,21 +1,27 @@
-# Postgresql search implementation
-Default search implementation in the FhirEST. 
+# PostgreSQL search implementation
+Default search implementation in the FhirEST using PostgreSQL as the backing database. 
 Module will automatically read conformance configuration and create needed table structure.  
 For every StructureDefinition, a table (partition) will be created wil link to resource id.  
 For every SearchParameter a separate table (partition) will be created with indexed values.  
 Module detects changes of search parameters and starts (re)indexing of changed search parameters in the background.
 
+## Dependencies
+
+`pg-search` depends on the [pg-store](../pg-store) module to provide the underlying resource storage mechanisms.
+
 
 ## Usage
+1. Add gradle dependency for `pg-search`
 ```
 implementation "ee.fhir.fhirest:fhirest-search:${fhirestVersion}"
 ```
-Include changeset in main liquibase changelog
+2. Include changeset in main liquibase changelog
 ```
 pg-search/changelog/changelog.xml
 ```
 
-pg-store module will use [pg-core](../pg-core) defined datasources.  
+## Configuration
+By default, `pg-store` module will use [pg-core](../pg-core) defined datasources.  
 You can also define separate datasource and liquibase configurations with prefixes `search-app` and `search-admin`
 ```yml
 spring:
@@ -91,4 +97,3 @@ AND EXISTS (SELECT 1 FROM search.encounter_token_identifier i WHERE i.active = t
 -- practitioner = 333
 AND EXISTS (SELECT 1 FROM search.encounter_reference_participant_individual i WHERE i.active = true and i.sid = base.sid AND (i.id = '333' and i.type_id = search.rt_id('Practitioner')))
 ```
-

@@ -1,20 +1,30 @@
 # Postgresql storage implementation
-Default storage implementation in the FhirEST.  
+Default storage implementation in the FhirEST using PostgreSQL as the backing database.  
 Resources are saved ‘as-is’ in json format.  
 Resources tables are partitioned of a common table.  
 Module will automatically read conformance configuration and create needed table structure and partitions based on StructureDefinition resource.
 
+## Dependencies
+
+`pg-store` depends on:
+* [pg-core](../pg-store) - common persistence utilities and configuration structures
+* [auth-core](../auth-core) - common authentication structures
+* [fhirest-core](../fhirest-core) - common logic and structures for resource lifecycle and conformance initialization
+* [fhir-structures](../fhir-structures) - multi-format FHIR resource parser and composer
+
 
 ## Usage
+
+1. Add gradle dependency for `pg-store`
 ```
 implementation "ee.fhir.fhirest:fhirest-store:${fhirestVersion}"
 ```
-Include changeset in main liquibase changelog
+2. Include changeset in main liquibase changelog
 ```
 pg-store/changelog/changelog.xml
 ```
 
-pg-store module will use [pg-core](../pg-core) defined datasources.  
+`pg-store` module will use [pg-core](../pg-core) defined datasources.  
 You can also define separate datasource and liquibase configurations with prefixes `store-app` and `store-admin`
 ```yml
 spring:

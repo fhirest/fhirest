@@ -1,7 +1,19 @@
 # Postgresql Core module
-Postgresql core/commons module. Provides common database connections and utilities for PostgreSQL.
+Postgresql core/commons module. Provides common database connections, utilities and configuration structures for PostgreSQL.
+
+## Dependencies
+
+`pg-core` is a *direct* dependency to:
+* [pg-store](../pg-store) - resource storage
+* [pg-search](../pg-store) - resource search
+* [fhirest-scheduler](../fhirest-scheduler) - action scheduler for stored resources
+* [fhirest-hashchain](../fhirest-hashchain) - resource timestamping and integrity (through [pg-store](https://github.com/fhirest/fhirest/tree/master/pg-store))
+
+`pg-core` depends on:
+* [tx-manager](../tx-manager) - multi transaction manager support
 
 ## Usage
+1. Add gradle dependency for `pg-core`
 ```
 implementation "ee.fhir.fhirest:pg-core:${fhirestVersion}"
 ```

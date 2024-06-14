@@ -122,56 +122,6 @@ implementation "ee.fhir.fhirest:operation-patient-everything:${fhirestVersion}"
 implementation "ee.fhir.fhirest:openapi:${fhirestVersion}"
 ```
 
-#### 4.4. Configuration
-
-#### 4.4.1. Resource persistence and search
-
-FhirEST [pg-store](./pg-store) and [pg-search](./pg-search) components provide FHIR resource storage and search implementation.
-See these modules configuration guides to set up datasources. 
-
-Simple configuration example with two users:
-```yml
-# example application.yml
-spring:
-  datasource:
-    default:
-      url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
-      username: ${DB_APP_USER:fhirest_app}
-      password: ${DB_APP_PASSWORD:test}
-      maxActive: ${DB_POOL_SIZE:1}
-      driverClassName: org.postgresql.Driver
-      type: com.zaxxer.hikari.HikariDataSource
-    admin:
-      url: ${spring.datasource.default.url}
-      username: ${DB_ADMIN_USER:fhirest_admin}
-      password: ${DB_ADMIN_PASSWORD:test}
-      maxActive: 1
-      driverClassName: org.postgresql.Driver
-      type: org.springframework.jdbc.datasource.SimpleDriverDataSource
-      liquibase:
-        change-log: 'classpath:changelog.xml'
-        parameters:
-          app-username: ${spring.datasource.default.username}
-```
-
-2. Path to Liquibase changelog file
-
-```xml
-<!-- example changelog.yml -->
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-
-  <include file="pg-core/changelog/changelog.xml" relativeToChangelogFile="false"/>
-  <include file="pg-store/changelog/changelog.xml" relativeToChangelogFile="false"/>
-  <include file="pg-search/changelog/changelog.xml" relativeToChangelogFile="false"/>
-
-</databaseChangeLog>
-```
-
-
 ## 5. Get Involved
 
 ### 5.1 Features request, bug reporting
