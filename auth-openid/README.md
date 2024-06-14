@@ -3,7 +3,8 @@ Implements `AuthenticationProvider` from [auth-core](../auth-core).
 Reads and validates user token in according to oauth openid specification.  
 `User` is populated with claims from jwt token. 
 
-## Usage
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:auth-openid:${fhirestVersion}"
 ```

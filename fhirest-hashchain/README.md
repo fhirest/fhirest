@@ -4,8 +4,8 @@ Depends on pg-store module and uses same database schema and connections.
 After every resource save, a hash is calculated and saved based on user configuration and previous hash, thus providing with a chain of hashes for every resource.
 For hash calculation [Postgresql pgcrypto](https://www.postgresql.org/docs/current/pgcrypto.html) module is used.
 
-## Usage
-1. Add gradle dependency for `fhirest-hashchain`
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:fhirest-hashchain:${fhirestVersion}"
 ```

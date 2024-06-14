@@ -2,7 +2,8 @@
 Base interfaces for adding authentication to rest endpoints.  
 Intercepts all HTTP requests and attempts to authenticate user based on provided implementations.
 
-## Usage
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:auth-rest:${fhirestVersion}"
 ```

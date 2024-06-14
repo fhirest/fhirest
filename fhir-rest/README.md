@@ -6,7 +6,8 @@ Example FHIR url would be http://localhost:8181/fhir/Patient.
 
 By default, it will read CapabilityStatement and StructureDefinition resources and start REST services accordingly.
 
-## Usage
+## Installation
+1. Add gradle dependency
 
 ```
 implementation "ee.fhir.fhirest:fhir-rest:${fhirestVersion}"

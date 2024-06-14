@@ -10,8 +10,8 @@ Module detects changes of search parameters and starts (re)indexing of changed s
 `pg-search` depends on the [pg-store](../pg-store) module to provide the underlying resource storage mechanisms.
 
 
-## Usage
-1. Add gradle dependency for `pg-search`
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:fhirest-search:${fhirestVersion}"
 ```

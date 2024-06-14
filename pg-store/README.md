@@ -13,9 +13,8 @@ Module will automatically read conformance configuration and create needed table
 * [fhir-structures](../fhir-structures) - multi-format FHIR resource parser and composer
 
 
-## Usage
-
-1. Add gradle dependency for `pg-store`
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:fhirest-store:${fhirestVersion}"
 ```

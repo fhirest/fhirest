@@ -12,8 +12,8 @@ Postgresql core/commons module. Provides common database connections, utilities 
 `pg-core` depends on:
 * [tx-manager](../tx-manager) - multi transaction manager support
 
-## Usage
-1. Add gradle dependency for `pg-core`
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:pg-core:${fhirestVersion}"
 ```

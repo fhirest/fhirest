@@ -4,10 +4,17 @@ It is required to implement tasks and schedule them manually.
 Every scheduled task will be executed single time.
 
 
-## Usage
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:fhirest-scheduler:${fhirestVersion}"
 ```
+2. Include changeset in main liquibase changelog
+```
+pg-scheduler/changelog/changelog.xml
+```
+
+## Configuration
 Scheduler module will use [pg-core](../pg-core) defined datasources 
 You can also define separate datasource and liquibase configurations with prefix `scheduler-app`
 ```

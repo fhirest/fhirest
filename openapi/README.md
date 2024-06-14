@@ -2,7 +2,8 @@
 Reads defined Conformance resources and composes OpenAPI descriptions in yaml format
 
 
-## Usage
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:openapi:${fhirestVersion}"
 ```

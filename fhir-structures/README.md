@@ -5,12 +5,13 @@ Provides default formats:
 * xml
 * html
 
-## Usage
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:fhir-structures:${fhirestVersion}"
 ```
 
-## Services
+## Usage
 ### ResourceFormatService
 This service provides api for parsing and composing resources from/to representation formats (json, xml).
 

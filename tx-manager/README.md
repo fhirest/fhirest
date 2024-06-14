@@ -5,7 +5,8 @@ Since multiple and unknown data providers are allowed, FhirEST cannot automatica
 When implementing your own storage, you need to think of transactionality as well.
 
 
-## Usage
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:fhirest-tx-manager:${fhirestVersion}"
 ```

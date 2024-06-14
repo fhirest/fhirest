@@ -5,12 +5,13 @@ Takes care of handling storage and search implementations with their transaction
 Search and store implementations may be independent of each other.  
 Manages processing of search parameters and composing reference chains.
 
-## Usage
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:fhirest-core:${fhirestVersion}"
 ```
 
-## Services
+## Usage
 ### [ResourceService](./src/main/java/ee/fhir/fhirest/core/service/resource/ResourceService.java)
 Main service to perform load, save and delete operations.
 * `ResourceVersion save(id, content, interaction)`

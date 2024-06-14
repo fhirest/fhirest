@@ -2,7 +2,8 @@
 Non-mandatory module. Provides tools and services to load initial conformance.
 
 
-## Usage
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:fhir-conformance:${fhirestVersion}"
 ```

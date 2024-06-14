@@ -1,7 +1,8 @@
 # Resource profile validations
 Reads defined StructureDefinitions and performs according profile validations on all incoming resources
 
-## Usage
+## Installation
+1. Add gradle dependency
 ```
 implementation "ee.fhir.fhirest:validation-profile:${fhirestVersion}"
 ```
