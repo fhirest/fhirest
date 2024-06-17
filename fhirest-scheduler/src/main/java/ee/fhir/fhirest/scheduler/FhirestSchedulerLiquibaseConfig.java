@@ -49,7 +49,7 @@ public class FhirestSchedulerLiquibaseConfig {
   @Bean
   @ConditionalOnBean(value = LiquibaseProperties.class, name = "schedulerAppLiquibaseProperties")
   public SpringLiquibase schedulerLiquibase(@Named("schedulerAppDataSource") DataSource dataSource,
-                                          @Named("schedulerAppLiquibaseProperties") LiquibaseProperties properties) {
+                                            @Named("schedulerAppLiquibaseProperties") LiquibaseProperties properties) {
     return SpringLiquibaseBuilder.build(dataSource, properties);
   }
 

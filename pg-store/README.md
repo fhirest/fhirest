@@ -1,84 +1,70 @@
-# FhirEST PostgreSQL store
-
-`pg-store` module provides FHIR resource storage on the FhirEST server using PostgreSQL as the backing database.
+# Postgresql storage implementation
+Default storage implementation in the FhirEST using PostgreSQL as the backing database.  
+Resources are saved ‘as-is’ in json format.  
+Resources tables are partitioned of a common table.  
+Module will automatically read conformance configuration and create needed table structure and partitions based on StructureDefinition resource.
 
 ## Dependencies
 
-`pg-store` is a *direct* dependency to:
-
-* [pg-search](https://github.com/fhirest/fhirest/tree/master/pg-store) - resource search
-* [fhirest-hashchain](https://github.com/fhirest/fhirest/tree/master/fhirest-hashchain) - resource timestamping and integrity
-
 `pg-store` depends on:
+* [pg-core](../pg-store) - common persistence utilities and configuration structures
+* [auth-core](../auth-core) - common authentication structures
+* [fhirest-core](../fhirest-core) - common logic and structures for resource lifecycle and conformance initialization
+* [fhir-structures](../fhir-structures) - multi-format FHIR resource parser and composer
 
-* [pg-core](https://github.com/fhirest/fhirest/tree/master/pg-store) - common persistence utilities and configuration structures
-* [auth-core](https://github.com/fhirest/fhirest/tree/master/auth-core) - common authentication structures
-* [fhirest-core](https://github.com/fhirest/fhirest/tree/master/fhirest-core) - common logic and structures for resource lifecycle and conformance initialization
-* [fhir-structures](https://github.com/fhirest/fhirest/tree/master/pg-fhir-structures) - multi-format FHIR resource parser and composer
 
 ## Installation
-1. Add gradle dependency for `pg-store`
+1. Add gradle dependency
 ```
-implementation "ee.fhir.fhirest:pg-store:${fhirestVersion}"
+implementation "ee.fhir.fhirest:fhirest-store:${fhirestVersion}"
+```
+2. Include changeset in main liquibase changelog
+```
+pg-store/changelog/changelog.xml
 ```
 
-## Configuration
-
-If `pg-store` is found on the classpath, then the following must be provided and configured:
-1. PostgreSQL database connection
-    1. Role-based configuration
-        1. `spring.datasource.default` - datasource credentials for reading and inserting resources
-        2. `spring.datasource.admin` - credentials for altering the database, e.g. for running migration scripts, adding/removing new resource definitions or updating indexes
-    2. Schema-based configuration
-        1. `spring.datasource.store-app` - reading and inserting stored resources
-        2. `spring.datasource.search-app` - reading and inserting search indexing related data
-        3. `spring.datasource.store-admin` - altering resource storage tables
-        4. `spring.datasource.search-admin` - altering index storage tables
-
-If both, role-based and schema-based configurations are provided, then latter takes the priority.
-
+`pg-store` module will use [pg-core](../pg-core) defined datasources.  
+You can also define separate datasource and liquibase configurations with prefixes `store-app` and `store-admin`
 ```yml
-# example application.yml
 spring:
   datasource:
-    default:
-      url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
-      username: ${DB_APP_USER:fhirest_app}
-      password: ${DB_APP_PASSWORD:test}
-      maxActive: ${DB_POOL_SIZE:1}
+    store-app:
+      url: jdbc:postgresql://localhost:5190/fhirestdb
+      username: fhirest_app
+      password: test
+      maxActive: 10
       driverClassName: org.postgresql.Driver
       type: com.zaxxer.hikari.HikariDataSource
-    admin:
-      url: ${spring.datasource.default.url}
-      username: ${DB_ADMIN_USER:fhirest_admin}
-      password: ${DB_ADMIN_PASSWORD:test}
+    store-admin:
+      url: jdbc:postgresql://localhost:5190/fhirestdb
+      username: fhirest_admin
+      password: test
       maxActive: 1
       driverClassName: org.postgresql.Driver
       type: org.springframework.jdbc.datasource.SimpleDriverDataSource
       liquibase:
-        change-log: 'classpath:changelog.xml'
+        change-log: 'classpath:changelog-store.xml'
         parameters:
-          app-username: ${spring.datasource.default.username}
-```
-2. Liquibase changelog file
-
-```xml
-<!-- example changelog.xml given pg-search is also used -->
-<databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-
-  <include file="pg-core/changelog/changelog.xml" relativeToChangelogFile="false"/>
-  <include file="pg-store/changelog/changelog.xml" relativeToChangelogFile="false"/>
-  <include file="pg-search/changelog/changelog.xml" relativeToChangelogFile="false"/>
-
-</databaseChangeLog>
+          app-username: ${spring.datasource.store-app.username}
 ```
 
-## Usage
 
-Use `ResourceService` exposed by the `pg-core` module to interact with the storage.
+## Database structure
 
-Internally, `pg-store` implements the `ResourceStorage` interface which is used through `ResourceStorageService` -> `ResourceService` component chain.
+Every version is saved in one table resource, which is partitioned by resource type.  
+Table names are case-insensitive.  
+Every resource version creates new record in the table.  
+Data is never deleted or changed in the store.  
+
+Every table has the same structure with described columns:  
+* `uid` - generated primary key
+* `type` and `id` - resource type and resource id, as in url (Patient/123)
+* `version` - resource version number. Generated sequentially
+* `updated` and `author` - When and who created this version.
+* `content` - full json content of a version
+* `profiles` - contains references to the profiling StructureDefinition resource by uid
+* `security_labels` - list of resource security labels
+* `sys_status` - system status of a version:
+  * `A` - active. There can be only one active version (last)
+  * `T` - terminated. Version has been updated by a newer version
+  * `C` - cancelled or deleted. Resource is deleted.

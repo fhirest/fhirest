@@ -4,7 +4,6 @@ description = "FhirEST module - Fhir resource search PostgreSQL implementation"
 dependencies {
   api project(':auth-core')
   api project(':pg-core')
-  api project(':pg-store')
   api project(':fhir-structures')
   api project(':fhirest-core')
 
