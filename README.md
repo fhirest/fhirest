@@ -136,7 +136,7 @@ TODO: link contribution.md
 
 ### 5.3 Developing
 
-[Developer Guide](https://github.com/fhirest/fhirest/blob/master/developer-guide.md)
+[Developer Guide](./developer-guide.md)
 
 ## 6. Licence
 
