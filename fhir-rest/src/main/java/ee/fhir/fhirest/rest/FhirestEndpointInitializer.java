@@ -190,9 +190,9 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
   private void start(CapabilityStatementRestResourceComponent resourceRest) {
     String type = resourceRest.getType();
     List<String> interactions = resourceRest.getInteraction().stream().filter(i -> i.getCode() != null).map(i -> i.getCode().toCode()).collect(toList());
-    if (CollectionUtils.isNotEmpty(resourceRest.getOperation())) {
+//    if (CollectionUtils.isNotEmpty(resourceRest.getOperation())) {
       interactions.add(InteractionType.OPERATION); // XXX for some reason operation is not in default fhir capability statement. need to add it.
-    }
+//    }
     log.debug("Starting: " + type + ": " + String.join(", ", interactions));
     FhirResourceServer service = resourceServers.stream().filter(s -> s.getTargetType().equals(type)).findFirst().orElse(defaultResourceServer);
     interactions.forEach(i -> endpointService.start(type, i, service));
