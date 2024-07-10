@@ -85,7 +85,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
     endpointService.getEnabledOperations().clear();
   }
 
-  private CapabilityStatement prepareCapability(CapabilityStatement capability, List<StructureDefinition> definitions) {
+  protected CapabilityStatement prepareCapability(CapabilityStatement capability, List<StructureDefinition> definitions) {
     if (capability == null || CollectionUtils.isEmpty(definitions)) {
       return null;
     }
@@ -116,7 +116,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
   /**
    * remove unimplemented operations
    */
-  private void prepareOperations(CapabilityStatementRestComponent rest) {
+  protected void prepareOperations(CapabilityStatementRestComponent rest) {
     rest.getResource().forEach(this::prepareOperationsForResource);
   }
 
