@@ -64,7 +64,7 @@ public abstract class DefaultExpressionProvider extends ExpressionProvider {
   private static List<String> getPaths(String resourceType, String key) {
     String expr = ConformanceHolder.requireSearchParam(resourceType, key).getExpression();
     List<String> paths = SearchPathUtil.parsePaths(expr).stream()
-        .filter(e -> e.startsWith(resourceType))
+        .filter(e -> e.startsWith(resourceType + "."))
         .map(e -> RegExUtils.removeFirst(e, resourceType + "\\."))
         .collect(toList());
     if (paths.isEmpty()) {

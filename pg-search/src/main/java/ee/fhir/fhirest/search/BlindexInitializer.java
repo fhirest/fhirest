@@ -76,9 +76,9 @@ public class BlindexInitializer {
     Map<String, Blindex> drop = new HashMap<>(current);
     create.keySet().forEach(drop::remove);
     current.keySet().forEach(create::remove);
-    log.debug("currently indexed: " + current);
-    log.debug("need to create: " + create);
-    log.debug("need to remove: " + drop);
+    log.debug("currently indexed: " + current.keySet());
+    log.debug("need to create: " + create.keySet());
+    log.debug("need to remove: " + drop.keySet());
     create(create.values());
     drop(drop.values());
     blindexRepository.refreshCache();
