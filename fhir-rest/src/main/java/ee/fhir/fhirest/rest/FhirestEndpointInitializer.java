@@ -74,14 +74,14 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
     return capability;
   }
 
-  private void restart() {
+  protected void restart() {
     stop();
     if (capability != null) {
       capability.getRest().stream().filter(r -> r.getMode() == RestfulCapabilityMode.SERVER).forEach(this::start);
     }
   }
 
-  private void stop() {
+  protected void stop() {
     endpointService.getEnabledOperations().clear();
   }
 
@@ -120,7 +120,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
     rest.getResource().forEach(this::prepareOperationsForResource);
   }
 
-  private void prepareOperationsForResource(CapabilityStatementRestResourceComponent r) {
+  protected void prepareOperationsForResource(CapabilityStatementRestResourceComponent r) {
     Map<String, List<BaseOperationDefinition>> opsByName = operations.stream()
         .filter(o -> o.getResourceType().equals(r.getType()))
         .collect(Collectors.groupingBy(BaseOperationDefinition::getOperationName));
@@ -137,7 +137,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
     );
   }
 
-  private boolean validateOperation(
+  protected boolean validateOperation(
       String resourceType,
       CapabilityStatementRestResourceOperationComponent operationComponent,
       OperationDefinition operationDefinition,
@@ -168,7 +168,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
     return validType && validInstance;
   }
 
-  private boolean validateOperation(List<BaseOperationDefinition> implTypes, String opName, String resourceType) {
+  protected boolean validateOperation(List<BaseOperationDefinition> implTypes, String opName, String resourceType) {
     if (implTypes.isEmpty()) {
       log.error("Cannot find implementation for declared in capability statement operation '{}'", opName);
       return false;
@@ -181,13 +181,13 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
     return true;
   }
 
-  private void start(CapabilityStatementRestComponent rest) {
+  protected void start(CapabilityStatementRestComponent rest) {
     endpointService.startRoot(rootServer);
     rest.getResource().forEach(this::start);
     log.info("Started " + (rest.getResource().size() + 1) + " rest services.");
   }
 
-  private void start(CapabilityStatementRestResourceComponent resourceRest) {
+  protected void start(CapabilityStatementRestResourceComponent resourceRest) {
     String type = resourceRest.getType();
     List<String> interactions = resourceRest.getInteraction().stream().filter(i -> i.getCode() != null).map(i -> i.getCode().toCode()).collect(toList());
 //    if (CollectionUtils.isNotEmpty(resourceRest.getOperation())) {
