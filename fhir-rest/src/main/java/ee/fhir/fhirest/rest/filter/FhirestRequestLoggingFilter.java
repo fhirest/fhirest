@@ -37,7 +37,7 @@ import static ee.fhir.fhirest.rest.model.FhirestRequestProperties.USERNAME;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class RequestLoggingFilter implements FhirestRequestFilter, FhirestResponseFilter {
+public class FhirestRequestLoggingFilter implements FhirestRequestFilter, FhirestResponseFilter {
   public static final String LOG_REQ_START = "log_req_start";
 
   @Override
