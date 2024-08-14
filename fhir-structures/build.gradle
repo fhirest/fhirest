@@ -8,6 +8,7 @@ dependencies {
   api("ca.uhn.hapi.fhir:hapi-fhir-validation:$hapiVersion") {
     exclude group: 'org.apache.commons', module: 'commons-compress'
   }
+  api "ca.uhn.hapi.fhir:hapi-fhir-caching-caffeine:$hapiVersion"
 
   implementation "org.ehcache:ehcache:${ehcacheVersion}"
   implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
