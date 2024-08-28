@@ -22,29 +22,33 @@
  * SOFTWARE.
  */
 
-package ee.fhir.fhirest.scheduler.api;
+package ee.fhir.fhirest.scheduler.manage;
 
+import ee.fhir.fhirest.scheduler.SchedulerJob;
+import ee.fhir.fhirest.scheduler.SchedulerJobQueryParams;
 import ee.fhir.fhirest.scheduler.SchedulerJobRepository;
 import java.util.Date;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class SchedulerService {
+public class SchedulerManagementService {
   private final SchedulerJobRepository jobRepository;
 
-  public void schedule(String type, String identifier, Date scheduled) {
-    jobRepository.insert(type, identifier, scheduled);
+  public List<SchedulerJob> findJobs(SchedulerJobQueryParams params) {
+    return jobRepository.query(params);
   }
 
-  public void reschedule(String type, String identifier, Date scheduled) {
-    jobRepository.cancel(type, identifier);
-    jobRepository.insert(type, identifier, scheduled);
-  }
-
-  public void unschedule(String type, String identifier) {
-    jobRepository.cancel(type, identifier);
+  public void rerun(Long id) {
+    List<SchedulerJob> result = jobRepository.query(new SchedulerJobQueryParams().setStatus("failed").setId(id));
+    if (result.size() != 1) {
+      throw new SchedulerJobException("Could not find unique failed job by id " + id);
+    }
+    SchedulerJob job = result.get(0);
+    jobRepository.markRerun(id);
+    jobRepository.insert(job.getType(), job.getIdentifier(), new Date());
   }
 
 }

@@ -24,17 +24,25 @@
 
 package ee.fhir.fhirest.scheduler;
 
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class SchedulerJob {
   private Long id;
   private String type;
   private String identifier;
+
+  private OffsetDateTime scheduled;
+  private LocalDateTime started;
+  private LocalDateTime finished;
+  private String log;
+  private String status;
 }
