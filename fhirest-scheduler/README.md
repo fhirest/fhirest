@@ -117,3 +117,46 @@ public class MedicationExpireSchedulePlugin extends ResourceAfterSaveInterceptor
 ```
 And that's all. Now, after every MedicationRequest save or update scheduler be ready to cancel it right after 72 hours passes.
 
+## REST Api  
+Scheduler module initializes REST endpoint for simple job management
+
+<details>
+ <summary>
+   <code>GET</code> <code><b>/scheduler/jobs</b></code>
+   <code>(Query jobs)</code>
+ </summary>
+
+##### Parameters
+> | name   | type     | data type | description           |
+> |--------|----------|-----------|-----------------------|
+> | status | optional | string    | Filter jobs by status |
+
+
+##### Example cURL
+```bash
+curl localhost:8181/scheduler/jobs?status=failed
+```
+
+</details>
+
+<details>
+ <summary>
+   <code>POST</code> <code><b>/scheduler/jobs/{id}/rerun</b></code>
+   <code>(Rerun a failed job)</code>
+ </summary>
+
+##### Parameters
+>| name |  type     | data type | description |
+>|------|-----------|-----------|-------------|
+>| id   |  required | number    | Id of a job |
+
+
+##### Example cURL
+```bash
+curl -XPOST localhost:8181/scheduler/jobs/1/rerun
+```
+</details>
+
+
+
+

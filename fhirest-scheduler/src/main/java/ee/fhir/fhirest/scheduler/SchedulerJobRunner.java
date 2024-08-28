@@ -26,7 +26,8 @@ package ee.fhir.fhirest.scheduler;
 
 import ee.fhir.fhirest.scheduler.api.ScheduleJobRunner;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -36,10 +37,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @EnableScheduling
-@RequiredArgsConstructor
 public class SchedulerJobRunner {
-  private final JobRepository jobRepository;
-  private final List<ScheduleJobRunner> scheduleJobRunners;
+  private final SchedulerJobRepository jobRepository;
+  private final Map<String, ScheduleJobRunner> scheduleJobRunners;
+
+  public SchedulerJobRunner(SchedulerJobRepository jobRepository, List<ScheduleJobRunner> scheduleJobRunners) {
+    this.jobRepository = jobRepository;
+    this.scheduleJobRunners = scheduleJobRunners.stream().collect(Collectors.toMap(ScheduleJobRunner::getType, r -> r));
+  }
 
   @Scheduled(cron = "0 0/5 * * * *")
   public void execute() {
@@ -49,20 +54,21 @@ public class SchedulerJobRunner {
       log.debug("found 0 jobs");
       return;
     }
-    log.info("found " + jobs.size() + " jobs");
-    jobs.stream().forEach(job -> {
+    log.info("found " + jobs.size() + " jobs, executing...");
+    jobs.forEach(job -> {
       if (!jobRepository.lock(job.getId())) {
         log.info("could not lock " + job.getId() + ", continuing");
         return;
       }
+      if (!scheduleJobRunners.containsKey(job.getType())) {
+        String err = "Could not find implementation for job type '" + job.getType() + "'";
+        jobRepository.fail(job.getId(), err);
+        log.error(err);
+        return;
+      }
       try {
-        scheduleJobRunners.stream()
-            .filter(r -> r.getType().equals(job.getType()))
-            .findFirst()
-            .ifPresent(runner -> {
-              String log = runner.run(job.getIdentifier());
-              jobRepository.finish(job.getId(), log);
-            });
+        String log = scheduleJobRunners.get(job.getType()).run(job.getIdentifier());
+        jobRepository.finish(job.getId(), log);
       } catch (Throwable e) {
         jobRepository.fail(job.getId(), ExceptionUtils.getStackTrace(e));
         log.error("error during job " + job.getId() + "execution: ", e);

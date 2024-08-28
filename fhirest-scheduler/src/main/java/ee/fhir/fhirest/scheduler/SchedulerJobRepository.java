@@ -24,51 +24,77 @@
 
 package ee.fhir.fhirest.scheduler;
 
+import ee.fhir.fhirest.util.sql.SqlBuilder;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JobRepository {
+public class SchedulerJobRepository {
   @Inject
   @Named("schedulerAppJdbcTemplate")
   private JdbcTemplate jdbcTemplate;
 
   public void insert(String type, String identifier, Date scheduled) {
-    String sql = "INSERT INTO scheduler.job (type, identifier, scheduled) values (?,?,?)";
+    String sql = "INSERT INTO scheduler.job (type, identifier, scheduled) VALUES (?,?,?)";
     jdbcTemplate.update(sql, type, identifier, scheduled);
   }
 
   public void cancel(String type, String identifier) {
 //    String sql = "UPDATE scheduler.job SET status = 'cancelled' where type = ? and identifier = ? and status = 'active'";
-    String sql = "DELETE FROM scheduler.job where type = ? and identifier = ? and status = 'active'";
+    String sql = "DELETE FROM scheduler.job WHERE type = ? AND identifier = ? AND status = 'active'";
     jdbcTemplate.update(sql, type, identifier);
   }
 
   public boolean lock(Long id) {
-    String sql = "UPDATE scheduler.job SET started = now() where id = ? and started is null and status = 'active'";
+    String sql = "UPDATE scheduler.job SET started = now() WHERE id = ? AND started IS NULL AND status = 'active'";
     return jdbcTemplate.update(sql, id) > 0;
   }
 
   public void finish(Long id, String log) {
-    String sql = "UPDATE scheduler.job SET finished = now(), status = 'finished', log = ? where id = ?";
+    String sql = "UPDATE scheduler.job SET finished = now(), status = 'finished', log = ? WHERE id = ?";
     jdbcTemplate.update(sql, log, id);
   }
 
   public void fail(Long id, String log) {
-    String sql = "UPDATE scheduler.job SET finished = now(), status = 'failed', log = ? where id = ?";
+    String sql = "UPDATE scheduler.job SET finished = now(), status = 'failed', log = ? WHERE id = ?";
     jdbcTemplate.update(sql, log, id);
   }
 
+  public void markRerun(Long id) {
+    String sql = "UPDATE scheduler.job SET status = 'rerun' WHERE id = ? and status = 'failed'";
+    jdbcTemplate.update(sql, id);
+  }
+
   public List<SchedulerJob> getExecutables() {
-    String sql =
-        "SELECT id, type, identifier FROM scheduler.job WHERE started is null and status = 'active' and scheduled <= now()";
-    return jdbcTemplate.query(sql, (rs, i) -> {
-      return new SchedulerJob(rs.getLong(1), rs.getString(2), rs.getString(3));
-    });
+    String sql = "SELECT * FROM scheduler.job WHERE started IS NULL AND status = 'active' AND scheduled <= now()";
+    return jdbcTemplate.query(sql, this::rowMapper);
+  }
+
+  public List<SchedulerJob> query(SchedulerJobQueryParams params) {
+    SqlBuilder sb = new SqlBuilder("SELECT * FROM scheduler.job j where 1=1");
+    sb.appendIfNotNull(" and j.id = ?", params.getId());
+    sb.appendIfNotNull(" and j.status = ?", params.getStatus());
+    return jdbcTemplate.query(sb.getSql(), this::rowMapper, sb.getParams());
+  }
+
+  private SchedulerJob rowMapper(ResultSet rs, int index) throws SQLException {
+    return new SchedulerJob()
+        .setId(rs.getLong("id"))
+        .setType(rs.getString("type"))
+        .setIdentifier(rs.getString("identifier"))
+        .setScheduled(rs.getObject("scheduled", OffsetDateTime.class))
+        .setStarted(rs.getObject("started", LocalDateTime.class))
+        .setStarted(rs.getObject("finished", LocalDateTime.class))
+        .setLog(rs.getString("log"))
+        .setStatus(rs.getString("status"));
   }
 
 }

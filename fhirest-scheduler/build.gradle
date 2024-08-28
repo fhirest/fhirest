@@ -6,4 +6,5 @@ dependencies {
   api project(':fhirest-core')
 
   implementation "org.liquibase:liquibase-core"
+  implementation 'org.springframework:spring-web'
 }

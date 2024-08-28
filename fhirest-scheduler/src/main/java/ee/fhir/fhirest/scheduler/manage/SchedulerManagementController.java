@@ -22,29 +22,41 @@
  * SOFTWARE.
  */
 
-package ee.fhir.fhirest.scheduler.api;
+package ee.fhir.fhirest.scheduler.manage;
 
-import ee.fhir.fhirest.scheduler.SchedulerJobRepository;
-import java.util.Date;
+import ee.fhir.fhirest.scheduler.SchedulerJob;
+import ee.fhir.fhirest.scheduler.SchedulerJobQueryParams;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController()
+@RequestMapping("/scheduler")
 @RequiredArgsConstructor
-@Component
-public class SchedulerService {
-  private final SchedulerJobRepository jobRepository;
+public class SchedulerManagementController {
+  private final SchedulerManagementService service;
 
-  public void schedule(String type, String identifier, Date scheduled) {
-    jobRepository.insert(type, identifier, scheduled);
+  @GetMapping("/jobs")
+  public List<SchedulerJob> findJobs(SchedulerJobQueryParams params) {
+    return service.findJobs(params);
   }
 
-  public void reschedule(String type, String identifier, Date scheduled) {
-    jobRepository.cancel(type, identifier);
-    jobRepository.insert(type, identifier, scheduled);
+  @PostMapping("/jobs/{id}/rerun")
+  public ResponseEntity<?> rerun(@PathVariable("id") Long id) {
+    service.rerun(id);
+    return ResponseEntity.ok().build();
   }
 
-  public void unschedule(String type, String identifier) {
-    jobRepository.cancel(type, identifier);
+  @ExceptionHandler({SchedulerJobException.class})
+  public Object exception(SchedulerJobException ex) {
+    return Map.of("error", ex.getMessage());
   }
 
 }
