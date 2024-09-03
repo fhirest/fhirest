@@ -1,5 +1,5 @@
 
-description = "FhirEST module - Provides Openapi support"
+description = "FHIRest module - Provides Openapi support"
 
 dependencies {
   api project(':fhir-structures')

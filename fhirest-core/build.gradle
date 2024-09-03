@@ -1,5 +1,5 @@
 
-description = "FhirEST module - Core module, responsible for fhir resouce lifecycle, conformance initialization"
+description = "FHIRest module - Core module, responsible for fhir resouce lifecycle, conformance initialization"
 
 dependencies {
   api project(':fhir-structures')

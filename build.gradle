@@ -87,7 +87,7 @@ subprojects { Project project ->
             }
             developers {
               developer {
-                name = 'FhirEST Community'
+                name = 'FHIRest Community'
               }
             }
             licenses {

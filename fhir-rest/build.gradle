@@ -1,5 +1,5 @@
 
-description = "FhirEST module - Provides fhir REST interfaces"
+description = "FHIRest module - Provides fhir REST interfaces"
 
 dependencies {
   api project(':fhir-structures')

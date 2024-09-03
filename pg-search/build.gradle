@@ -1,5 +1,5 @@
 
-description = "FhirEST module - Fhir resource search PostgreSQL implementation"
+description = "FHIRest module - Fhir resource search PostgreSQL implementation"
 
 dependencies {
   api project(':auth-core')

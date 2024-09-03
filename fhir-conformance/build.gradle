@@ -1,5 +1,5 @@
 
-description = "FhirEST module - Provides possibilities to load initial conformance resources"
+description = "FHIRest module - Provides possibilities to load initial conformance resources"
 
 dependencies {
   api project(':fhirest-core')

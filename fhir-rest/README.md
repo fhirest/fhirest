@@ -38,7 +38,7 @@ Example [FhirBinaryServer](./src/main/java/ee/fhir/fhirest/rest/resource/FhirBin
 ## Excception handling
 
 According to FHIR specification, in case of any error an OperationOutcome resource should be returned.  
-FhirEST automatically takes care of this and composes OperationOutcome in case of any exception.  
+FHIRest automatically takes care of this and composes OperationOutcome in case of any exception.  
 You can take advantage of FhirestResponseFilter in order to perform some custom actions on error.
 
 Yet, you can still rewrite default handling behaviour by

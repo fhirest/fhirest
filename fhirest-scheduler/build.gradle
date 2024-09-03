@@ -1,5 +1,5 @@
 
-description = "FhirEST module - Provides possibilities to perform some actions on resource at some given time in the future"
+description = "FHIRest module - Provides possibilities to perform some actions on resource at some given time in the future"
 
 dependencies {
   api project(':pg-core')

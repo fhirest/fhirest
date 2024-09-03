@@ -1,5 +1,5 @@
 # PostgreSQL search implementation
-Default search implementation in the FhirEST using PostgreSQL as the backing database. 
+Default search implementation in the FHIRest using PostgreSQL as the backing database. 
 Module will automatically read conformance configuration and create needed table structure.  
 For every StructureDefinition, a table (partition) will be created wil link to resource id.  
 For every SearchParameter a separate table (partition) will be created with indexed values.  
@@ -47,7 +47,7 @@ spring:
 
 ## Module overview and details
 - Tables
-    - `blindex` - managed by FhirEST. Stores information about indexes.
+    - `blindex` - managed by FHIRest. Stores information about indexes.
 - Index tables
     - `resource` - reference to a stored resource. Partitioned by resource type
     - `base_index_date` - date datatype indexes

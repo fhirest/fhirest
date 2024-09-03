@@ -1,5 +1,5 @@
 
-description = "FhirEST module - common authentication objects"
+description = "FHIRest module - common authentication objects"
 
 dependencies {
 }

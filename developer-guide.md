@@ -13,7 +13,7 @@ Project can be built using Java 17 and gradle
 
 Running
 ---------------
-Although FhirEST is a library, for testing purposes it has a runnable application
+Although FHIRest is a library, for testing purposes it has a runnable application
 1. Create a database. See `etc/run-postgres.sh`
 2. Run
 ```

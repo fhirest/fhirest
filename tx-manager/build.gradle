@@ -1,5 +1,5 @@
 
-description = "FhirEST module - Database transaction support"
+description = "FHIRest module - Database transaction support"
 
 dependencies {
 }

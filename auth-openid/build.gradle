@@ -1,6 +1,6 @@
 
 
-description = "FhirEST module - simple oauth implementation"
+description = "FHIRest module - simple oauth implementation"
 
 dependencies {
   api project(':auth-rest')

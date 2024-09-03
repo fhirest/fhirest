@@ -1,4 +1,4 @@
-# FhirEST Hashchain
+# FHIRest Hashchain
 Module timestamps all saved resource versions and saves the hashes in a table.  
 Depends on pg-store module and uses same database schema and connections.  
 After every resource save, a hash is calculated and saved based on user configuration and previous hash, thus providing with a chain of hashes for every resource.

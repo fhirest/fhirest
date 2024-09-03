@@ -1,5 +1,5 @@
 
-description = "FhirEST module - smart-app-launch implementation"
+description = "FHIRest module - smart-app-launch implementation"
 
 dependencies {
   api project(':auth-core')

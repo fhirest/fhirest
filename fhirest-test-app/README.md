@@ -1,4 +1,4 @@
-# FhirEST test application
+# FHIRest test application
 Simple application for running locally for testing purposes  
 
 ## Running

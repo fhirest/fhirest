@@ -1,7 +1,7 @@
 # Transaction manager
 Module provides interfaces for transaction handling.
 
-Since multiple and unknown data providers are allowed, FhirEST cannot automatically handle their transactions.
+Since multiple and unknown data providers are allowed, FHIRest cannot automatically handle their transactions.
 When implementing your own storage, you need to think of transactionality as well.
 
 

@@ -1,5 +1,5 @@
 
-description = "FhirEST module - stamps all resource versions into a chain for data verification. Depends on pg-store module"
+description = "FHIRest module - stamps all resource versions into a chain for data verification. Depends on pg-store module"
 
 dependencies {
   api project(':fhirest-core')

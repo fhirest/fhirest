@@ -1,5 +1,5 @@
 # Postgresql storage implementation
-Default storage implementation in the FhirEST using PostgreSQL as the backing database.  
+Default storage implementation in the FHIRest using PostgreSQL as the backing database.  
 Resources are saved ‘as-is’ in json format.  
 Resources tables are partitioned of a common table.  
 Module will automatically read conformance configuration and create needed table structure and partitions based on StructureDefinition resource.

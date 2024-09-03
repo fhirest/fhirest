@@ -1,5 +1,5 @@
 
-description = "FhirEST module - base interfaces for adding authentication to rest endpoints"
+description = "FHIRest module - base interfaces for adding authentication to rest endpoints"
 
 dependencies {
   api project(':auth-core')

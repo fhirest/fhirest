@@ -1,12 +1,12 @@
-# FhirEST
+# FHIRest
 
 ## 1. Introduction
 
-FhirEST is an open-source FHIR server managed by the FhirEST community. It is developed under a xx licence.
+FHIRest is an open-source FHIR server managed by the FHIRest community. It is developed under a xx licence.
 
 ## 2. Release history
 
-> FhirEST using Semantic versioning https://semver.org/
+> FHIRest using Semantic versioning https://semver.org/
 > **Release** - Release number
 >
 > **Current version** - means the release branch
@@ -15,7 +15,7 @@ FhirEST is an open-source FHIR server managed by the FhirEST community. It is de
 >
 > **Spring version** - minimum version of spring framework
 >
-> **Java version** - Current FhirEST Java version
+> **Java version** - Current FHIRest Java version
 
 | Release | Version | Supported FHIR version | Spring version | Java Version |
 |---------|---------|------------------------|----------------|--------------|
@@ -23,11 +23,11 @@ FhirEST is an open-source FHIR server managed by the FhirEST community. It is de
 
 ## 3. Components
 
-The FhirEST FHIR server is open-source software that uses the following components.
+The FHIRest FHIR server is open-source software that uses the following components.
 
-### 3.1. FhirEST core components
+### 3.1. FHIRest core components
 
-FhirEST provides several Java modules that may be embedded into the source code of your application as libraries.
+FHIRest provides several Java modules that may be embedded into the source code of your application as libraries.
 
 | Component                                                        | What it does                                                                                 |
 |------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
@@ -50,16 +50,16 @@ FhirEST provides several Java modules that may be embedded into the source code 
 | [auth-rest](./auth-rest)                                         | Base interfaces for adding authentication to rest endpoints                                  |
 | [auth-openid](./auth-openid)                                     | Simple oauth implementation                                                                  |
 | [auth-smart](./auth-smart)                                       | smart-app-launch implementation                                                              |
-| [fhirest-test-app](./fhirest-test-app)                           | Simple application to run FhirEST                                                            |
+| [fhirest-test-app](./fhirest-test-app)                           | Simple application to run FHIRest                                                            |
 
-### 3.2. FhirEST other components
+### 3.2. FHIRest other components
 
 | Component  | What it does             | Repo      | 
 |------------|--------------------------|-----------|
 | HAPI FHIR  | Description of component | Repo link |
 | Springboot | Description of component | Repo link |
 
-## 4. Using FhirEST
+## 4. Using FHIRest
 
 #### 4.1. Example projects
 
@@ -70,7 +70,7 @@ To run example applications, follow the instructions under the corresponding pro
 
 #### 4.2. Using the libraries
 
-FhirEST modules are published to:
+FHIRest modules are published to:
 
 * Maven Central: **releases**
 * GitHub Packages registry: **snapshots** and **releases**.
@@ -126,8 +126,8 @@ implementation "ee.fhir.fhirest:openapi:${fhirestVersion}"
 
 ### 5.1 Features request, bug reporting
 
-If you find any bug in the FhirEST product or have a new feature request, please insert it
-via [git issues](https://github.com/fhirest/fhirest/issues/new/choose). The FhirEST community maintainers will review the inserted issues regularly. If the
+If you find any bug in the FHIRest product or have a new feature request, please insert it
+via [git issues](https://github.com/fhirest/fhirest/issues/new/choose). The FHIRest community maintainers will review the inserted issues regularly. If the
 request is critical, please add the name of the project and contact details to the description and send an e-mail to fhirest@tehik.ee
 
 ### 5.2 Contributing

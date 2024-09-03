@@ -1,5 +1,5 @@
 
-description = "FhirEST module - Implementation of Patient 'everything' operation"
+description = "FHIRest module - Implementation of Patient 'everything' operation"
 
 dependencies {
     api project(':fhirest-core')

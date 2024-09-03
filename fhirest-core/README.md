@@ -1,4 +1,4 @@
-# FhirEST core module
+# FHIRest core module
 Core module, responsible for fhir resource lifecycle, conformance initialization.  
 Manages most of the extension points.  
 Takes care of handling storage and search implementations with their transactions.  
@@ -56,8 +56,8 @@ See `ConformanceHolder.get*`
 
 
 ## Conformance
-On every startup, FhirEST will need to configure itself based on conformance, thus conformance resources should be provided.  
-By default, FhirEST will load them from storage.  
+On every startup, FHIRest will need to configure itself based on conformance, thus conformance resources should be provided.  
+By default, FHIRest will load them from storage.  
 To provide conformance resources in other way, implement [ConformanceLoader](./src/main/java/ee/fhir/fhirest/core/service/conformance/loader/ConformanceLoader.java).  
 There are also 2 prepared implementations you can base on:
 * [ConformanceStaticLoader](./src/main/java/ee/fhir/fhirest/core/service/conformance/loader/ConformanceStaticLoader.java).  
