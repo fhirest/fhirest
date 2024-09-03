@@ -27,19 +27,17 @@ You can also define separate datasource and liquibase configurations with prefix
 spring:
   datasource:
     search-app:
-      url: jdbc:postgresql://localhost:5191/fhirestdb
+      jdbc-url: jdbc:postgresql://localhost:5191/fhirestdb
       username: fhirest_app
       password: test
-      maxActive: 10
-      driverClassName: org.postgresql.Driver
-      type: com.zaxxer.hikari.HikariDataSource
+      maximum-pool-size: 10
+      driver-class-name: org.postgresql.Driver
     search-admin:
-      url: jdbc:postgresql://localhost:5191/fhirestdb
+      jdbc-url: jdbc:postgresql://localhost:5191/fhirestdb
       username: fhirest_admin
       password: test
-      maxActive: 1
-      driverClassName: org.postgresql.Driver
-      type: org.springframework.jdbc.datasource.SimpleDriverDataSource
+      maximum-pool-size: 1
+      driver-class-name: org.postgresql.Driver
       liquibase:
         change-log: 'classpath:changelog-search.xml'
         parameters:

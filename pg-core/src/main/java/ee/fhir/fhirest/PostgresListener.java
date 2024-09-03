@@ -56,7 +56,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-@ConditionalOnProperty("spring.datasource.default.url") //TODO: migranaut. multiple datasources?
+@ConditionalOnProperty("spring.datasource.default.jdbc-url") //TODO: migranaut. multiple datasources?
 @Component
 @EnableScheduling
 public class PostgresListener {
@@ -66,7 +66,7 @@ public class PostgresListener {
   public PostgresListener(Environment env) {
     HikariConfig conf = new HikariConfig();
     conf.setDriverClassName("org.postgresql.Driver");
-    conf.setJdbcUrl(env.getProperty("spring.datasource.default.url", String.class));
+    conf.setJdbcUrl(env.getProperty("spring.datasource.default.jdbc-url", String.class));
     conf.setUsername(env.getProperty("spring.datasource.default.username", String.class));
     conf.setPassword(env.getProperty("spring.datasource.default.password", String.class));
     conf.setMaximumPoolSize(1);

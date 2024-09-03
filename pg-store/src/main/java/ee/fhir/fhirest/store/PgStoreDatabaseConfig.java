@@ -24,12 +24,13 @@
 
 package ee.fhir.fhirest.store;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import ee.fhir.fhirest.PgTransactionManager;
 import jakarta.inject.Named;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,29 +41,33 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class PgStoreDatabaseConfig {
 
   @Bean
-  @ConditionalOnProperty("spring.datasource.store-app.url")
+  @ConditionalOnProperty("spring.datasource.store-app.jdbc-url")
   @ConfigurationProperties("spring.datasource.store-app")
-  public DataSourceProperties storeAppDataSourceProperties() {
-    return new DataSourceProperties();
+  public HikariConfig storeAppDataSourceProperties() {
+    return new HikariConfig();
   }
 
   @Bean
-  public DataSource storeAppDataSource(@Named("storeAppDataSourceProperties") Optional<DataSourceProperties> properties,
+  public DataSource storeAppDataSource(@Named("storeAppDataSourceProperties") Optional<HikariConfig> properties,
                                        @Named("defaultDataSource") Optional<DataSource> defaultDs) {
-    return properties.map(p -> (DataSource) p.initializeDataSourceBuilder().build()).or(() -> defaultDs).orElseThrow();
+    return properties.map(HikariDataSource::new)
+        .or(() -> defaultDs.map(HikariDataSource.class::cast))
+        .orElseThrow();
   }
 
   @Bean
-  @ConditionalOnProperty("spring.datasource.store-admin.url")
+  @ConditionalOnProperty("spring.datasource.store-admin.jdbc-url")
   @ConfigurationProperties("spring.datasource.store-admin")
-  public DataSourceProperties storeAdminDataSourceProperties() {
-    return new DataSourceProperties();
+  public HikariConfig storeAdminDataSourceProperties() {
+    return new HikariConfig();
   }
 
   @Bean
-  public DataSource storeAdminDataSource(@Named("storeAdminDataSourceProperties") Optional<DataSourceProperties> properties,
+  public DataSource storeAdminDataSource(@Named("storeAdminDataSourceProperties") Optional<HikariConfig> properties,
                                          @Named("adminDataSource") Optional<DataSource> adminDs) {
-    return properties.map(p -> (DataSource) p.initializeDataSourceBuilder().build()).or(() -> adminDs).orElseThrow();
+    return properties.map(HikariDataSource::new)
+        .or(() -> adminDs.map(HikariDataSource.class::cast))
+        .orElseThrow();
   }
 
 
@@ -77,7 +82,7 @@ public class PgStoreDatabaseConfig {
   }
 
   @Bean
-  @ConditionalOnProperty("spring.datasource.store-app.url")
+  @ConditionalOnProperty("spring.datasource.store-app.jdbc-url")
   public PgTransactionManager storeTransactionManager(@Named("storeAppDataSource") DataSource ds) {
     return new PgTransactionManager(ds);
   }

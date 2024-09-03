@@ -28,16 +28,19 @@ as well as separate datasource definitions for crud operations and database alte
 
 where both use same configuration properties, as in spring, with an addition of liquibase configuration under admin datasource.
 
+All connections are using HikariCP connection, you can add any Hikari specific configuration properties under all 
+datasources.
+
 ```yml
 # example spring config 
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
-    username: ${DB_APP_USER:fhirest_app}
-    password: ${DB_APP_PASSWORD:test}
-    maxActive: ${DB_POOL_SIZE:1}
-    driverClassName: org.postgresql.Driver
-    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      jdbc-url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
+      username: ${DB_APP_USER:fhirest_app}
+      password: ${DB_APP_PASSWORD:test}
+      maximum-pool-size: ${DB_POOL_SIZE:1}
+      driver-class-name: org.postgresql.Driver
   liquibase:
     url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
     user: postgres
@@ -52,19 +55,17 @@ spring:
 spring:
   datasource:
     default:
-      url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
+      jdbc-url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
       username: ${DB_APP_USER:fhirest_app}
       password: ${DB_APP_PASSWORD:test}
-      maxActive: ${DB_POOL_SIZE:1}
-      driverClassName: org.postgresql.Driver
-      type: com.zaxxer.hikari.HikariDataSource
+      maximum-pool-size: ${DB_POOL_SIZE:1}
+      driver-class-name: org.postgresql.Driver
     admin:
-      url: ${spring.datasource.default.url}
+      url: ${spring.datasource.default.jdbc-url}
       username: ${DB_ADMIN_USER:fhirest_admin}
       password: ${DB_ADMIN_PASSWORD:test}
-      maxActive: 1
-      driverClassName: org.postgresql.Driver
-      type: org.springframework.jdbc.datasource.SimpleDriverDataSource
+      maximum-pool-size: 1
+      driver-class-name: org.postgresql.Driver
       liquibase:
         change-log: 'classpath:changelog.xml'
         parameters:

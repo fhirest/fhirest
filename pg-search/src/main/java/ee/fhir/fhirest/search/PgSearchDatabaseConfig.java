@@ -24,12 +24,13 @@
 
 package ee.fhir.fhirest.search;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import ee.fhir.fhirest.PgTransactionManager;
 import jakarta.inject.Named;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,29 +41,33 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class PgSearchDatabaseConfig {
 
   @Bean
-  @ConditionalOnProperty("spring.datasource.search-app.url")
+  @ConditionalOnProperty("spring.datasource.search-app.jdbc-url")
   @ConfigurationProperties("spring.datasource.search-app")
-  public DataSourceProperties searchAppDataSourceProperties() {
-    return new DataSourceProperties();
+  public HikariConfig searchAppDataSourceProperties() {
+    return new HikariConfig();
   }
 
   @Bean
-  public DataSource searchAppDataSource(@Named("searchAppDataSourceProperties") Optional<DataSourceProperties> properties,
+  public DataSource searchAppDataSource(@Named("searchAppDataSourceProperties") Optional<HikariConfig> properties,
                                         @Named("defaultDataSource") Optional<DataSource> defaultDs) {
-    return properties.map(p -> (DataSource) p.initializeDataSourceBuilder().build()).or(() -> defaultDs).orElseThrow();
+    return properties.map(HikariDataSource::new)
+        .or(() -> defaultDs.map(HikariDataSource.class::cast))
+        .orElseThrow();
   }
 
   @Bean
-  @ConditionalOnProperty("spring.datasource.search-admin.url")
+  @ConditionalOnProperty("spring.datasource.search-admin.jdbc-url")
   @ConfigurationProperties("spring.datasource.search-admin")
-  public DataSourceProperties searchAdminDataSourceProperties() {
-    return new DataSourceProperties();
+  public HikariConfig searchAdminDataSourceProperties() {
+    return new HikariConfig();
   }
 
   @Bean
-  public DataSource searchAdminDataSource(@Named("searchAdminDataSourceProperties") Optional<DataSourceProperties> properties,
+  public DataSource searchAdminDataSource(@Named("searchAdminDataSourceProperties") Optional<HikariConfig> properties,
                                           @Named("adminDataSource") Optional<DataSource> adminDs) {
-    return properties.map(p -> (DataSource) p.initializeDataSourceBuilder().build()).or(() -> adminDs).orElseThrow();
+    return properties.map(HikariDataSource::new)
+        .or(() -> adminDs.map(HikariDataSource.class::cast))
+        .orElseThrow();
   }
 
   @Bean
@@ -76,7 +81,7 @@ public class PgSearchDatabaseConfig {
   }
 
   @Bean
-  @ConditionalOnProperty("spring.datasource.search-app.url")
+  @ConditionalOnProperty("spring.datasource.search-app.jdbc-url")
   public PgTransactionManager searchTransactionManager(@Named("searchAppDataSource") DataSource ds) {
     return new PgTransactionManager(ds);
   }
