@@ -29,8 +29,8 @@ import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
 import ee.fhir.fhirest.search.repository.ResourceStructureRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
-import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

@@ -24,32 +24,34 @@
 
 package ee.fhir.fhirest.scheduler;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import jakarta.inject.Named;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-;
 
 @Configuration
 public class FhirestSchedulerDatabaseConfig {
 
   @Bean
-  @ConditionalOnProperty("spring.datasource.scheduler-app.url")
+  @ConditionalOnProperty("spring.datasource.scheduler-app.jdbc-url")
   @ConfigurationProperties("spring.datasource.scheduler-app")
-  public DataSourceProperties schedulerAppDataSourceProperties() {
-    return new DataSourceProperties();
+  public HikariConfig schedulerAppDataSourceProperties() {
+    return new HikariConfig();
   }
 
   @Bean
-  public DataSource schedulerAppDataSource(@Named("schedulerAppDataSourceProperties") Optional<DataSourceProperties> properties,
+  public DataSource schedulerAppDataSource(@Named("schedulerAppDataSourceProperties") Optional<HikariConfig> properties,
                                           @Named("defaultDataSource") Optional<DataSource> defaultDs) {
-    return properties.map(p -> (DataSource) p.initializeDataSourceBuilder().build()).or(() -> defaultDs).orElseThrow();
+    return properties.map(HikariDataSource::new)
+        .or(() -> defaultDs.map(HikariDataSource.class::cast))
+        .orElseThrow();
   }
 
 

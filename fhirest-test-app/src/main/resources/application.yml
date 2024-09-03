@@ -4,19 +4,17 @@ server:
 spring:
   datasource:
     default:
-      url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
+      jdbc-url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
       username: ${DB_APP_USER:fhirest_app}
       password: ${DB_APP_PASSWORD:test}
-      maxActive: ${DB_POOL_SIZE:1}
-      driverClassName: org.postgresql.Driver
-      type: com.zaxxer.hikari.HikariDataSource
+      maximum-pool-size: ${DB_POOL_SIZE:1}
+      driver-class-name: org.postgresql.Driver
     admin:
-      url: ${spring.datasource.default.url}
+      jdbc-url: ${spring.datasource.default.jdbc-url}
       username: ${DB_ADMIN_USER:fhirest_admin}
       password: ${DB_ADMIN_PASSWORD:test}
-      maxActive: 1
-      driverClassName: org.postgresql.Driver
-      type: org.springframework.jdbc.datasource.SimpleDriverDataSource
+      maximum-pool-size: 1
+      driver-class-name: org.postgresql.Driver
       liquibase:
         change-log: 'classpath:changelog.yml'
         parameters:
@@ -24,19 +22,19 @@ spring:
 
 #  spring:
 #    datasource:
-#      url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
-#      username: ${DB_APP_USER:fhirest_app}
-#      password: ${DB_APP_PASSWORD:test}
-#      maxActive: ${DB_POOL_SIZE:1}
-#      driverClassName: org.postgresql.Driver
-#      type: com.zaxxer.hikari.HikariDataSource
+#      hikari:
+#        jdbc-url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
+#        username: ${DB_APP_USER:fhirest_admin}
+#        password: ${DB_APP_PASSWORD:test}
+#        maximum-pool-size: ${DB_POOL_SIZE:1}
+#        driver-class-name: org.postgresql.Driver
 #    liquibase:
 #      url: ${DB_URL:jdbc:postgresql://localhost:5151/fhirestdb}
 #      user: postgres
 #      password: postgres
 #      change-log: 'classpath:changelog.yml'
 #      parameters:
-#        app-username: ${spring.datasource.username}
+#        app-username: ${spring.datasource.hikari.username}
 
 
 management:
