@@ -66,6 +66,9 @@ import org.hl7.fhir.r5.model.ResourceType;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>Default http request consumer for all resource types.</p>
+ */
 @Slf4j
 @Primary
 @Component

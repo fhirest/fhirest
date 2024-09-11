@@ -68,6 +68,9 @@ import org.springframework.stereotype.Component;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService.getFhirVersionEnum;
 
+/**
+ * Configuration and holder class of Hapi context
+ */
 @RequiredArgsConstructor
 @Component
 public class HapiContextHolder implements ConformanceUpdateListener {
@@ -137,9 +140,9 @@ public class HapiContextHolder implements ConformanceUpdateListener {
   }
 
   /**
-   * should use SnapshotGeneratingValidationSupport from hapi.
-   * fixes issue https://github.com/hapifhir/hapi-fhir/issues/4978
-   * delete this when resolved
+   * <p>should use SnapshotGeneratingValidationSupport from hapi.</p>
+   * <p>fixes issue https://github.com/hapifhir/hapi-fhir/issues/4978</p>
+   * <p>delete this when resolved</p>
    */
   private static class FhirestSnapshotGeneratingValidationSupport implements IValidationSupport {
     private static final Logger ourLog = LoggerFactory.getLogger(org.hl7.fhir.common.hapi.validation.support.SnapshotGeneratingValidationSupport.class);

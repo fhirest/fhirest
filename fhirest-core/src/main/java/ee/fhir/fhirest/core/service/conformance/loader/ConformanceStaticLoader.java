@@ -34,6 +34,20 @@ import java.util.Map;
 import org.hl7.fhir.r5.model.Bundle;
 import org.hl7.fhir.r5.model.Resource;
 
+
+/**
+ * <p>Use this to provide preloaded conformance resources from file storage or elsewhere</p>
+ * <pre>
+ * {@code
+ * @Component
+ * @Primary
+ * public class FileBasedConformanceLoader extends ConformanceStaticLoader implements ConformanceLoader {
+ *   public List<String> getResources() {
+ *     <load resources here>
+ *   }
+ * }
+ * </pre>
+ */
 public abstract class ConformanceStaticLoader implements ConformanceLoader {
   protected final Map<String, List<Resource>> resources = new HashMap<>();
 

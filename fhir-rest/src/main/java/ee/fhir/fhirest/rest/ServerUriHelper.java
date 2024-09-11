@@ -31,10 +31,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 /**
- * don't forget to add nginx proxypass conf:
- * proxy_set_header Host $http_host/path;
- * proxy_set_header X-Forwarded-Host $http_host/path;
- * proxy_set_header X-Forwarded-Proto $scheme;
+ * <p>don't forget to add nginx proxypass conf:</p>
+ * <p>proxy_set_header Host $http_host/path;</p>
+ * <p>proxy_set_header X-Forwarded-Host $http_host/path;</p>
+ * <p>proxy_set_header X-Forwarded-Proto $scheme;</p>
  */
 @Component
 @RequiredArgsConstructor

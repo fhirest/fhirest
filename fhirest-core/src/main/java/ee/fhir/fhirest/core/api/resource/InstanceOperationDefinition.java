@@ -27,9 +27,15 @@ package ee.fhir.fhirest.core.api.resource;
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.structure.api.ResourceContent;
 
+/**
+ * Interface should be used to provide actual functionality of an <b>instance</b> level operation.
+ * @see BaseOperationDefinition
+ */
 public interface InstanceOperationDefinition extends BaseOperationDefinition {
   /**
-   * @return Parameters or Resource
+   * @param id resource id
+   * @param parameters Unparsed resource of <b>Parameters</b> resource type
+   * @return <b>Parameters</b> or <b>Resource</b>, as in <a href="https://www.hl7.org/fhir/operations.html#response">https://www.hl7.org/fhir/operations.html#response</a>
    */
   ResourceContent run(ResourceId id, ResourceContent parameters);
 

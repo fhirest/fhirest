@@ -31,9 +31,17 @@ import ee.fhir.fhirest.core.model.search.HistorySearchCriterion;
 import ee.fhir.fhirest.structure.api.ResourceContent;
 import java.util.List;
 
+/**
+ * Interface for implementing a FHIR resource storage.
+ * There can be only on implementation for every resource type.
+ */
 public interface ResourceStorage {
   String DEFAULT = "default";
 
+  /**
+   * <p>A FHIR resource type this implementation will only be applied for.</p>
+   * <p>Use value "<b>default</b>" to apply this to all other resources</p>
+   */
   default String getResourceType() {
     return DEFAULT;
   }
@@ -48,5 +56,8 @@ public interface ResourceStorage {
 
   List<ResourceVersion> loadHistory(HistorySearchCriterion criteria);
 
+  /**
+   * @return Unique resource id from sequence to be saved later
+   */
   String generateNewId();
 }

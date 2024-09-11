@@ -44,6 +44,13 @@ import org.hl7.fhir.r5.model.StructureDefinition;
 import org.hl7.fhir.r5.model.TerminologyCapabilities;
 import org.hl7.fhir.r5.model.ValueSet;
 
+/**
+ * <p>A holder class for current conformance configurations</p>
+ * <p>Provides static access to Conformance resources</p>
+ * <p>Should be manually populated</p>
+ *
+ * @see ConformanceInitializationService
+ */
 public class ConformanceHolder {
   protected static CapabilityStatement capabilityStatement;
   protected static TerminologyCapabilities terminologyCapabilities;

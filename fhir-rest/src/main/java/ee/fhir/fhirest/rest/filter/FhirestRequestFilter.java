@@ -26,6 +26,12 @@ package ee.fhir.fhirest.rest.filter;
 
 import ee.fhir.fhirest.rest.model.FhirestRequest;
 
+/**
+ *   <p>Called after HTTP request is accepted and before any work on resource is started. May be used for authentication, logging, etc.</p>
+ *   <p>Implementations are called in order according to `getOrder` method.</p>
+ *   <p>You can do any changes to request object, containing HTTP request data.</p>
+ *   <p>Throwing exception is also allowed.</p>
+ */
 public interface FhirestRequestFilter {
   Integer RECEIVE = 10;
   Integer READ = 20;

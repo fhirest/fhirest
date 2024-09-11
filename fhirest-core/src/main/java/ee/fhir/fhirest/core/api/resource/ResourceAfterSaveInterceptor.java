@@ -24,21 +24,51 @@
 
 package ee.fhir.fhirest.core.api.resource;
 
+import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
+import ee.fhir.fhirest.core.service.resource.ResourceService;
+import ee.fhir.fhirest.structure.api.ResourceContent;
 
+/**
+ * <p>Interceptor implementations called after resource saved in database.</p>
+ *
+ * @see ee.fhir.fhirest.core.service.resource.ResourceService
+ * @see ResourceService#save(ResourceId, ResourceContent, String)
+ */
 public abstract class ResourceAfterSaveInterceptor {
+  /**
+   * <p><b>1</b></p>
+   * <p>After resource is saved, but inside the transaction</p>
+   */
   public static final String TRANSACTION = "TRANSACTION";
+  /**
+   * <p><b>2</b></p>
+   * <p>After all operations are finished</p>
+   */
   public static final String FINALIZATION = "FINALIZATION";
 
   private final String phase;
 
+  /**
+   * @param phase A phase to run this in. Possible values:
+   * <ol>
+   *   <li>{@link ResourceAfterSaveInterceptor#TRANSACTION}</li>
+   *   <li>{@link ResourceAfterSaveInterceptor#FINALIZATION}</li>
+   * </ol>
+   */
   public ResourceAfterSaveInterceptor(String phase) {
     this.phase = phase;
   }
 
+  /**
+   * @see ResourceAfterSaveInterceptor#ResourceAfterSaveInterceptor(String)
+   */
   public String getPhase() {
     return phase;
   }
 
+  /**
+   * @param version Saved resource
+   */
   public abstract void handle(ResourceVersion version);
 }

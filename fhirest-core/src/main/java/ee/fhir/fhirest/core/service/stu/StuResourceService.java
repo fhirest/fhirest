@@ -35,12 +35,7 @@ import org.hl7.fhir.r5.model.Resource;
 import org.springframework.stereotype.Component;
 
 /**
- * XXX
- * some beatuful day remove structures dependency from fhirest-core and move this to structures module
- * also move FhirPath.
- * and make fhir-structures dependant on fhir-core
- *
- * ponies
+ * Helper service for resource parsing
  */
 @Component
 @RequiredArgsConstructor

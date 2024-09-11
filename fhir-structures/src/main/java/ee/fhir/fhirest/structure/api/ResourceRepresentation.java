@@ -27,13 +27,28 @@ package ee.fhir.fhirest.structure.api;
 import java.util.List;
 import org.hl7.fhir.r5.model.Resource;
 
+/**
+ * Interface used to add support of different FHIR resource formats (json, xml, ...)
+ */
 public interface ResourceRepresentation {
+  /**
+   * @return List of all possible mime types, that would consider to be this format ("application/json", "text/json")
+   */
   List<String> getMimeTypes();
 
+  /**
+   * @return Name of this format
+   */
   String getName();
 
+  /**
+   * @return Format resource
+   */
   String compose(Resource resource);
 
+  /**
+   * Used to guess correct format given the textual representation
+   */
   boolean isParsable(String input);
 
   <R extends Resource> R parse(String input);

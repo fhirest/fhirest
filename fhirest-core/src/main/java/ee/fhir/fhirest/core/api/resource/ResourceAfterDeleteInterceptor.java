@@ -25,7 +25,14 @@
 package ee.fhir.fhirest.core.api.resource;
 
 import ee.fhir.fhirest.core.model.ResourceId;
+import ee.fhir.fhirest.core.service.resource.ResourceService;
 
+/**
+ * <p>Interceptor implementations called after resource is deleted.</p>
+ *
+ * @see ee.fhir.fhirest.core.service.resource.ResourceService
+ * @see ResourceService#delete(ResourceId)
+ */
 public interface ResourceAfterDeleteInterceptor {
   void delete(ResourceId id);
 }

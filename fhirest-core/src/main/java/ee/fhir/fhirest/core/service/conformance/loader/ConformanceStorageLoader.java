@@ -24,6 +24,7 @@
 
 package ee.fhir.fhirest.core.service.conformance.loader;
 
+import ee.fhir.fhirest.core.service.conformance.ConformanceInitializationService;
 import ee.fhir.fhirest.core.service.resource.ResourceSearchService;
 import ee.fhir.fhirest.structure.service.ResourceFormatService;
 import java.util.List;
@@ -33,6 +34,9 @@ import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Provides conformance resource to {@link ConformanceInitializationService} by loading them from database using current <b>search</b> and <b>store</b> implementations
+ */
 @Component
 @RequiredArgsConstructor
 public class ConformanceStorageLoader implements ConformanceLoader {

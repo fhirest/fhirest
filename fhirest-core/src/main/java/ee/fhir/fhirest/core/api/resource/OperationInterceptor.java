@@ -24,11 +24,19 @@
 
 package ee.fhir.fhirest.core.api.resource;
 
+import ee.fhir.fhirest.core.service.resource.ResourceOperationService;
 import ee.fhir.fhirest.structure.api.ResourceContent;
 
+/**
+ * <p>Interceptor implementations called before FHIR operation call.</p>
+ *
+ * @see ResourceOperationService
+ */
 public interface OperationInterceptor {
   /**
    * @param level instance | type | ...
+   * @param operation operation name
+   * @param parameters Unparsed resource of <b>Parameters</b> resource type
    */
   void handle(String level, String operation, ResourceContent parameters);
 }

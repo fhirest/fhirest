@@ -58,7 +58,7 @@ public class FhirestRequest {
   private String transactionMethod;
   private FhirestEnabledOperation operation;
   /**
-   * for custom and internal logic
+   * Use this for custom and internal logic
    */
   private Map<String, Object> properties = new LinkedHashMap<>();
 

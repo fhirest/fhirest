@@ -56,6 +56,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>A component, that listens to any database changes on specific tables and run events on some data changes</p>
+ * <p>Component creates it's own connection outside of any connection pool</p>
+ * <p>This connection is used to poll PostgreSQL for notifications about data change</p>
+ * @see PostgresChangeListener
+ */
 @ConditionalOnProperty("spring.datasource.default.jdbc-url") //TODO: migranaut. multiple datasources?
 @Component
 @EnableScheduling
@@ -142,6 +148,17 @@ public class PostgresListener {
     }
   }
 
+  /**
+   * <p>Annotate a method with this annotation to run it after data in specific table changes</p>
+   * <pre>
+   * {@code
+   * @PostgresChangeListener(table = "search.blindex")
+   *   public void refreshCache() {
+   *     // do something
+   *   }
+   * }
+   * </pre>
+   */
   @Target({ElementType.METHOD})
   @Retention(RetentionPolicy.RUNTIME)
   public static @interface PostgresChangeListener {

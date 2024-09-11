@@ -25,6 +25,13 @@
 package ee.fhir.fhirest.core.api.resource;
 
 public interface BaseOperationDefinition {
+  /**
+   * @return FHIR resource type this operation is applied to
+   */
   String getResourceType();
+
+  /**
+   * @return Name of the operation, as in url, without prefix '$'.
+   */
   String getOperationName();
 }

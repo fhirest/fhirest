@@ -28,6 +28,17 @@ import java.util.List;
 import org.hl7.fhir.r5.model.Resource;
 
 
+/**
+ * <p>It is required to implement and provide this interface to load conformance resources</p>
+ * <p>Default implementation: {@link ConformanceStorageLoader}</p>
+ *
+ * @see ConformanceStorageLoader
+ * @see ConformanceStaticLoader
+ */
 public interface ConformanceLoader {
+  /**
+   * @param name Resource type
+   * @return Conformance resources for given type
+   */
   <T extends Resource> List<T> load(String name);
 }

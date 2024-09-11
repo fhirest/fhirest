@@ -38,6 +38,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>Service manages different {@link ResourceStorage} implementations.</p>
+ * <p>There can be only on implementation for every resource type.</p>
+ * <p>Pseudo resource type "default" will be taken if no match found</p>
+ */
 @Component
 public class ResourceStorageService {
   private final Map<String, ResourceStorage> storages;
@@ -78,8 +83,9 @@ public class ResourceStorageService {
   }
 
   /**
+   * Save resource regardless of the result of transaction.
    * use with caution. only business logic
-   * outside of transaction
+   * runs outside of main transaction
    */
   public ResourceVersion storeForce(ResourceId id, ResourceContent content) {
     return tx.newTransaction(() -> getStorage(id.getResourceType()).save(id, content));

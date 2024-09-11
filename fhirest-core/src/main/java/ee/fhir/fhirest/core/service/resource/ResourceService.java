@@ -27,6 +27,7 @@ package ee.fhir.fhirest.core.service.resource;
 import ee.fhir.fhirest.core.api.resource.ResourceAfterDeleteInterceptor;
 import ee.fhir.fhirest.core.api.resource.ResourceAfterSaveInterceptor;
 import ee.fhir.fhirest.core.api.resource.ResourceBeforeSaveInterceptor;
+import ee.fhir.fhirest.core.api.resource.ResourceStorage;
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.core.model.VersionId;
@@ -38,6 +39,16 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>Service responsible for resource save/update/delete interactions.</p>
+ * <p>Manages resource lifecycle, transaction, interceptors.</p>
+ *
+ * @see ResourceStorageService
+ * @see ResourceBeforeSaveInterceptor
+ * @see ResourceAfterSaveInterceptor
+ * @see ResourceAfterDeleteInterceptor
+ * @see TransactionService
+ */
 @Component
 @RequiredArgsConstructor
 public class ResourceService {
@@ -47,6 +58,29 @@ public class ResourceService {
   private final List<ResourceAfterDeleteInterceptor> afterDeleteInterceptor;
   private final TransactionService tx;
 
+  /**
+   * <p>Call interceptors, start transaction and save resource using implemented {@link ResourceStorage}</p>
+   * <br/>
+   * <p>
+   * Interceptors order:
+   *   <ul>
+   *     <li>ResourceBeforeSaveInterceptor.INPUT_VALIDATION</li>
+   *     <li>ResourceBeforeSaveInterceptor.NORMALIZATION</li>
+   *     <li>ResourceBeforeSaveInterceptor.BUSINESS_VALIDATION</li>
+   *     <li><i>- transaction start -</i></li>
+   *     <li>ResourceBeforeSaveInterceptor.TRANSACTION</li>
+   *     <li><i>- perform save -</i></li>
+   *     <li>ResourceAfterSaveInterceptor.TRANSACTION</li>
+   *     <li><i>- transaction end -</i></li>
+   *     <li>ResourceAfterSaveInterceptor.FINALIZATION</li>
+   *   </ul>
+   * </p>
+   *
+   * @param id          FHIR Resource id
+   * @param content     FHIR resource content
+   * @param interaction FHIR interaction
+   * @return Resource version with content and id
+   */
   public ResourceVersion save(ResourceId id, ResourceContent content, String interaction) {
     interceptBeforeSave(ResourceBeforeSaveInterceptor.INPUT_VALIDATION, id, content, interaction);
     interceptBeforeSave(ResourceBeforeSaveInterceptor.NORMALIZATION, id, content, interaction);
@@ -64,33 +98,64 @@ public class ResourceService {
   }
 
   /**
-   * @param reference ResourceType/id
+   * @param reference "{ResourceType}/{id}[/_history/{versionId}]", eg. "Patient/1" or "Patient/1/_history/2"
+   * @see ResourceService#load(VersionId)
    */
   public ResourceVersion load(String reference) {
     return load(ResourceUtil.parseReference(reference));
   }
 
+  /**
+   * Load last version by resource id
+   *
+   * @see ResourceService#load(VersionId)
+   */
   public ResourceVersion load(ResourceId id) {
     return load(new VersionId(id));
   }
 
+  /**
+   * Load resource version using implemented {@link ee.fhir.fhirest.core.service.resource.ResourceStorageService ResourceStorageService}.
+   * If version id is not provided - loads last version.
+   *
+   * @return Resource version with content and id
+   */
   public ResourceVersion load(VersionId id) {
     return storageService.load(id);
   }
 
+  /**
+   * Load resource versions using implemented {@link ee.fhir.fhirest.core.service.resource.ResourceStorageService ResourceStorageService}.
+   *
+   * @return Resource versions with content and id
+   */
   public List<ResourceVersion> load(List<VersionId> ids) {
     return storageService.load(ids);
   }
 
+  /**
+   * Perform resource history search if supported.
+   *
+   * @return List of all found resource versions.
+   * @see <a href="https://www.hl7.org/fhir/http.html#history">https://www.hl7.org/fhir/http.html#history</a>
+   */
   public List<ResourceVersion> loadHistory(HistorySearchCriterion criteria) {
     return storageService.loadHistory(criteria);
   }
 
+  /**
+   * Perform <b>delete</b> interaction and call all {@link ResourceAfterDeleteInterceptor}
+   *
+   * @see <a href="https://www.hl7.org/fhir/http.html#delete">https://www.hl7.org/fhir/http.html#delete</a>
+   */
   public void delete(ResourceId id) {
     storageService.delete(id);
     afterDeleteInterceptor.forEach(i -> i.delete(id));
   }
 
+  /**
+   * Prepare a new unique resource id to be saved in the future.
+   */
   public String generateNewId(String resourceType) {
     return storageService.generateNewId(resourceType);
   }

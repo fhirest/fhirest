@@ -55,6 +55,9 @@ import org.hl7.fhir.r5.model.UriType;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+/**
+ * Service responsible for handling FHIR transaction and bundle save operations
+ */
 @Component
 @RequiredArgsConstructor
 public class BundleService implements BundleSaveHandler {

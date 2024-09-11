@@ -26,6 +26,9 @@ package ee.fhir.fhirest.rest.filter;
 
 import ee.fhir.fhirest.rest.model.FhirestRequest;
 
+/**
+ * Called for every resource interaction = for every resource in `transaction` + simple CRUD requests.
+ */
 public interface FhirestRequestExecutionInterceptor {
   void beforeExecute(FhirestRequest request);
 }

@@ -29,8 +29,17 @@ import ee.fhir.fhirest.rest.interaction.FhirInteraction;
 import ee.fhir.fhirest.rest.model.FhirestRequest;
 import ee.fhir.fhirest.rest.model.FhirestResponse;
 
+/**
+ * Interface for consuming http (fhir) requests
+ *
+ * @see BaseFhirResourceServer
+ * @see DefaultFhirResourceServer
+ */
 public interface FhirResourceServer {
 
+  /**
+   * @return resource type
+   */
   String getTargetType();
 
   @FhirInteraction(interaction = InteractionType.READ, mapping = "GET /{}")
