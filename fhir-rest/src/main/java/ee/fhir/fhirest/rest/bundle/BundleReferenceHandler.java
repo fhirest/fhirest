@@ -57,6 +57,10 @@ public class BundleReferenceHandler {
   private final ResourceService resourceService;
   private final ResourceSearchService resourceSearchService;
 
+  /**
+   * <p>Replaces temporary ids with actual ids for a transaction request</p>
+   * <p><a href="https://www.hl7.org/fhir/http.html#transaction">https://www.hl7.org/fhir/http.html#transaction</a></p>
+   */
   public void replaceIds(Bundle bundle) {
     // fullUrl -> local key
     Map<String, String> referenceIds = new HashMap<>();

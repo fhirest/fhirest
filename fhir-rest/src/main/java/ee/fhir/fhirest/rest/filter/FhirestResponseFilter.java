@@ -27,6 +27,11 @@ package ee.fhir.fhirest.rest.filter;
 import ee.fhir.fhirest.rest.model.FhirestRequest;
 import ee.fhir.fhirest.rest.model.FhirestResponse;
 
+/**
+ * <p>All implementations called before response is flushed, but after all transactions are committed and work is done. Useful for logging or contexts cleanup</p>
+ * <p>Implementations are called in order according to `getOrder` method.</p>
+ * <p>You can do any changes to response object if you would like to modify response.</p>
+ */
 public interface FhirestResponseFilter {
   /**
    * Less = later

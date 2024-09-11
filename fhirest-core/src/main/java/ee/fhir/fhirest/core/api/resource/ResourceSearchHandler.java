@@ -27,12 +27,24 @@ package ee.fhir.fhirest.core.api.resource;
 import ee.fhir.fhirest.core.model.search.SearchCriterion;
 import ee.fhir.fhirest.core.model.search.SearchResult;
 
+/**
+ * Main interface for implementing FHIR resource search.
+ * There can be only on implementation for every resource type.
+ */
 public interface ResourceSearchHandler {
   String DEFAULT = "default";
 
+  /**
+   * <p>A FHIR resource type this implementation will only be applied for.</p>
+   * <p>Use value "<b>default</b>" to apply this to all other resources</p>
+   */
   default String getResourceType() {
     return DEFAULT;
   }
 
+  /**
+   * @param criteria Parsed query parameters
+   * @return Found resources and meta
+   */
   SearchResult search(SearchCriterion criteria);
 }

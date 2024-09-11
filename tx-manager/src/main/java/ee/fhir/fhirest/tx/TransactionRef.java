@@ -24,11 +24,17 @@
 
 package ee.fhir.fhirest.tx;
 
+/**
+ * Reference object of a running transaction
+ */
 public interface TransactionRef {
-
-  void rollback(Throwable e);
 
   void commit();
 
+  void rollback(Throwable e);
+
+  /**
+   * Executed at the end of transaction regardless of the outcome
+   */
   void cleanupTransaction();
 }

@@ -55,6 +55,10 @@ import org.springframework.stereotype.Component;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * <p>Service responsible for resource search interactions.</p>
+ * <p>Depends on {@link ResourceSearchHandler} implementations</p>
+ */
 @Component
 public class ResourceSearchService {
   private static final String INCLUDE_ALL = "*";
@@ -77,14 +81,26 @@ public class ResourceSearchService {
     return searchHandlers.getOrDefault(resourceType, searchHandlers.get(ResourceSearchHandler.DEFAULT));
   }
 
+  /**
+   * @param params array of alternating key-values
+   * @see ResourceSearchService#search(SearchCriterion)
+   */
   public SearchResult search(String resourceType, String... params) {
     return search(resourceType, MapUtil.toMultimap((Object[]) params));
   }
 
+  /**
+   * @param params Multivalued map of query parameters
+   * @see ResourceSearchService#search(SearchCriterion)
+   */
   public SearchResult search(String resourceType, Map<String, List<String>> params) {
     return search(SearchCriterionBuilder.parse(params, resourceType));
   }
 
+  /**
+   * @param criteria
+   * @return Search result resources and includes
+   */
   public SearchResult search(SearchCriterion criteria) {
     ResourceSearchHandler searchHandler = getSearchHandler(criteria.getType());
     if (searchHandler == null) {

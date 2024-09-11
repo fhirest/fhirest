@@ -33,15 +33,32 @@ import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * <p>FHIRest manages transactions manually.</p>
+ * <p>Since there may be several different databases depending on your configuration, transactions for all of them are started and finished simultaneously</p>
+ * <p>Every database implementation should also implement and provide {@link TransactionManager} bean</p>
+ *
+ * @see TransactionManager
+ */
 @Component
 @RequiredArgsConstructor
 public class TransactionService {
   private final List<TransactionManager> txManagers;
 
+  /**
+   * Force make a new transaction
+   * @param fn Function to be called inside this transaction
+   * @return Result of provided function
+   */
   public <T> T newTransaction(Supplier<T> fn) {
     return transaction(fn, tx -> tx.requireNewTransaction());
   }
 
+  /**
+   * Support current transaction if present or make a new one.
+   * @param fn Function to be called inside this transaction
+   * @return Result of provided function
+   */
   public <T> T transaction(Supplier<T> fn) {
     return transaction(fn, tx -> tx.requireTransaction());
   }

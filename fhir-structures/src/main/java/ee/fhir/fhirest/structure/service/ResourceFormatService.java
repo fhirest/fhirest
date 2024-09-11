@@ -45,6 +45,9 @@ import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.hl7.fhir.r5.model.Resource;
 import org.springframework.stereotype.Component;
 
+/**
+ * Service manages all implemented resource formats (json, xml, ...) for simple resource parsing and composing
+ */
 @RequiredArgsConstructor
 @Component
 public class ResourceFormatService {

@@ -38,6 +38,15 @@ import org.springframework.stereotype.Component;
 
 import static java.util.concurrent.CompletableFuture.runAsync;
 
+/**
+ * <p>Perform Conformance initialization by loading resources using {@link ConformanceLoader}, populates {@link ConformanceHolder} and executes server configuration by running {@link ConformanceUpdateListener}</p>
+ * <p>Runs automatically at startup {@link ConformanceInitializer}</p>
+ *
+ * @see ConformanceLoader
+ * @see ConformanceHolder
+ * @see ConformanceUpdateListener
+ * @see ConformanceInitializer
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -45,6 +54,9 @@ public class ConformanceInitializationService {
   private final List<ConformanceUpdateListener> conformanceUpdateListeners;
   private final ConformanceLoader conformanceLoader;
 
+  /**
+   * Reloads conformance from {@link ConformanceLoader} and reconfigures server
+   */
   public void refresh() {
     log.info("refreshing conformance...");
     CompletableFuture.allOf(

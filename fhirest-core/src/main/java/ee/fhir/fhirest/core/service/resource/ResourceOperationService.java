@@ -35,6 +35,13 @@ import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.r5.model.OperationOutcome.IssueType;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>Service responsible for executing fhir operations.</p>
+ *
+ * @see InstanceOperationDefinition
+ * @see TypeOperationDefinition
+ * @see OperationInterceptor
+ */
 @Component
 @RequiredArgsConstructor
 public class ResourceOperationService {
@@ -42,6 +49,13 @@ public class ResourceOperationService {
   private final List<TypeOperationDefinition> typeOperations;
   private final List<OperationInterceptor> interceptors;
 
+  /**
+   * Execute an instance operation
+   * @param operation operation name with '$' prefix
+   * @param id resource id
+   * @param parameters <b>Parameters</b> content
+   * @return Operation result
+   */
   public ResourceContent runInstanceOperation(String operation, ResourceId id, ResourceContent parameters) {
     interceptors.forEach(i -> i.handle("instance", operation, parameters));
     return instanceOperations.stream()
@@ -52,6 +66,12 @@ public class ResourceOperationService {
         .run(id, parameters);
   }
 
+  /**
+   * Execute a type operation
+   * @param operation operation name with '$' prefix
+   * @param parameters <b>Parameters</b> content
+   * @return Operation result
+   */
   public ResourceContent runTypeOperation(String operation, String type, ResourceContent parameters) {
     interceptors.forEach(i -> i.handle("type", operation, parameters));
     return typeOperations.stream()

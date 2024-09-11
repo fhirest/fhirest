@@ -55,6 +55,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+/**
+ * <p>Main FHIR controller, that accepts all requests on /fhir endpoint,
+ *   processes http request into local object and forwards to {@link FhirestEndpointService} for processing as a FHIR interaction</p>
+ * <p>Allows attaching listeners before and after interaction is processed</p>
+ *
+ * @see FhirestEndpointService
+ * @see FhirestRequestFilter
+ * @see FhirestResponseFilter
+ * @see FhirExceptionHandler
+ */
 @RequestMapping(path = "/" + RuleThemAllFhirController.FHIR_ROOT, consumes = "*/*", produces = "*/*")
 @Controller
 @RequiredArgsConstructor

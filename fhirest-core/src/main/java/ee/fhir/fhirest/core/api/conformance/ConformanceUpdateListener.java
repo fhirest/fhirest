@@ -24,6 +24,9 @@
 
 package ee.fhir.fhirest.core.api.conformance;
 
+/**
+ * Interface implementing services called everytime conformance is reloaded
+ */
 public interface ConformanceUpdateListener {
   default Integer getOrder() {
     return 100;

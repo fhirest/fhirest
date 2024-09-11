@@ -24,10 +24,19 @@
 
 package ee.fhir.fhirest.tx;
 
+/**
+ * @see TransactionService
+ */
 public interface TransactionManager {
 
+  /**
+   * Support current transaction if present or make a new one.
+   */
   TransactionRef requireTransaction();
 
+  /**
+   * Force make a new transaction
+   */
   TransactionRef requireNewTransaction();
 
 }

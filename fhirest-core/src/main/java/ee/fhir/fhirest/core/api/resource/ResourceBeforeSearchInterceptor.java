@@ -27,6 +27,10 @@ package ee.fhir.fhirest.core.api.resource;
 
 import ee.fhir.fhirest.core.model.search.SearchCriterion;
 
+/**
+ * <p>Interceptor implementations called before resource search is performed</p>
+ * <p>May be useful for search parameter modification or validation</p>
+ */
 public abstract class ResourceBeforeSearchInterceptor {
 
   public abstract void handle(SearchCriterion criteria);
