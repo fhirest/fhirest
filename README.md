@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-FHIRest is an open-source FHIR server managed by the FHIRest community. It is developed under a xx licence.
+FHIRest is an open-source FHIR server managed by the FHIRest community. It is developed under a MIT licence.
 
 ## 2. Release history
 
