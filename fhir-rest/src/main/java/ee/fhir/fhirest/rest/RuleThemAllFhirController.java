@@ -147,9 +147,9 @@ public class RuleThemAllFhirController {
   private FhirestRequest buildFhirestRequest(HttpServletRequest request) {
     FhirestRequest req = new FhirestRequest();
     req.setMethod(request.getMethod());
-    String p = StringUtils.defaultString(request.getRequestURI());
-    p = StringUtils.removeStart(p, "/");
-    p = StringUtils.removeStart(p, serverUriHelper.getContextPath());
+    String p = StringUtils.defaultString(request.getServletPath());
+//    p = StringUtils.removeStart(p, "/");
+//    p = StringUtils.removeStart(p, serverUriHelper.getContextPath());
     p = StringUtils.removeStart(p, "/");
     p = StringUtils.removeStart(p, FHIR_ROOT);
     p = StringUtils.removeStart(p, "/");
