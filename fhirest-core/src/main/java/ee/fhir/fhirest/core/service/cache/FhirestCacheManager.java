@@ -24,38 +24,27 @@
 
 package ee.fhir.fhirest.core.service.cache;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import jakarta.annotation.PreDestroy;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
-import org.ehcache.Cache;
-import org.ehcache.config.builders.CacheConfigurationBuilder;
-import org.ehcache.config.builders.CacheManagerBuilder;
-import org.ehcache.config.builders.ExpiryPolicyBuilder;
-import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class FhirestCacheManager implements AutoCloseable {
-  private final org.ehcache.CacheManager manager = CacheManagerBuilder.newCacheManagerBuilder().build();
   private final Map<String, FhirestCache> caches = new HashMap<>();
 
-  public FhirestCacheManager() {
-    manager.init();
-  }
-
   public FhirestCache registerCache(String name, int maxEntries, long ttlSeconds) {
-    CacheConfigurationBuilder<String, Object> builder = CacheConfigurationBuilder
-        .newCacheConfigurationBuilder(String.class, Object.class, ResourcePoolsBuilder.heap(maxEntries));
-    builder.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(ttlSeconds)));
-    if (getCache(name) != null) {
-      manager.removeCache(name);
-    }
-    Cache<String, Object> cache = manager.createCache(name, builder.build());
+    Cache<String, Object> cache =  Caffeine.newBuilder()
+        .expireAfterWrite(ttlSeconds, TimeUnit.SECONDS)
+        .maximumSize(maxEntries)
+        .build();
     FhirestCache fhirestCache = new FhirestCache(cache);
     caches.put(name, fhirestCache);
     return fhirestCache;
@@ -80,8 +69,7 @@ public class FhirestCacheManager implements AutoCloseable {
   @PreDestroy
   @Override
   public void close() {
-    log.info("Closing cache manager...");
-    this.manager.close();
+    this.caches.clear();
   }
 
 }
