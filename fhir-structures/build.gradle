@@ -10,7 +10,7 @@ dependencies {
   }
   api "ca.uhn.hapi.fhir:hapi-fhir-caching-caffeine:$hapiVersion"
 
-  implementation "org.ehcache:ehcache:${ehcacheVersion}"
+  implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
   implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
 
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
