@@ -43,5 +43,10 @@ management:
     health.show-details: always
 
 ## due to this https://chat.fhir.org/#narrow/stream/179166-implementers/topic/composite.20search.20parameters.20in.20R5, some definitions altered manually and uploaded to kodality repository
-fhirest.conformance.definitions-url: https://kexus.kodality.com/repository/store-public/kefhir/defs-r5.zip
-# fhirest.oauth.jwks-url: https://auth.kodality.dev/realms/terminology/protocol/openid-connect/certs
+fhirest:
+  conformance.definitions-url: https://kexus.kodality.com/repository/store-public/kefhir/defs-r5.zip
+  #oauth.jwks-url: https://auth.kodality.dev/realms/terminology/protocol/openid-connect/certs
+  resource-formatter:
+    cache:
+      max-size: 1000
+      ttl: 32

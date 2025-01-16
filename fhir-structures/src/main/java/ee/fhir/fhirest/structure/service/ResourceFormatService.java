@@ -24,25 +24,22 @@
 
 package ee.fhir.fhirest.structure.service;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import ee.fhir.fhirest.structure.api.ParseException;
 import ee.fhir.fhirest.structure.api.ResourceContent;
 import ee.fhir.fhirest.structure.api.ResourceRepresentation;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ehcache.Cache;
-import org.ehcache.CacheManager;
-import org.ehcache.config.builders.CacheConfigurationBuilder;
-import org.ehcache.config.builders.CacheManagerBuilder;
-import org.ehcache.config.builders.ExpiryPolicyBuilder;
-import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -53,23 +50,26 @@ import org.springframework.stereotype.Component;
 public class ResourceFormatService {
   private final List<ResourceRepresentation> representations;
   private final ContentTypeService justForBeanInit; //needed
-  private Cache<String, ? extends Resource> cache;
   private static ResourceFormatService instance;
+
+  @Value("${fhirest.resource-formatter.cache.max-size:1000}")
+  private long maxCacheSize;
+  @Value("${fhirest.resource-formatter.cache.expire-after-write:32}") //in seconds
+  private int cacheTtl;
+  private Cache<String, Resource> cache;
 
   @PostConstruct
   private void init() {
     ResourceFormatService.instance = this;
-    CacheManager manager = CacheManagerBuilder.newCacheManagerBuilder().build();
-    manager.init();
-    CacheConfigurationBuilder<String, Resource> builder = CacheConfigurationBuilder
-        .newCacheConfigurationBuilder(String.class, Resource.class, ResourcePoolsBuilder.heap(2048));
-    builder.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofSeconds(32)));
-    cache = manager.createCache("resources", builder.build());
+    this.cache = Caffeine.newBuilder()
+        .expireAfterWrite(cacheTtl, TimeUnit.SECONDS)
+        .maximumSize(maxCacheSize)
+        .build();
   }
 
   @PreDestroy
   public void destroy() {
-    cache.clear();
+    cache.invalidateAll();
   }
 
   public static ResourceFormatService get() {
@@ -99,13 +99,10 @@ public class ResourceFormatService {
       return null;
     }
     String key = DigestUtils.md5Hex(input);
-    if (cache.get(key) == null) {
-      cache.put(key,
-          guessPresenter(input)
-              .orElseThrow(() -> new ParseException("unknown format: [" + StringUtils.left(input, 10) + "]"))
-              .parse(input));
-    }
-    return (R) cache.get(key).copy();
+    return (R) cache.get(key, k -> guessPresenter(input)
+            .orElseThrow(() -> new ParseException("unknown format: [" + StringUtils.left(input, 10) + "]"))
+            .parse(input))
+        .copy();
   }
 
   public List<String> findSupported(List<String> contentTypes) {

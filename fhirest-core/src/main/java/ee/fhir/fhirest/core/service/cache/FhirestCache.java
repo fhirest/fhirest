@@ -24,9 +24,10 @@
 
 package ee.fhir.fhirest.core.service.cache;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-import org.ehcache.Cache;
 
 public class FhirestCache {
   private final Cache<String, Object> cache;
@@ -37,19 +38,19 @@ public class FhirestCache {
 
   @SuppressWarnings("unchecked")
   public <V> V get(String key, Supplier<V> computeFn) {
-    if (!cache.containsKey(key)) {
+    if (cache.getIfPresent(key) == null) {
       V value = computeFn.get();
       if (value == null) {
         return null;
       }
       cache.put(key, value);
     }
-    return (V) cache.get(key);
+    return (V) cache.getIfPresent(key);
   }
 
   @SuppressWarnings("unchecked")
   public synchronized <V> CompletableFuture<V> getCf(String key, Supplier<CompletableFuture<V>> computeFn) {
-    CompletableFuture<V> value = (CompletableFuture<V>) cache.get(key);
+    CompletableFuture<V> value = (CompletableFuture<V>) cache.getIfPresent(key);
     if (value == null || value.isCancelled() || value.isCompletedExceptionally()) {
       value = computeFn.get();
       value.thenAccept(v -> cache.put(key, CompletableFuture.completedFuture(v)));
@@ -59,6 +60,6 @@ public class FhirestCache {
   }
 
   public void remove(String key) {
-    cache.remove(key);
+    cache.invalidateAll(List.of(key));
   }
 }
