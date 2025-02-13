@@ -27,13 +27,17 @@ package ee.fhir.fhirest;
 import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 public final class SpringLiquibaseBuilder {
   public static SpringLiquibase build(DataSource ds, LiquibaseProperties p) {
     SpringLiquibase liquibase = new SpringLiquibase();
     liquibase.setDataSource(ds);
     liquibase.setChangeLog(p.getChangeLog());
-    liquibase.setContexts(p.getContexts());
+    if (!CollectionUtils.isEmpty(p.getContexts())) {
+      liquibase.setContexts(StringUtils.collectionToCommaDelimitedString(p.getContexts()));
+    }
     liquibase.setDefaultSchema(p.getDefaultSchema());
     liquibase.setDropFirst(p.isDropFirst());
     liquibase.setShouldRun(p.isEnabled());
