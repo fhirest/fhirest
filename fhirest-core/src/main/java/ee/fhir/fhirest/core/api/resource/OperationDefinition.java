@@ -24,17 +24,9 @@
 
 package ee.fhir.fhirest.core.api.resource;
 
-import ee.fhir.fhirest.structure.api.ResourceContent;
-
-/**
- * Interface should be used to provide actual functionality of an <b>base</b> level operation.
- * @see OperationDefinition
- */
-public interface BaseOperationDefinition extends OperationDefinition {
+public interface OperationDefinition {
   /**
-   * @param parameters Unparsed resource of <b>Parameters</b> resource type
-   * @return <b>Parameters</b> or <b>Resource</b>, as in <a href="https://www.hl7.org/fhir/operations.html#response">https://www.hl7.org/fhir/operations.html#response</a>
+   * @return Name of the operation, as in url, without prefix '$'.
    */
-  ResourceContent run(ResourceContent parameters);
-
+  String getOperationName();
 }

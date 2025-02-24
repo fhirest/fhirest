@@ -34,7 +34,7 @@ import ee.fhir.fhirest.structure.api.ResourceContent;
  */
 public interface OperationInterceptor {
   /**
-   * @param level instance | type | ...
+   * @param level instance | type | base
    * @param operation operation name
    * @param parameters Unparsed resource of <b>Parameters</b> resource type
    */

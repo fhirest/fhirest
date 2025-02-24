@@ -24,17 +24,22 @@
 
 package ee.fhir.fhirest.rest;
 
+import ee.fhir.fhirest.core.exception.FhirException;
 import ee.fhir.fhirest.core.exception.FhirServerException;
+import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.InteractionType;
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.core.model.search.HistorySearchCriterion;
 import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
+import ee.fhir.fhirest.core.service.resource.ResourceOperationService;
 import ee.fhir.fhirest.core.service.resource.ResourceService;
 import ee.fhir.fhirest.rest.bundle.BundleSaveHandler;
 import ee.fhir.fhirest.rest.interaction.FhirInteraction;
 import ee.fhir.fhirest.rest.model.FhirestRequest;
 import ee.fhir.fhirest.rest.model.FhirestResponse;
+import ee.fhir.fhirest.rest.operation.OperationParametersReader;
 import ee.fhir.fhirest.rest.util.BundleUtil;
+import ee.fhir.fhirest.structure.api.ResourceContent;
 import ee.fhir.fhirest.structure.service.ResourceFormatService;
 import jakarta.inject.Provider;
 import java.util.List;
@@ -55,6 +60,8 @@ public class FhirRootServer {
   private final ResourceFormatService resourceFormatService;
   private final ResourceService resourceService;
   private final Provider<BundleSaveHandler> bundleService;
+  private final ResourceOperationService resourceOperationService;
+  private final OperationParametersReader operationParametersReader;
 
   @FhirInteraction(interaction = InteractionType.CONFORMANCE, mapping = "GET /metadata")
   public FhirestResponse conformance(FhirestRequest req) {
@@ -94,6 +101,22 @@ public class FhirRootServer {
     OperationOutcome op = new OperationOutcome();
     op.addIssue().setDetails(new CodeableConcept().setText("Welcome to Fhirest"));
     return new FhirestResponse(200, op);
+  }
+
+  @FhirInteraction(interaction = InteractionType.OPERATION, mapping = "GET /${}")
+  public FhirestResponse baseOperation(FhirestRequest req) {
+    String operation = req.getPath();
+    if (!operation.startsWith("$")) {
+      throw new FhirException(FhirestIssue.FEST_010);
+    }
+    ResourceContent content = operationParametersReader.readOperationParameters(operation, req);
+    ResourceContent response = resourceOperationService.runBaseOperation(operation, req.getType(), content);
+    return new FhirestResponse(200, response);
+  }
+
+  @FhirInteraction(interaction = InteractionType.OPERATION, mapping = "POST /${}")
+  public FhirestResponse baseOperation_(FhirestRequest req) {
+    return baseOperation(req);
   }
 
 }

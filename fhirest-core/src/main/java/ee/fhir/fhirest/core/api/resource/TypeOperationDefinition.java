@@ -28,9 +28,14 @@ import ee.fhir.fhirest.structure.api.ResourceContent;
 
 /**
  * Interface should be used to provide actual functionality of an <b>type</b> level operation.
- * @see BaseOperationDefinition
+ * @see OperationDefinition
  */
-public interface TypeOperationDefinition extends BaseOperationDefinition {
+public interface TypeOperationDefinition extends OperationDefinition {
+  /**
+   * @return FHIR resource type this operation is applied to
+   */
+  String getResourceType();
+
   /**
    * @param parameters Unparsed resource of <b>Parameters</b> resource type
    * @return <b>Parameters</b> or <b>Resource</b>, as in <a href="https://www.hl7.org/fhir/operations.html#response">https://www.hl7.org/fhir/operations.html#response</a>
