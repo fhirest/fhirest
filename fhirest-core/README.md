@@ -106,6 +106,7 @@ See [Postgresql implementation](../pg-search) for examples.
 ## Operations
 Every Fhir [Operation](https://www.hl7.org/fhir/operations.html) requires an implementation
 
-According to specification and requiremenrs, implement one of
+According to specification and requirements, implement one of
 * [InstanceOperationDefinition](./src/main/java/ee/fhir/fhirest/core/api/resource/InstanceOperationDefinition.java)
 * [TypeOperationDefinition](./src/main/java/ee/fhir/fhirest/core/api/resource/TypeOperationDefinition.java)
+* [BaseOperationDefinition](./src/main/java/ee/fhir/fhirest/core/api/resource/BaseOperationDefinition.java)

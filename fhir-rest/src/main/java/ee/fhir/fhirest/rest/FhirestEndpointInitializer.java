@@ -25,8 +25,8 @@
 package ee.fhir.fhirest.rest;
 
 import ee.fhir.fhirest.core.api.conformance.ConformanceUpdateListener;
-import ee.fhir.fhirest.core.api.resource.BaseOperationDefinition;
 import ee.fhir.fhirest.core.api.resource.InstanceOperationDefinition;
+import ee.fhir.fhirest.core.api.resource.OperationDefinition;
 import ee.fhir.fhirest.core.api.resource.TypeOperationDefinition;
 import ee.fhir.fhirest.core.model.InteractionType;
 import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,7 +45,6 @@ import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResource
 import org.hl7.fhir.r5.model.CapabilityStatement.ResourceVersionPolicy;
 import org.hl7.fhir.r5.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r5.model.CapabilityStatement.SystemRestfulInteraction;
-import org.hl7.fhir.r5.model.OperationDefinition;
 import org.hl7.fhir.r5.model.StructureDefinition;
 import org.springframework.stereotype.Component;
 
@@ -60,7 +60,8 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
   private final DefaultFhirResourceServer defaultResourceServer;
   private final FhirRootServer rootServer;
 
-  private final List<BaseOperationDefinition> operations;
+  private final List<TypeOperationDefinition> typeOperations;
+  private final List<InstanceOperationDefinition> instanceOperations;
 
   private CapabilityStatement capability;
 
@@ -121,13 +122,14 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
   }
 
   protected void prepareOperationsForResource(CapabilityStatementRestResourceComponent r) {
-    Map<String, List<BaseOperationDefinition>> opsByName = operations.stream()
-        .filter(o -> o.getResourceType().equals(r.getType()))
-        .collect(Collectors.groupingBy(BaseOperationDefinition::getOperationName));
+    Map<String, List<OperationDefinition>> opsByName = Stream.concat(
+        instanceOperations.stream().filter(o -> o.getResourceType().equals(r.getType())),
+        typeOperations.stream().filter(o -> o.getResourceType().equals(r.getType()))
+    ).collect(Collectors.groupingBy(OperationDefinition::getOperationName));
 
     r.setOperation(r.getOperation().stream().filter(operationComponent -> {
-      OperationDefinition operationDefinition = ConformanceHolder.getOperationDefinition(operationComponent.getDefinition());
-      List<BaseOperationDefinition> implementations = opsByName.getOrDefault(operationComponent.getName(), List.of());
+      org.hl7.fhir.r5.model.OperationDefinition operationDefinition = ConformanceHolder.getOperationDefinition(operationComponent.getDefinition());
+      List<OperationDefinition> implementations = opsByName.getOrDefault(operationComponent.getName(), List.of());
       opsByName.remove(operationComponent.getName());
       return validateOperation(r.getType(), operationComponent, operationDefinition, implementations);
     }).toList());
@@ -140,8 +142,8 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
   protected boolean validateOperation(
       String resourceType,
       CapabilityStatementRestResourceOperationComponent operationComponent,
-      OperationDefinition operationDefinition,
-      List<BaseOperationDefinition> impls
+      org.hl7.fhir.r5.model.OperationDefinition operationDefinition,
+      List<OperationDefinition> impls
   ) {
     if (operationDefinition == null) {
       log.error("Missing OperationDefinition for referenced in CapabilityStatement operation {} for resource {}",
@@ -151,7 +153,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
 
     boolean validType = true;
     if (operationDefinition.getType()) {
-      List<BaseOperationDefinition> typeImpls = impls.stream()
+      List<OperationDefinition> typeImpls = impls.stream()
           .filter(TypeOperationDefinition.class::isInstance)
           .toList();
       validType = validateOperation(typeImpls, operationComponent.getDefinition(), resourceType);
@@ -159,7 +161,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
 
     boolean validInstance = true;
     if (operationDefinition.getInstance()) {
-      List<BaseOperationDefinition> instanceImpls = impls.stream()
+      List<OperationDefinition> instanceImpls = impls.stream()
           .filter(InstanceOperationDefinition.class::isInstance)
           .toList();
       validInstance = validateOperation(instanceImpls, operationComponent.getDefinition(), resourceType);
@@ -168,7 +170,7 @@ public class FhirestEndpointInitializer implements ConformanceUpdateListener {
     return validType && validInstance;
   }
 
-  protected boolean validateOperation(List<BaseOperationDefinition> implTypes, String opName, String resourceType) {
+  protected boolean validateOperation(List<OperationDefinition> implTypes, String opName, String resourceType) {
     if (implTypes.isEmpty()) {
       log.error("Cannot find implementation for declared in capability statement operation '{}'", opName);
       return false;

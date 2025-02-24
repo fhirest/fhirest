@@ -24,6 +24,7 @@
 
 package ee.fhir.fhirest.core.service.resource;
 
+import ee.fhir.fhirest.core.api.resource.BaseOperationDefinition;
 import ee.fhir.fhirest.core.api.resource.InstanceOperationDefinition;
 import ee.fhir.fhirest.core.api.resource.OperationInterceptor;
 import ee.fhir.fhirest.core.api.resource.TypeOperationDefinition;
@@ -47,12 +48,14 @@ import org.springframework.stereotype.Component;
 public class ResourceOperationService {
   private final List<InstanceOperationDefinition> instanceOperations;
   private final List<TypeOperationDefinition> typeOperations;
+  private final List<BaseOperationDefinition> baseOperations;
   private final List<OperationInterceptor> interceptors;
 
   /**
    * Execute an instance operation
-   * @param operation operation name with '$' prefix
-   * @param id resource id
+   *
+   * @param operation  operation name with '$' prefix
+   * @param id         resource id
    * @param parameters <b>Parameters</b> content
    * @return Operation result
    */
@@ -68,7 +71,8 @@ public class ResourceOperationService {
 
   /**
    * Execute a type operation
-   * @param operation operation name with '$' prefix
+   *
+   * @param operation  operation name with '$' prefix
    * @param parameters <b>Parameters</b> content
    * @return Operation result
    */
@@ -77,6 +81,22 @@ public class ResourceOperationService {
     return typeOperations.stream()
         .filter(op -> operation.equals("$" + op.getOperationName()))
         .filter(op -> op.getResourceType().equals(type))
+        .findFirst()
+        .orElseThrow(() -> new FhirException(404, IssueType.NOTFOUND, "operation " + operation + " not found"))
+        .run(parameters);
+  }
+
+  /**
+   * Execute a base operation
+   *
+   * @param operation  operation name with '$' prefix
+   * @param parameters <b>Parameters</b> content
+   * @return Operation result
+   */
+  public ResourceContent runBaseOperation(String operation, String type, ResourceContent parameters) {
+    interceptors.forEach(i -> i.handle("base", operation, parameters));
+    return baseOperations.stream()
+        .filter(op -> operation.equals("$" + op.getOperationName()))
         .findFirst()
         .orElseThrow(() -> new FhirException(404, IssueType.NOTFOUND, "operation " + operation + " not found"))
         .run(parameters);
