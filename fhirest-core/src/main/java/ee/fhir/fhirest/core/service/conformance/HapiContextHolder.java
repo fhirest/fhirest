@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.hl7.fhir.common.hapi.validation.support.CachingValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
 import org.hl7.fhir.common.hapi.validation.support.PrePopulatedValidationSupport;
@@ -115,7 +114,8 @@ public class HapiContextHolder implements ConformanceUpdateListener {
     Map<String, IBaseResource> defs = ConformanceHolder.getDefinitions().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d, (a, b) -> a));
     // hack to bypass hapi structuredefinition.type validation, (#see org.hl7.fhir.validation.instance.InstanceValidator.checkTypeValue)
     // because wo don't have information about "source package" and it isn't even a part of fhir resource.
-    defs.values().forEach(def -> ((Resource) def).setSourcePackage(new PackageInformation("hl7.fhir.r", def.getMeta().getLastUpdated())));
+    defs.values().forEach(def -> ((Resource) def).setSourcePackage(
+        new PackageInformation("hl7.fhir.r", context.getVersion().getVersion().getFhirVersionString(), def.getMeta().getLastUpdated())));
     Map<String, IBaseResource> vs = ConformanceHolder.getValueSets().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d, (a, b) -> a));
     Map<String, IBaseResource> cs = ConformanceHolder.getCodeSystems().stream()
         .filter(c -> SUPPORTED_CS_CONTENT_MODES.contains(c.getContent()))
@@ -128,7 +128,8 @@ public class HapiContextHolder implements ConformanceUpdateListener {
         new FhirestSnapshotGeneratingValidationSupport(context)
     );
     validationSupportProviders.forEach(p -> chain.addValidationSupport(p.getValidationSupport(context)));
-    return new CachingValidationSupport(chain);
+//    return new CachingValidationSupport(chain);
+    return chain;
   }
 
   private void preloadHapi() {
