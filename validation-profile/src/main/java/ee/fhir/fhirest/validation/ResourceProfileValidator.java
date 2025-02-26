@@ -106,7 +106,7 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
     }
     try {
       List<SingleValidationMessage> errors = hapiContextHolder.getValidator().validateWithResult(content.getValue()).getMessages();
-      errors = errors.stream().filter(m -> isError(m.getSeverity())).collect(toList());
+      errors = errors.stream().filter(m -> isError(m.getSeverity())).toList();
       if (!errors.isEmpty()) {
         throw new FhirException(400, errors.stream().map(msg -> {
           OperationOutcomeIssueComponent issue = new OperationOutcomeIssueComponent();
@@ -120,6 +120,9 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
     } catch (Exception e) {
       if (e instanceof FHIRException) {
         throw new FhirException(FhirestIssue.FEST_023, "message", e.getMessage());
+      }
+      if (e instanceof FhirException fe && fe.getHttpCode() >= 400 && fe.getHttpCode() < 500) {
+        throw e;
       }
       log.error("exception during profile validation", e);
       throw new FhirServerException("exception during profile validation: " + e.getMessage());
