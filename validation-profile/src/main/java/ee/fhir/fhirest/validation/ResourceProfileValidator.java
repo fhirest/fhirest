@@ -104,28 +104,32 @@ public class ResourceProfileValidator extends ResourceBeforeSaveInterceptor impl
     if (hapiContextHolder.getHapiContext() == null) {
       throw new FhirServerException("fhir context initialization error");
     }
+    List<SingleValidationMessage> errors;
     try {
-      List<SingleValidationMessage> errors = hapiContextHolder.getValidator().validateWithResult(content.getValue()).getMessages();
-      errors = errors.stream().filter(m -> isError(m.getSeverity())).toList();
-      if (!errors.isEmpty()) {
-        throw new FhirException(400, errors.stream().map(msg -> {
+      errors = hapiContextHolder.getValidator().validateWithResult(content.getValue()).getMessages();
+    } catch (Exception e) {
+      if (e instanceof FHIRException) {
+        throw new FhirException(FhirestIssue.FEST_023, "message", e.getMessage());
+      }
+      log.error("exception during profile validation", e);
+      throw new FhirServerException("exception during profile validation: " + e.getMessage());
+    }
+    handleValidationErrors(errors);
+  }
+
+  private void handleValidationErrors(List<SingleValidationMessage> errors) {
+    List<OperationOutcomeIssueComponent> issues = errors.stream()
+        .filter(m -> isError(m.getSeverity()))
+        .map(msg -> {
           OperationOutcomeIssueComponent issue = new OperationOutcomeIssueComponent();
           issue.setCode(IssueType.INVALID);
           issue.setSeverity(IssueSeverity.fromCode(msg.getSeverity().getCode()));
           issue.setDetails(new CodeableConcept().setText(msg.getMessage()));
           issue.addLocation(msg.getLocationString());
           return issue;
-        }).collect(toList()));
-      }
-    } catch (Exception e) {
-      if (e instanceof FHIRException) {
-        throw new FhirException(FhirestIssue.FEST_023, "message", e.getMessage());
-      }
-      if (e instanceof FhirException fe && fe.getHttpCode() >= 400 && fe.getHttpCode() < 500) {
-        throw e;
-      }
-      log.error("exception during profile validation", e);
-      throw new FhirServerException("exception during profile validation: " + e.getMessage());
+        }).collect(toList());
+    if (!issues.isEmpty()) {
+      throw new FhirException(400, issues);
     }
   }
 
