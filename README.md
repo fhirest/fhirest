@@ -128,7 +128,7 @@ request is critical, please add the name of the project and contact details to t
 
 ### 5.2 Contributing
 
-Please refer to the FHIRest community [CONTRIBUTING.md](../.github/CONTRIBUTING.md)
+Please refer to the FHIRest community [CONTRIBUTING.md](https://github.com/fhirest/.github/blob/main/CONTRIBUTING.md)
 
 ### 5.3 Developing
 
