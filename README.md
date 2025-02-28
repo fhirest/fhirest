@@ -73,19 +73,20 @@ FHIRest modules are published to:
 
 ##### 4.2.1 Maven Central
 
-* Simply refer to https://mvnrepository.com/artifact/ee.fhir.fhirest for a list of available packages and versions
+* Check out [Maven Repo](https://mvnrepository.com/artifact/ee.fhir.fhirest) for a list of available packages and versions
 
 ##### 4.2.2 Github Packages
 
-* Using a build tool of your choice, declare Maven repository with URL `https://maven.pkg.github.com/fhirest/fhirest`. For detailed instructions, refer to
-  official guides:
-    * [Maven](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package)
-    * [Gradle](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package)
-* GitHub Packages requires authentication using a personal access token (classic) with at least `read:packages` scope to install packages. For detailed
-  instructions, refer to official guides:
-    * [Maven](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-with-a-personal-access-token)
-    * [Gradle](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#authenticating-with-a-personal-access-token)
-* Example config using `build.gradle` (Gradle Groovy) where the personal token is provided through environment variables `GITHUB_USER` and `GITHUB_TOKEN`:
+* Using a build tool of your choice, declare Maven repository with URL `https://maven.pkg.github.com/fhirest/fhirest`.  
+For detailed instructions, refer to official guides:
+[Maven](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#installing-a-package),
+[Gradle](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package)
+* GitHub Packages requires authentication using a personal access token (classic) with at least `read:packages` scope to install packages.  
+For detailed instructions, refer to official guides:
+[Maven](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-with-a-personal-access-token),
+[Gradle](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#authenticating-with-a-personal-access-token)
+
+Example config using `build.gradle`, where the personal token is provided through environment variables `GITHUB_USER` and `GITHUB_TOKEN`:
 
 ```groovy
 maven {
