@@ -2,24 +2,20 @@
 
 ## 1. Introduction
 
-FHIRest is an open-source FHIR server managed by the FHIRest community. It is developed under a MIT licence.
+FHIRest is an open-source FHIR server managed by the FHIRest community.
 
 ## 2. Release history
 
-> FHIRest using Semantic versioning https://semver.org/
-> **Release** - Release number
->
-> **Current version** - means the release branch
->
-> **Supported FHIR version** - Supported FHIR versions
->
-> **Spring version** - minimum version of spring framework
->
-> **Java version** - Current FHIRest Java version
+List of released versions with changelog available in the [github releases](./releases)
 
-| Release | Version | Supported FHIR version | Spring version | Java Version |
-|---------|---------|------------------------|----------------|--------------|
-| 1.0     | 1.0.1   | R5 (conformance), R4   | 3.2            | 17           |
+> FHIRest using Semantic versioning https://semver.org/
+
+#### Major changes
+
+| Release | FHIR version | Supported FHIR versions | Spring version | Java Version |
+|---------|--------------|-------------------------|----------------|--------------|
+| 1.2     | R5           | R5, R4                  | 3.4            | 17           |
+| 1.0     | R5           | R5, R4                  | 3.2            | 17           |
 
 ## 3. Components
 
@@ -132,12 +128,15 @@ request is critical, please add the name of the project and contact details to t
 
 ### 5.2 Contributing
 
-TODO: link contribution.md
+Please refer to the FHIRest community [CONTRIBUTING.md](../.github/CONTRIBUTING.md)
 
 ### 5.3 Developing
 
-[Developer Guide](./developer-guide.md)
+* [Building and Running](./developer-guide.md)
+* [Publishing](./publishing.md)
+* [Code style](../.github/codestyle)
+* [Coding rules](../.github/CODING_RULES.md)
 
 ## 6. Licence
 
-MIT licence..
+FHIRest is developed under [MIT licence](./LICENSE.md).

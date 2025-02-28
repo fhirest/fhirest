@@ -111,4 +111,10 @@ subprojects { Project project ->
     }
   }
 
+  dependencyCheck {
+    nvd {
+      apiKey = project.findProperty('nvd.key') ?: System.getenv('NVD_KEY') ?: ''
+    }
+  }
+
 }

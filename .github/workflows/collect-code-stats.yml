@@ -35,8 +35,8 @@ jobs:
           name: deps.md
           path: "./etc/deps.md"
 
-      - run: ./gradlew fhirest-test-app:dependencyCheckAnalyze > dependency-check.md
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check.md
-          path: "./dependency-check.md"
+#      - run: ./gradlew fhirest-test-app:dependencyCheckAnalyze > dependency-check.md
+#      - uses: actions/upload-artifact@v4
+#        with:
+#          name: dependency-check.md
+#          path: "./dependency-check.md"
