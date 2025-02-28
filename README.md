@@ -6,7 +6,7 @@ FHIRest is an open-source FHIR server managed by the FHIRest community.
 
 ## 2. Release history
 
-List of released versions with changelog available in the [github releases](./releases)
+List of released versions with changelog available in the [github releases](https://github.com/fhirest/fhirest/releases)
 
 > FHIRest using Semantic versioning https://semver.org/
 
