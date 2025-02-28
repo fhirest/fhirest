@@ -134,8 +134,8 @@ Please refer to the FHIRest community [CONTRIBUTING.md](../.github/CONTRIBUTING.
 
 * [Building and Running](./developer-guide.md)
 * [Publishing](./publishing.md)
-* [Code style](../.github/codestyle)
-* [Coding rules](../.github/CODING_RULES.md)
+* [Code style](https://github.com/fhirest/.github/tree/main/codestyle)
+* [Coding rules](https://github.com/fhirest/.github/blob/main/CODING_RULES.md)
 
 ## 6. Licence
 
