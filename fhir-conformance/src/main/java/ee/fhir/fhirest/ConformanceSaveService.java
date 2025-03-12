@@ -32,10 +32,10 @@ import ee.fhir.fhirest.core.model.VersionId;
 import ee.fhir.fhirest.structure.service.ResourceFormatService;
 import java.util.Date;
 import java.util.List;
-import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r5.model.Resource;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
