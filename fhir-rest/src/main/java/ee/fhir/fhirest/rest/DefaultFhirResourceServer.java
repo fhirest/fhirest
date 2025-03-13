@@ -137,8 +137,8 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   }
 
   protected boolean exists(String type, String id) {
-    if (ConformanceHolder.getSearchParam(type, "_id") == null || ConformanceHolder.getSearchParam(type, "_count") == null) {
-      return resourceService.load(new ResourceId(type, id)) != null;
+    if (ConformanceHolder.getSearchParam(type, "_id") == null) {
+      return !resourceService.load(List.of(new VersionId(type, id))).isEmpty();
     }
     return resourceSearchService.search(type, "_id", id, "_count", "0").getTotal() > 0;
   }
