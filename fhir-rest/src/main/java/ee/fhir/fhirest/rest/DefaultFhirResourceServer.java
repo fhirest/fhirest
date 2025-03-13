@@ -128,12 +128,19 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     String contentLocation = req.getHeader("Content-Location");
     Integer ver = contentLocation == null ? null : ResourceUtil.parseReference(contentLocation).getVersion();
     ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
-    boolean exists = resourceId != null && resourceSearchService.search(req.getType(), "_id", resourceId, "_count", "0").getTotal() > 0;
+    boolean exists = resourceId != null && exists(req.getType(), resourceId);
     if (!exists && !isUpdateCreateAllowed(req.getType()) && !"POST".equals(req.getTransactionMethod())) {
       throw new FhirException(FhirestIssue.FEST_006);
     }
     ResourceVersion version = resourceService.save(new VersionId(req.getType(), resourceId, ver), content, InteractionType.UPDATE);
     return exists ? updated(version, req) : created(version, req);
+  }
+
+  protected boolean exists(String type, String id) {
+    if (ConformanceHolder.getSearchParam(type, "_id") == null || ConformanceHolder.getSearchParam(type, "_count") == null) {
+      return resourceService.load(new ResourceId(type, id)) != null;
+    }
+    return resourceSearchService.search(type, "_id", id, "_count", "0").getTotal() > 0;
   }
 
   private boolean isUpdateCreateAllowed(String type) {
