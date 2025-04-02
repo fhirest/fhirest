@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.stereotype.Component;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.joining;
 
@@ -53,23 +53,23 @@ public class TokenIndexRepository extends TypeIndexRepository<Value> {
   }
 
   private Stream<Value> getValue(Object value, String valueType) {
-    switch (valueType) {
-      case "code":
-      case "string":
-        return Stream.of(new Value(null, (String) value));
-      case "boolean":
-        return Stream.of(new Value(null, ((Boolean) value).toString()));
-      case "Coding":
-      case "Identifier":
-      case "ContactPoint":
+    return switch (valueType) {
+      case "code", "string" -> Stream.of(new Value(null, (String) value));
+      case "boolean" -> Stream.of(new Value(null, ((Boolean) value).toString()));
+      case "Coding" -> {
         Map obj = (Map) value;
-        return Stream.of(new Value((String) obj.get("system"), (String) obj.get("value")));
-      case "CodeableConcept":
+        yield Stream.of(new Value((String) obj.get("system"), (String) obj.get("code")));
+      }
+      case "Identifier", "ContactPoint" -> {
+        Map obj = (Map) value;
+        yield Stream.of(new Value((String) obj.get("system"), (String) obj.get("value")));
+      }
+      case "CodeableConcept" -> {
         List<Map> coding = (List<Map>) ((Map) value).get("coding");
-        return coding == null ? Stream.of() : coding.stream().map(c -> new Value((String) c.get("system"), (String) c.get("code")));
-      default:
-        return Stream.of();
-    }
+        yield coding == null ? Stream.of() : coding.stream().map(c -> new Value((String) c.get("system"), (String) c.get("code")));
+      }
+      default -> Stream.of();
+    };
   }
 
   @Override

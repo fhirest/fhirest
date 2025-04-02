@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "a293ec8d-10d6-4614-949a-1ec2c4b44cd6",
+		"_postman_id": "aba48720-8d48-48ac-9fb5-62de04c2cbf5",
 		"name": "41-search-token",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2623563"
 	},
 	"item": [
 		{
@@ -350,6 +351,249 @@
 						{
 							"key": "identifier",
 							"value": "urn:fhirest-search-tests%7C"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"resourceType\": \"Bundle\",\n    \"type\": \"transaction\",\n    \"entry\": [\n        {\n            \"fullUrl\": \"test-questionnaire-1\",\n            \"request\": {\n                \"url\": \"Questionnaire/questionnaire100\",\n                \"method\": \"PUT\"\n            },\n            \"resource\": {\n                \"resourceType\": \"Questionnaire\",\n                \"id\": \"questionnaire100\",\n                \"url\": \"https://fhirest.fhir.ee/fhir/Questionnaire/questionnaire100\",\n                \"identifier\": [\n                    {\n                        \"system\": \"urn:ietf:rfc:3986\",\n                        \"value\": \"urn:oid:2.16.840.1.113883.4.642.20.6\"\n                    }\n                ],\n                \"status\": \"active\",\n                \"subjectType\": [\n                    \"Patient\"\n                ],\n                \"date\": \"2025-01-01\",\n                \"code\": [\n                    {\n                        \"system\": \"http://example.org/fhirest-test-questionnaire-code\",\n                        \"code\": \"VL-1-1\",\n                        \"display\": \"Lifelines Questionnaire 1 part 1\"\n                    }\n                ],\n                \"item\": [\n                    {\n                        \"linkId\": \"1\",\n                        \"text\": \"Do you have allergies?\",\n                        \"type\": \"boolean\"\n                    },\n                    {\n                        \"linkId\": \"2\",\n                        \"text\": \"General questions\",\n                        \"type\": \"group\",\n                        \"item\": [\n                            {\n                                \"linkId\": \"2.1\",\n                                \"text\": \"What is your gender?\",\n                                \"type\": \"string\"\n                            },\n                            {\n                                \"linkId\": \"2.2\",\n                                \"text\": \"What is your date of birth?\",\n                                \"type\": \"date\"\n                            },\n                            {\n                                \"linkId\": \"2.3\",\n                                \"text\": \"What is your country of birth?\",\n                                \"type\": \"string\"\n                            },\n                            {\n                                \"linkId\": \"2.4\",\n                                \"text\": \"What is your marital status?\",\n                                \"type\": \"string\"\n                            }\n                        ]\n                    },\n                    {\n                        \"linkId\": \"3\",\n                        \"text\": \"Intoxications\",\n                        \"type\": \"group\",\n                        \"item\": [\n                            {\n                                \"linkId\": \"3.1\",\n                                \"text\": \"Do you smoke?\",\n                                \"type\": \"boolean\"\n                            },\n                            {\n                                \"linkId\": \"3.2\",\n                                \"text\": \"Do you drink alchohol?\",\n                                \"type\": \"boolean\"\n                            }\n                        ]\n                    }\n                ]\n            }\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}",
+					"host": [
+						"{{fhirest}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "token Coding param unexistant",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(0);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Questionnaire?_id=questionnaire100&questionnaire-code=shouldnotexist333",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Questionnaire"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "questionnaire100"
+						},
+						{
+							"key": "questionnaire-code",
+							"value": "shouldnotexist333"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "token Coding param: value",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"questionnaire100\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Questionnaire?_id=questionnaire100&questionnaire-code=VL-1-1",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Questionnaire"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "questionnaire100"
+						},
+						{
+							"key": "questionnaire-code",
+							"value": "VL-1-1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "token Coding param: system|value",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"pm.test(\"validate search result\", function () {",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");",
+							"    pm.expect(pm.response.json().total).to.eql(1);",
+							"    pm.expect(pm.response.json().entry[0].resource.id).to.eql(\"questionnaire100\");",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Questionnaire?_id=questionnaire100&questionnaire-code=http%3A%2F%2Fexample.org%2Ffhirest-test-questionnaire-code%7CVL-1-1",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Questionnaire"
+					],
+					"query": [
+						{
+							"key": "_id",
+							"value": "questionnaire100"
+						},
+						{
+							"key": "questionnaire-code",
+							"value": "http%3A%2F%2Fexample.org%2Ffhirest-test-questionnaire-code%7CVL-1-1"
 						}
 					]
 				}
