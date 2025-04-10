@@ -27,16 +27,20 @@ package ee.fhir.fhirest.core.model.search;
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.core.model.VersionId;
+import ee.fhir.fhirest.structure.api.ResourceContent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 
+@Getter
 public class SearchResult {
   private Integer total;
   private List<ResourceVersion> entries;
   private final List<ResourceVersion> includes = new ArrayList<>();
+  private ResourceContent issues;
 
   public SearchResult() {
     this(0, new ArrayList<>());
@@ -59,24 +63,12 @@ public class SearchResult {
     return CollectionUtils.isEmpty(entries);
   }
 
-  public Integer getTotal() {
-    return total;
-  }
-
   public void setTotal(Integer total) {
     this.total = total;
   }
 
-  public List<ResourceVersion> getEntries() {
-    return entries;
-  }
-
   public void setEntries(List<ResourceVersion> entries) {
     this.entries = entries;
-  }
-
-  public List<ResourceVersion> getIncludes() {
-    return includes;
   }
 
   public void addInclude(ResourceVersion include) {
@@ -85,6 +77,10 @@ public class SearchResult {
 
   public void addIncludes(List<ResourceVersion> includes) {
     this.includes.addAll(includes);
+  }
+
+  public void setIssues(ResourceContent issues) {
+    this.issues = issues;
   }
 
 }
