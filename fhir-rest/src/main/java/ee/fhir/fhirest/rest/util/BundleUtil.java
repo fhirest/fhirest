@@ -47,6 +47,9 @@ public class BundleUtil {
 
   public static Bundle compose(SearchResult search) {
     Bundle bundle = compose(search.getTotal(), search.getEntries(), BundleType.SEARCHSET);
+    if (search.getIssues() != null) {
+      bundle.setIssues(ResourceFormatService.get().parse(search.getIssues().getValue()));
+    }
     if (CollectionUtils.isNotEmpty(search.getIncludes())) {
       bundle.getEntry().forEach(e -> {
         e.setSearch(new BundleEntrySearchComponent());
