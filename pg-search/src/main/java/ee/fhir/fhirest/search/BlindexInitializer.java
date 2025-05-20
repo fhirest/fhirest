@@ -29,6 +29,7 @@ import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
 import ee.fhir.fhirest.core.service.resource.ResourceSearchService;
 import ee.fhir.fhirest.search.index.IndexService;
 import ee.fhir.fhirest.search.model.Blindex;
+import ee.fhir.fhirest.search.model.StructureElement;
 import ee.fhir.fhirest.search.repository.BlindexRepository;
 import ee.fhir.fhirest.search.util.SearchPathUtil;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r5.model.CapabilityStatement.RestfulCapabilityMode;
 import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
 import org.hl7.fhir.r5.model.SearchParameter;
+import org.hl7.fhir.r5.model.StructureDefinition;
 import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Component;
 
@@ -76,21 +78,20 @@ public class BlindexInitializer {
     Map<String, Blindex> drop = new HashMap<>(current);
     create.keySet().forEach(drop::remove);
     current.keySet().forEach(create::remove);
-    log.debug("currently indexed: " + current.keySet());
-    log.debug("need to create: " + create.keySet());
-    log.debug("need to remove: " + drop.keySet());
+    log.debug("currently indexed: {}", current.keySet());
+    log.debug("need to create: {}", create.keySet());
+    log.debug("need to remove: {}", drop.keySet());
     create(create.values());
     drop(drop.values());
     blindexRepository.refreshCache();
     log.info("blindex initialization finished");
-    return;
   }
 
   private List<SearchParameter> findCapabilityDefinedParameters() {
     List<String> resourceTypes = List.of("http://hl7.org/fhir/StructureDefinition/DomainResource", "http://hl7.org/fhir/StructureDefinition/Resource");
     List<String> defined = ConformanceHolder.getDefinitions().stream()
         .filter(def -> def.getBaseDefinition() != null && resourceTypes.contains(def.getBaseDefinition()))
-        .map(def -> def.getName()).toList();
+        .map(StructureDefinition::getName).toList();
     Map<String, SearchParameter> spDefinitions = ConformanceHolder.getSearchParams().values().stream().collect(Collectors.toMap(d -> d.getUrl(), d -> d));
 
     return ConformanceHolder.getCapabilityStatement().getRest().stream().filter(r -> r.getMode() == RestfulCapabilityMode.SERVER).flatMap(rest -> {
@@ -113,19 +114,23 @@ public class BlindexInitializer {
     create.forEach(b -> {
       log.debug("creating index on " + b.getKey());
       try {
-        if (!structureDefinitionHolder.getStructureElements().containsKey(b.getResourceType()) ||
-            !structureDefinitionHolder.getStructureElements().get(b.getResourceType()).containsKey(b.getPath())) {
-          log.debug("failed " + b.getKey() + ": " + " unknown yet");
-          errors.add(b.getKey() + ": " + " unknown yet");
+        if (!structureDefinitionHolder.getStructureElements().containsKey(b.getResourceType())) {
+          log.debug("failed {}: unknown resource type: {}", b.getKey(), b.getResourceType());
+          errors.add(b.getKey() + ": unknown resource type: " + b.getResourceType());
           return;
         }
-        if (structureDefinitionHolder.getStructureElements().get(b.getResourceType()).get(b.getPath()).stream()
-            .anyMatch(el -> {
-              return List.of("canonical", "id", "Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType())
-                     || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri")); //TODO
-            })) {
-          log.debug("failed " + b.getKey() + ": " + " not configures");
-          errors.add(b.getKey() + ": " + " not configures");
+        Map<String, List<StructureElement>> elements = structureDefinitionHolder.getStructureElements().get(b.getResourceType());
+        if (!elements.containsKey(b.getPath())) {
+          log.debug("failed {} - {}: unknown yet", b.getResourceType(), b.getKey());
+          errors.add(b.getKey() + ": unknown yet");
+          return;
+        }
+        if (elements.get(b.getPath()).stream().anyMatch(el -> {
+          return List.of("canonical", "Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType())
+                 || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri")); //TODO
+        })) {
+          log.debug("failed {} - {}: not configured", b.getResourceType(), b.getKey());
+          errors.add(b.getKey() + ": " + " not configured");
           return;
         }
         createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), b.getPath()));
@@ -134,7 +139,7 @@ public class BlindexInitializer {
         if (e.getCause() instanceof PSQLException) {
           err = (e.getCause().getMessage().substring(0, e.getCause().getMessage().indexOf("\n")));
         }
-        log.debug("failed " + b.getKey() + ": " + err);
+        log.info("failed {} - {}: {}", b.getResourceType(), b.getKey(), err);
         errors.add(b.getKey() + ": " + err);
       }
     });

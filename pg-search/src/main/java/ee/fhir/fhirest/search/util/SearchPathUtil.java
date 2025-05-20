@@ -36,16 +36,24 @@ public final class SearchPathUtil {
 
   public static Set<String> parsePaths(String expression) {
     return Stream.of(expression.split("\\|"))
-        .map(s -> StringUtils.trim(s))
-        .map(s -> replaceAs(s))
-        .map(s -> replaceFhirpathAs(s))
-        .map(s -> replaceFhirpathOfType(s))
-        .map(s -> replaceFhirpathWhereResolve(s))
+        .map(SearchPathUtil::trim)
+        .map(SearchPathUtil::replaceAs)
+        .map(SearchPathUtil::replaceFhirpathAs)
+        .map(SearchPathUtil::replaceFhirpathOfType)
+        .map(SearchPathUtil::replaceFhirpathWhereResolve)
         .collect(Collectors.toSet());
   }
 
+  private static String trim(String s) {
+    s = StringUtils.trim(s);
+    if (s.startsWith("(") && s.endsWith(")")) {
+      s = s.substring(1, s.length() - 1);
+    }
+    return s;
+  }
+
   private static String replaceAs(String s) {
-    if (!s.startsWith("(") || !s.contains(" as ")) {
+    if (!s.contains(" as ")) {
       return s;
     }
     s = StringUtils.remove(s, "(");
