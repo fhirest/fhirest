@@ -82,7 +82,7 @@ public class RuleThemAllFhirController {
   @PostConstruct
   public void init() {
     requestFilters.sort(Comparator.comparing(FhirestRequestFilter::getOrder));
-    responseFilters.sort(Comparator.comparing(FhirestResponseFilter::getOrder));
+    responseFilters.sort(Comparator.comparing(FhirestResponseFilter::getOrder).reversed());
   }
 
   @RequestMapping(path = "{*path}", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
