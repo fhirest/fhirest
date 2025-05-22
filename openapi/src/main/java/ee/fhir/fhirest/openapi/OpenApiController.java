@@ -37,8 +37,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class OpenApiController {
   private final OpenapiComposer composer;
 
-  @GetMapping(produces = {"text/plain", "application/json"})
-  public ResponseEntity<String> swag() {
+  @GetMapping(produces = {"text/plain", "application/yaml"})
+  public ResponseEntity<String> generateOpenapi() {
     return ResponseEntity.of(Optional.of(composer.generateOpenApiYaml()));
   }
 
