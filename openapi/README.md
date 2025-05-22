@@ -8,4 +8,7 @@ Reads defined Conformance resources and composes OpenAPI descriptions in yaml fo
 implementation "ee.fhir.fhirest:openapi:${fhirestVersion}"
 ```
 
-Openapi will be available on `/fhir-swagger` endpoint.
+Openapi will be available on `/fhir-openapi` endpoint.
+
+## Configurations
+* `fhirest.openapi.path` - `openapi-path` - ***fhir-openapi*** by default.  Openapi endpoint

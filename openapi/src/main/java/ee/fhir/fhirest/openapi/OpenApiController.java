@@ -32,13 +32,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("fhir-swagger")
+@RequestMapping("${fhirest.openapi.path:/fhir-openapi}")
 @RequiredArgsConstructor
 public class OpenApiController {
   private final OpenapiComposer composer;
 
-  @GetMapping(produces = "application/yaml")
-  public ResponseEntity<String> swag() {
+  @GetMapping(produces = {"text/plain", "application/yaml"})
+  public ResponseEntity<String> generateOpenapi() {
     return ResponseEntity.of(Optional.of(composer.generateOpenApiYaml()));
   }
 
