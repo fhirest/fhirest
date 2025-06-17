@@ -27,6 +27,9 @@ package ee.fhir.fhirest.core.util;
 import ee.fhir.fhirest.core.exception.FhirException;
 import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.VersionId;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
@@ -55,6 +58,13 @@ public final class ResourceUtil {
       id.setVersion(Integer.valueOf(tokens[3]));
     }
     return id;
+  }
+
+  public static List<VersionId> filterUnique(List<VersionId> versions) {
+    Set<String> seen = new HashSet<>();
+    return versions.stream()
+        .filter(version -> seen.add(version.getReference()))
+        .toList();
   }
 
 }
