@@ -148,7 +148,8 @@ public class ResourceSearchService {
               .filter(reference -> !contains(result, reference))
               .forEach(resourceIds::add)
           );
-      result.addIncludes(storageService.load(resourceIds));
+      List<VersionId> uniqueResourceIds = ResourceUtil.filterUnique(resourceIds);
+      result.addIncludes(storageService.load(uniqueResourceIds));
     }));
   }
 
