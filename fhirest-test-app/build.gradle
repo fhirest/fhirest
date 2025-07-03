@@ -22,6 +22,10 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter'
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
   implementation "org.liquibase:liquibase-core"
+
+  testImplementation "org.junit.jupiter:junit-jupiter-api:5.11.4"
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.11.4"
+  testImplementation "org.springframework.boot:spring-boot-starter-test"
 }
 
 bootRun {
@@ -32,6 +36,10 @@ bootRun {
 
 bootJar {
   enabled false
+}
+
+test {
+  useJUnitPlatform()
 }
 
 tasks.withType(PublishToMavenRepository).configureEach { it.enabled = false }
