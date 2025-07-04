@@ -68,8 +68,6 @@ import java.util.ArrayList;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService.getFhirVersionEnum;
-import static org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain.CacheConfiguration;
-import static org.hl7.fhir.common.hapi.validation.support.ValidationSupportChain.CacheConfiguration.defaultValues;
 
 /**
  * Configuration and holder class of Hapi context
@@ -85,8 +83,8 @@ public class HapiContextHolder implements ConformanceUpdateListener {
   protected FhirValidator validator;
   protected final List<HapiValidationSupportProvider> validationSupportProviders;
 
-  @Value("${CACHE_TIMEOUT:10}")
-  private int minuteCacheTimeout;
+  @Value("${fhirest.hapi.cache.timeout:10m}")
+  private Duration cacheTimeout;
 
   public IWorkerContext getHapiContext() {
     return hapiContext;
@@ -128,13 +126,8 @@ public class HapiContextHolder implements ConformanceUpdateListener {
         .filter(c -> SUPPORTED_CS_CONTENT_MODES.contains(c.getContent()))
         .collect(Collectors.toMap(d -> d.getUrl(), d -> d, (a, b) -> a));
 
-    CacheConfiguration cacheConfiguration = defaultValues();
-    cacheConfiguration.setCacheTimeout(
-            Duration.ofMinutes(minuteCacheTimeout)
-    );
-
     ValidationSupportChain chain = new ValidationSupportChain(
-            cacheConfiguration,
+        ValidationSupportChain.CacheConfiguration.defaultValues().setCacheTimeout(cacheTimeout),
         new InMemoryTerminologyServerValidationSupport(context),
         new PrePopulatedValidationSupport(context, defs, vs, cs),
         new CommonCodeSystemsTerminologyService(context),
