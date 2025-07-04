@@ -28,10 +28,10 @@ class HapiContextHolderCacheWithDefaultEnvTest {
         hapiContextHolder.init();
 
         //Act
-        final ValidationSupportChain validationSupportChain = ReflectionTestUtils.invokeMethod(hapiContextHolder,"getValidationSupport");
+        final ValidationSupportChain validationSupportChain = ReflectionTestUtils.invokeMethod(hapiContextHolder, "getValidationSupport");
 
         assertNotNull(validationSupportChain);
-        final CacheConfiguration cacheConfiguration = (CacheConfiguration) ReflectionTestUtils.getField(validationSupportChain,"myCacheConfiguration");
+        final CacheConfiguration cacheConfiguration = (CacheConfiguration) ReflectionTestUtils.getField(validationSupportChain, "myCacheConfiguration");
         assertNotNull(cacheConfiguration);
 
         final long actual = cacheConfiguration.getCacheTimeout();
