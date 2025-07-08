@@ -45,18 +45,25 @@ import ee.fhir.fhirest.rest.model.FhirestResponse;
 import ee.fhir.fhirest.rest.operation.OperationParametersReader;
 import ee.fhir.fhirest.rest.util.BundleUtil;
 import ee.fhir.fhirest.structure.api.ResourceContent;
+import ee.fhir.fhirest.structure.defs.JsonRepresentation;
 import jakarta.inject.Inject;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r5.model.Bundle;
 import org.hl7.fhir.r5.model.Bundle.BundleType;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
+import org.hl7.fhir.r5.model.CodeableConcept;
+import org.hl7.fhir.r5.model.OperationOutcome;
+import org.hl7.fhir.r5.model.Resource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.hl7.fhir.r5.model.OperationOutcome.IssueType.INVALID;
 
 /**
  * <p>Default http request consumer for all resource types.</p>
@@ -74,6 +81,8 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   protected OperationParametersReader operationParametersReader;
   @Inject
   protected ResourceOperationService resourceOperationService;
+  @Inject
+  JsonRepresentation jsonRepresentation;
 
   @Override
   public String getTargetType() {
@@ -128,6 +137,14 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     String contentLocation = req.getHeader("Content-Location");
     Integer ver = contentLocation == null ? null : ResourceUtil.parseReference(contentLocation).getVersion();
     ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
+    Resource resource = jsonRepresentation.parse(content.getValue());
+    if (resource.getId() == null || !resourceId.equals(resource.getId())) {
+      OperationOutcome op = new OperationOutcome();
+      op.addIssue()
+              .setCode(INVALID)
+              .setDetails(new CodeableConcept().setText("ID mismatch between request body and URL"));
+      return new FhirestResponse(400, op);
+    }
     boolean exists = resourceId != null && exists(req.getType(), resourceId);
     if (!exists && !isUpdateCreateAllowed(req.getType()) && !"POST".equals(req.getTransactionMethod())) {
       throw new FhirException(FhirestIssue.FEST_006);
