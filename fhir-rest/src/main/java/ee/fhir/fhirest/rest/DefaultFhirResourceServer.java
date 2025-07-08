@@ -39,13 +39,13 @@ import ee.fhir.fhirest.core.service.resource.ResourceOperationService;
 import ee.fhir.fhirest.core.service.resource.ResourceSearchService;
 import ee.fhir.fhirest.core.service.resource.ResourceService;
 import ee.fhir.fhirest.core.util.DateUtil;
+import ee.fhir.fhirest.core.util.JsonUtil;
 import ee.fhir.fhirest.core.util.ResourceUtil;
 import ee.fhir.fhirest.rest.model.FhirestRequest;
 import ee.fhir.fhirest.rest.model.FhirestResponse;
 import ee.fhir.fhirest.rest.operation.OperationParametersReader;
 import ee.fhir.fhirest.rest.util.BundleUtil;
 import ee.fhir.fhirest.structure.api.ResourceContent;
-import ee.fhir.fhirest.structure.defs.JsonRepresentation;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -54,7 +54,6 @@ import org.hl7.fhir.r5.model.Bundle.BundleType;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.hl7.fhir.r5.model.CodeableConcept;
 import org.hl7.fhir.r5.model.OperationOutcome;
-import org.hl7.fhir.r5.model.Resource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -81,8 +80,6 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   protected OperationParametersReader operationParametersReader;
   @Inject
   protected ResourceOperationService resourceOperationService;
-  @Inject
-  JsonRepresentation jsonRepresentation;
 
   @Override
   public String getTargetType() {
@@ -137,8 +134,10 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     String contentLocation = req.getHeader("Content-Location");
     Integer ver = contentLocation == null ? null : ResourceUtil.parseReference(contentLocation).getVersion();
     ResourceContent content = new ResourceContent(req.getBody(), req.getContentTypeName());
-    Resource resource = jsonRepresentation.parse(content.getValue());
-    if (resource.getId() == null || !resourceId.equals(resource.getId())) {
+    Map<String, Object> convertedContent = JsonUtil.fromJson(content.getValue());
+    Object rawContentId = convertedContent.get("id");
+    final String contentId = (rawContentId instanceof String) ? (String) rawContentId : null;
+    if (contentId == null || !resourceId.equals(contentId)) {
       OperationOutcome op = new OperationOutcome();
       op.addIssue()
               .setCode(INVALID)
