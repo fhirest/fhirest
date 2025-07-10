@@ -66,11 +66,10 @@ public class PgResourceStorage implements ResourceStorage {
   }
 
   private ResourceVersion store(ResourceId id, ResourceContent content) {
-    ResourceContent cont = content.getContentType().contains("json") ? content : toJson(content);
-    Resource convertedResource = resourceFormatService.parse(cont.getValue());
-    convertedResource.setId(id.getResourceId());
-    cont = resourceFormatService.compose(convertedResource);
-    ResourceVersion version = new ResourceVersion(new VersionId(id), cont);
+    Resource resource = resourceFormatService.parse(content.getValue());
+    resource.setId(id.getResourceId());
+    ResourceContent resourceContent = resourceFormatService.compose(resource);
+    ResourceVersion version = new ResourceVersion(new VersionId(id), resourceContent);
     version.getId().setVersion(resourceRepository.getLastVersion(id) + 1);
     if (clientIdentity.get() != null && clientIdentity.get().getName() != null) {
       version.setAuthor(Map.of("name", clientIdentity.get().getName()));

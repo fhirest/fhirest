@@ -53,7 +53,6 @@ import org.hl7.fhir.r5.model.Bundle.BundleType;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -260,7 +259,6 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     ResourceContent response = resourceOperationService.runTypeOperation(operation, req.getType(), content);
     return new FhirestResponse(200, response);
   }
-
 
 
   @Override
