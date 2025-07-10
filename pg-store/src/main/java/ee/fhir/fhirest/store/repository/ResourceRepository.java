@@ -34,15 +34,16 @@ import ee.fhir.fhirest.store.api.PgResourceFilter;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
@@ -112,7 +113,17 @@ public class ResourceRepository {
     if (id.getVersion() != null) {
       sb.append(" AND version = ?", id.getVersion());
     } else {
-      sb.append(" AND sys_status = 'A'");
+      sb.append(""" 
+                AND sys_status = (
+                SELECT CASE WHEN EXISTS (
+                  SELECT 1 FROM store.resource
+                  WHERE type = ? AND id = ? AND sys_status = 'A'
+                )
+                THEN 'A'
+                ELSE 'C'
+                END)
+                ORDER BY r.updated DESC
+                LIMIT 1""",  id.getResourceType(), id.getResourceId());
     }
     pgResourceFilter.ifPresent(f -> f.filter(sb, "r"));
     try {
