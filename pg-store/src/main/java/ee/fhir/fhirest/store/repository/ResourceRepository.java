@@ -113,17 +113,20 @@ public class ResourceRepository {
     if (id.getVersion() != null) {
       sb.append(" AND version = ?", id.getVersion());
     } else {
-      sb.append(""" 
-                AND sys_status = (
-                SELECT CASE WHEN EXISTS (
-                  SELECT 1 FROM store.resource
-                  WHERE type = ? AND id = ? AND sys_status = 'A'
-                )
-                THEN 'A'
-                ELSE 'C'
-                END)
-                ORDER BY r.updated DESC
-                LIMIT 1""",  id.getResourceType(), id.getResourceId());
+      sb.append("""
+              AND sys_status = (
+                SELECT CASE
+                  WHEN EXISTS (
+                    SELECT 1 FROM store.resource
+                    WHERE type = ? AND id = ? AND sys_status = 'A'
+                  )
+                  THEN 'A'
+                  ELSE 'C'
+                END
+              )
+              ORDER BY r.updated DESC
+              LIMIT 1
+              """, id.getResourceType(), id.getResourceId());
     }
     pgResourceFilter.ifPresent(f -> f.filter(sb, "r"));
     try {
