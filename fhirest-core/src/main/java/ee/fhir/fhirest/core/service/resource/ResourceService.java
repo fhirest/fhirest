@@ -32,7 +32,6 @@ import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.core.model.VersionId;
 import ee.fhir.fhirest.core.model.search.HistorySearchCriterion;
-import ee.fhir.fhirest.core.util.JsonUtil;
 import ee.fhir.fhirest.core.util.ResourceUtil;
 import ee.fhir.fhirest.structure.api.ResourceContent;
 import ee.fhir.fhirest.tx.TransactionService;
@@ -40,7 +39,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>Service responsible for resource save/update/delete interactions.</p>
@@ -90,10 +88,6 @@ public class ResourceService {
     interceptBeforeSave(ResourceBeforeSaveInterceptor.BUSINESS_VALIDATION, id, content, interaction);
 
     id.setResourceId(id.getResourceId() == null ? generateNewId(id.getResourceType()) : id.getResourceId());
-    Map<String, Object> convertedContent = JsonUtil.fromJson(content.getValue());
-    convertedContent.put("id", id.getResourceId());
-    String updatedContent = JsonUtil.toJson(convertedContent);
-    content.setValue(updatedContent);
     ResourceVersion version = tx.transaction(() -> {
       interceptBeforeSave(ResourceBeforeSaveInterceptor.TRANSACTION, id, content, interaction);
       ResourceVersion ver = storageService.store(id, content);

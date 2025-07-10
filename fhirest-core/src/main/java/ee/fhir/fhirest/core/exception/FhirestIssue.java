@@ -71,6 +71,7 @@ public enum FhirestIssue {
   FEST_034(400, INVALID, "invalid reference param: {{value}}"),
   FEST_035(400, INVALID, ":not modifier not allowed in token param"),
   FEST_036(400, INVALID, "Invalid reference: {{ref}}"),
+  FEST_037(400, INVALID, "ID mismatch between request body and URL"),
   ;
 
   private final int httpCode;
