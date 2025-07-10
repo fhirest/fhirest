@@ -37,12 +37,6 @@ import ca.uhn.hapi.converters.canonical.VersionCanonicalizer;
 import ee.fhir.fhirest.core.api.conformance.ConformanceUpdateListener;
 import ee.fhir.fhirest.core.api.conformance.HapiValidationSupportProvider;
 import jakarta.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
@@ -62,7 +56,15 @@ import org.hl7.fhir.r5.model.Resource;
 import org.hl7.fhir.utilities.validation.ValidationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService.getFhirVersionEnum;
@@ -80,6 +82,9 @@ public class HapiContextHolder implements ConformanceUpdateListener {
   protected FhirContext context;
   protected FhirValidator validator;
   protected final List<HapiValidationSupportProvider> validationSupportProviders;
+
+  @Value("${fhirest.hapi.cache.timeout:10m}")
+  private Duration cacheTimeout;
 
   public IWorkerContext getHapiContext() {
     return hapiContext;
@@ -122,6 +127,7 @@ public class HapiContextHolder implements ConformanceUpdateListener {
         .collect(Collectors.toMap(d -> d.getUrl(), d -> d, (a, b) -> a));
 
     ValidationSupportChain chain = new ValidationSupportChain(
+        ValidationSupportChain.CacheConfiguration.defaultValues().setCacheTimeout(cacheTimeout),
         new InMemoryTerminologyServerValidationSupport(context),
         new PrePopulatedValidationSupport(context, defs, vs, cs),
         new CommonCodeSystemsTerminologyService(context),
