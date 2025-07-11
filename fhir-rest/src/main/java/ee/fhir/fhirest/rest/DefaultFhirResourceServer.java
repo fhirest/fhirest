@@ -46,10 +46,6 @@ import ee.fhir.fhirest.rest.operation.OperationParametersReader;
 import ee.fhir.fhirest.rest.util.BundleUtil;
 import ee.fhir.fhirest.structure.api.ResourceContent;
 import jakarta.inject.Inject;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r5.model.Bundle;
@@ -57,6 +53,10 @@ import org.hl7.fhir.r5.model.Bundle.BundleType;
 import org.hl7.fhir.r5.model.CapabilityStatement.CapabilityStatementRestResourceComponent;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Default http request consumer for all resource types.</p>
@@ -259,7 +259,6 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
     ResourceContent response = resourceOperationService.runTypeOperation(operation, req.getType(), content);
     return new FhirestResponse(200, response);
   }
-
 
 
   @Override

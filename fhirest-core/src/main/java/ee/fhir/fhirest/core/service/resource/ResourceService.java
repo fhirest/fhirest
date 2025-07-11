@@ -35,9 +35,10 @@ import ee.fhir.fhirest.core.model.search.HistorySearchCriterion;
 import ee.fhir.fhirest.core.util.ResourceUtil;
 import ee.fhir.fhirest.structure.api.ResourceContent;
 import ee.fhir.fhirest.tx.TransactionService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>Service responsible for resource save/update/delete interactions.</p>

@@ -36,15 +36,16 @@ import ee.fhir.fhirest.store.repository.ResourceRepository;
 import ee.fhir.fhirest.structure.api.ResourceContent;
 import ee.fhir.fhirest.structure.service.ResourceFormatService;
 import jakarta.inject.Inject;
+import org.hl7.fhir.r5.model.Resource;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
+
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.hl7.fhir.r5.model.Resource;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
 
 @Primary
 @Component
@@ -65,8 +66,10 @@ public class PgResourceStorage implements ResourceStorage {
   }
 
   private ResourceVersion store(ResourceId id, ResourceContent content) {
-    ResourceContent cont = content.getContentType().contains("json") ? content : toJson(content);
-    ResourceVersion version = new ResourceVersion(new VersionId(id), cont);
+    Resource resource = resourceFormatService.parse(content.getValue());
+    resource.setId(id.getResourceId());
+    ResourceContent resourceContent = resourceFormatService.compose(resource);
+    ResourceVersion version = new ResourceVersion(new VersionId(id), resourceContent);
     version.getId().setVersion(resourceRepository.getLastVersion(id) + 1);
     if (clientIdentity.get() != null && clientIdentity.get().getName() != null) {
       version.setAuthor(Map.of("name", clientIdentity.get().getName()));
