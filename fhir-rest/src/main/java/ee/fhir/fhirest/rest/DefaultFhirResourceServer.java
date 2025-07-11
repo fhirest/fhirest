@@ -173,8 +173,8 @@ public class DefaultFhirResourceServer extends BaseFhirResourceServer {
   @Override
   public FhirestResponse history(FhirestRequest req) {
     VersionId id = req.getReference();
-    ResourceVersion version = resourceService.load(id);
-    if (version == null) {
+    boolean exists = exists(req.getType(), id.getResourceId());
+    if (!exists) {
       throw new FhirException(FhirestIssue.FEST_008, "resource", req.getType() + "/" + id.getResourceId());
     }
     HistorySearchCriterion criteria = new HistorySearchCriterion(id.getResourceType(), id.getResourceId());
