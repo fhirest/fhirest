@@ -28,7 +28,6 @@ import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.core.model.VersionId;
 import ee.fhir.fhirest.core.model.search.SearchResult;
 import ee.fhir.fhirest.structure.service.ResourceFormatService;
-import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hl7.fhir.r5.model.Bundle;
 import org.hl7.fhir.r5.model.Bundle.BundleEntryComponent;
@@ -38,6 +37,7 @@ import org.hl7.fhir.r5.model.Bundle.BundleEntrySearchComponent;
 import org.hl7.fhir.r5.model.Bundle.BundleType;
 import org.hl7.fhir.r5.model.Bundle.HTTPVerb;
 import org.hl7.fhir.r5.model.Bundle.SearchEntryMode;
+import java.util.List;
 
 public class BundleUtil {
 
@@ -73,14 +73,15 @@ public class BundleUtil {
       BundleEntryComponent entry = composeEntry(v);
       bundle.addEntry(entry);
       if (bundleType == BundleType.HISTORY) {
+        HTTPVerb httpVerb = calcMethod(v);
         BundleEntryRequestComponent request = new BundleEntryRequestComponent();
-        request.setMethod(calcMethod(v));
+        request.setMethod(httpVerb);
         request.setUrl(v.getId().getResourceReference());
         entry.setRequest(request);
 
         BundleEntryResponseComponent response = new BundleEntryResponseComponent();
         response.setLastModified(v.getModified());
-        response.setStatus("200");//this is stupid
+        response.setStatus(calcStatusCode(httpVerb));
         entry.setResponse(response);
       }
     });
@@ -98,5 +99,13 @@ public class BundleUtil {
   private static HTTPVerb calcMethod(ResourceVersion version) {
     //XXX: this is NOT how it should be. need to somehow save action maybe? stupid
     return version.isDeleted() ? HTTPVerb.DELETE : version.getId().getVersion() == 1 ? HTTPVerb.POST : HTTPVerb.PUT;
+  }
+
+  private static String calcStatusCode(HTTPVerb httpVerb) {
+      return switch (httpVerb) {
+          case DELETE -> "204";
+          case POST -> "201";
+          default -> "200";
+      };
   }
 }
