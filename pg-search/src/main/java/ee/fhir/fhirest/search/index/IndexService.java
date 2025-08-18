@@ -26,6 +26,7 @@ package ee.fhir.fhirest.search.index;
 
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
+import ee.fhir.fhirest.core.service.FhirPath;
 import ee.fhir.fhirest.core.util.JsonUtil;
 import ee.fhir.fhirest.search.StructureDefinitionHolder;
 import ee.fhir.fhirest.search.model.Blindex;
@@ -35,7 +36,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.hl7.fhir.instance.model.api.IBase;
+import org.hl7.fhir.r5.model.Base;
+import org.hl7.fhir.r5.model.BooleanType;
+import org.hl7.fhir.r5.model.CodeableConcept;
+import org.hl7.fhir.r5.model.Coding;
+import org.hl7.fhir.r5.model.ContactPoint;
+import org.hl7.fhir.r5.model.Identifier;
+import org.hl7.fhir.r5.model.Quantity;
+import org.hl7.fhir.r5.model.Reference;
+import org.hl7.fhir.r5.model.StringType;
+import org.hl7.fhir.r5.model.UriType;
 import org.springframework.stereotype.Component;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 
 import static java.util.stream.Collectors.toList;
 
@@ -47,11 +63,18 @@ public class IndexService {
   private final SearchIndexRepository searchIndexRepository;
   private final Map<String, TypeIndexRepository> indexRepos;
   private final StructureDefinitionHolder structureDefinitionHolder;
+  private final FhirPath fhirPath;
+  private static final FhirContext CTX = FhirContext.forR5();
+  private static final IParser PARSER = CTX.newJsonParser().setPrettyPrint(false);
 
-  public IndexService(SearchIndexRepository searchIndexRepository, List<TypeIndexRepository> repos, StructureDefinitionHolder structureDefinitionHolder) {
+  public IndexService(SearchIndexRepository searchIndexRepository,
+      List<TypeIndexRepository> repos, 
+      StructureDefinitionHolder structureDefinitionHolder,
+      FhirPath fhirPath) {
     this.searchIndexRepository = searchIndexRepository;
     this.indexRepos = repos.stream().collect(Collectors.toMap(TypeIndexRepository::getType, r -> r));
     this.structureDefinitionHolder = structureDefinitionHolder;
+    this.fhirPath = fhirPath;
   }
 
   public void saveIndexes(ResourceVersion version) {
@@ -74,27 +97,210 @@ public class IndexService {
       }
       TypeIndexRepository<T> repo = indexRepos.get(blindex.getParamType());
 
-      // special-case: QuestionnaireResponse is-subject-ref (valueReference under items with isSubject extension)
-      if ("QuestionnaireResponse".equals(blindex.getResourceType())
-          && "reference".equals(blindex.getParamType())
-          && blindex.getPath().contains("questionnaireresponse-isSubject")
-          && blindex.getPath().contains(".answer.valueReference")) {
+      Map<String, List<StructureElement>> map = structureDefinitionHolder.getStructureElements().get(blindex.getResourceType());
+      List<StructureElement> elements = map != null ? map.get(blindex.getPath()) : null;
 
-        List<Map<String, Object>> rawRefs = collectIsSubjectAnswerValueReferences(jsonObject);
-        List<T> values = rawRefs.stream()
-            .flatMap(obj -> repo.map(obj, "Reference"))
-            .filter(Objects::nonNull)
-            .collect(toList());
-        repo.save(sid, version, blindex, values);
-        return;
-      }
+      // decide if we should use FHIRPath evaluation
+      boolean hasPredicates = blindex.getPath().contains(".where(") || blindex.getPath().contains(".exists()") || 
+          blindex.getPath().contains("!=") || blindex.getPath().contains("=") || blindex.getPath().contains("<") || blindex.getPath().contains(">");
 
-      List<StructureElement> elements = structureDefinitionHolder.getStructureElements().get(blindex.getResourceType()).get(blindex.getPath());
-      List<T> values = elements.stream().flatMap(el -> {
-        return JsonUtil.fhirpathSimple(jsonObject, el.getChild()).flatMap(obj -> repo.map(obj, el.getType())).filter(Objects::nonNull);
-      }).collect(toList());
-      repo.save(sid, version, blindex, values);
+      
+      if (elements == null || hasPredicates) {
+        // Build full FHIRPath expression (ensure it starts with ResourceType.)
+        String fullExpr = blindex.getPath().startsWith(blindex.getResourceType() + ".")
+            ? blindex.getPath()
+            : blindex.getResourceType() + "." + blindex.getPath();
+        
+        // Normalize structure-field names to FHIRPath choice syntax
+        String evalExpr = fullExpr
+            .replace(".valueReference", ".value.ofType(Reference)")
+            .replace(".valueCoding", ".value.ofType(Coding)")
+            .replace(".valueString", ".value.ofType(string)")
+            .replace(".valueUri", ".value.ofType(uri)")
+            .replace(".valueBoolean", ".value.ofType(boolean)")
+            .replace(".valueQuantity", ".value.ofType(Quantity)");
+        
+        // Evaluate against the resource JSON
+        List<?> hits = fhirPath.evaluate(version.getContent().getValue(), evalExpr);
+
+        List<T> values = switch (blindex.getParamType().toLowerCase()) {
+          case "reference" -> adaptReferences(hits).stream()
+              .flatMap(obj -> repo.map(obj, "Reference"))
+              .filter(Objects::nonNull)
+              .collect(toList());
+
+          case "token" -> adaptTokens(hits).stream()
+              // Let your TokenIndexRepository.map decide by type hint; "Coding" is a safe default
+              .flatMap(obj -> repo.map(obj, "Coding"))
+              .filter(Objects::nonNull)
+              .collect(toList());
+
+          case "string" -> {
+              List<Map<String,Object>> ss;
+              if (blindex.getPath().contains("location-boundary-geojson")) {
+                ss = adaptSpecialAsString(hits);
+              } else {
+                ss = adaptStrings(hits);
+              }
+              yield ss.stream()
+                  .flatMap(obj -> repo.map(obj, "string"))
+                  .filter(Objects::nonNull)
+                  .collect(toList());
+            }
+
+            case "uri" -> adaptUris(hits).stream()
+                .flatMap(obj -> repo.map(obj, "uri"))
+                .filter(Objects::nonNull)
+                .collect(toList());
+        
+            case "quantity" -> adaptQuantities(hits).stream()
+                .flatMap(obj -> repo.map(obj, "Quantity"))
+                .filter(Objects::nonNull)
+                .collect(toList());
+
+            case "date", "number" -> {
+              // If you have dedicated repos, add adapters similar to Quantity/String
+              // For now, fall back to structural path if present; otherwise index nothing
+              if (elements == null) yield List.<T>of();
+              yield elements.stream().flatMap(el ->
+                  JsonUtil.fhirpathSimple(jsonObject, el.getChild())
+                      .flatMap(obj -> repo.map(obj, el.getType()))
+                      .filter(Objects::nonNull)
+              ).collect(toList());
+            }
+
+            default -> {
+              // Unknown param type; fall back to structural if available
+              if (elements == null) yield List.<T>of();
+              yield elements.stream().flatMap(el ->
+                  JsonUtil.fhirpathSimple(jsonObject, el.getChild())
+                      .flatMap(obj -> repo.map(obj, el.getType()))
+                      .filter(Objects::nonNull)
+              ).collect(toList());
+            }
+          };
+
+          repo.save(sid, version, blindex, values);
+          return;
+       }
     });
+  }
+  
+  private static List<Map<String, Object>> adaptReferences(List<?> hits) {
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (Object o : hits) {
+      if (o instanceof Reference ref && ref.hasReference()) {
+        out.add(Map.of("reference", ref.getReference()));
+      } else if (o instanceof UriType uri && uri.hasValue()) {
+        // Some .resource/canonical cases may surface as UriType
+        out.add(Map.of("reference", uri.getValue()));
+      } else if (o instanceof StringType st && st.hasValue()) {
+        // If FHIRPath gives a plain string "Patient/123"
+        out.add(Map.of("reference", st.getValue()));
+      }
+    }
+    return out;
+  }
+
+  private static List<Map<String, Object>> adaptTokens(List<?> hits) {
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (Object o : hits) {
+      if (o instanceof Coding c && c.hasCode()) {
+        Map<String, Object> m = new HashMap<>();
+        if (c.hasSystem()) m.put("system", c.getSystem());
+        m.put("code", c.getCode());
+        if (c.hasDisplay()) m.put("display", c.getDisplay());
+        out.add(m);
+      } else if (o instanceof CodeableConcept cc) {
+        // Prefer first Coding; if none, fall back to text as a pseudo-code
+        if (cc.hasCoding()) {
+          Coding c = cc.getCodingFirstRep();
+          if (c.hasCode() || c.hasSystem()) {
+            Map<String, Object> m = new HashMap<>();
+            if (c.hasSystem()) m.put("system", c.getSystem());
+            if (c.hasCode())   m.put("code", c.getCode());
+            if (c.hasDisplay()) m.put("display", c.getDisplay());
+            out.add(m);
+          }
+        } else if (cc.hasText()) {
+          out.add(Map.of("code", cc.getText()));
+        }
+      } else if (o instanceof Identifier id && id.hasValue()) {
+        Map<String, Object> m = new HashMap<>();
+        if (id.hasSystem()) m.put("system", id.getSystem());
+        m.put("code", id.getValue());
+        out.add(m);
+      } else if (o instanceof ContactPoint cp && cp.hasValue()) {
+        Map<String, Object> m = new HashMap<>();
+        if (cp.hasSystem()) m.put("system", cp.getSystem().toCode());
+        m.put("code", cp.getValue());
+        out.add(m);
+      } else if (o instanceof BooleanType bt) {
+        out.add(Map.of("code", bt.booleanValue() ? "true" : "false"));
+      } else if (o instanceof StringType st && st.hasValue()) {
+        out.add(Map.of("code", st.getValue()));
+      }
+    }
+    return out;
+  }
+
+  private static List<Map<String, Object>> adaptSpecialAsString(List<?> hits) {
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (Object o : hits) {
+      if (o instanceof Base b) {
+        String v = b.primitiveValue();
+        if (v == null) v = toJsonString(b);
+        if (v != null) out.add(Map.of("value", v));
+      }
+    }
+    return out;
+  }
+
+  private static String toJsonString(Base b) {
+    if (b == null) return null;
+    try {
+      return PARSER.encodeToString((IBase) b);
+    } catch (Exception e) {
+      String pv = b.primitiveValue();
+      return pv != null ? pv : String.valueOf(b);
+    }
+  }
+
+  private static List<Map<String, Object>> adaptStrings(List<?> hits) {
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (Object o : hits) {
+      if (o instanceof Base b) {
+        String v = b.primitiveValue();
+        if (v != null) out.add(Map.of("value", v));
+      }
+    }
+    return out;
+  }
+
+  private static List<Map<String, Object>> adaptUris(List<?> hits) {
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (Object o : hits) {
+      if (o instanceof Base b) {
+        String v = b.primitiveValue();
+        if (v != null) out.add(Map.of("uri", v));
+      }
+    }
+    return out;
+  }
+
+  private static List<Map<String, Object>> adaptQuantities(List<?> hits) {
+    List<Map<String, Object>> out = new ArrayList<>();
+    for (Object o : hits) {
+      if (o instanceof Quantity q && q.hasValue()) {
+        Map<String, Object> m = new HashMap<>();
+        m.put("value", q.getValue());
+        if (q.hasUnit()) m.put("unit", q.getUnit());
+        if (q.hasSystem()) m.put("system", q.getSystem());
+        if (q.hasCode()) m.put("code", q.getCode());
+        out.add(m);
+      }
+    }
+    return out;
   }
 
   public void deleteResource(ResourceId id) {
@@ -104,56 +310,4 @@ public class IndexService {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private static List<Map<String, Object>> collectIsSubjectAnswerValueReferences(Map<String, Object> qrJson) {
-    List<Map<String, Object>> out = new ArrayList<>();
-    if (qrJson == null) return out;
-    Object items = qrJson.get("item");
-    if (!(items instanceof List<?> list)) return out;
-
-    for (Object o : list) {
-      if (!(o instanceof Map<?, ?> m)) continue;
-      Map<String, Object> item = (Map<String, Object>) m;
-
-      boolean isSubject = hasIsSubjectExtension(item);
-      if (isSubject) {
-        Object answers = item.get("answer");
-        if (answers instanceof List<?> alist) {
-          for (Object a : alist) {
-            if (a instanceof Map<?, ?> am) {
-              Map<String, Object> ans = (Map<String, Object>) am;
-              Object vr = ans.get("valueReference");
-              if (vr instanceof Map<?, ?> vrm) {
-                out.add((Map<String, Object>) vrm);
-              }
-            }
-          }
-        }
-      }
-
-      Object nested = item.get("item");
-      if (nested instanceof List<?>) {
-        Map<String, Object> wrapper = new HashMap<>();
-        wrapper.put("item", nested);
-        out.addAll(collectIsSubjectAnswerValueReferences(wrapper));
-      }
-    }
-    return out;
-  }
-
-  @SuppressWarnings("unchecked")
-  private static boolean hasIsSubjectExtension(Map<String, Object> item) {
-    Object exts = item.get("extension");
-    if (!(exts instanceof List<?> list)) return false;
-    for (Object e : list) {
-      if (e instanceof Map<?, ?> em) {
-        Map<String, Object> ext = (Map<String, Object>) em;
-        if ("http://hl7.org/fhir/StructureDefinition/questionnaireresponse-isSubject".equals(ext.get("url"))
-            && Boolean.TRUE.equals(ext.get("valueBoolean"))) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
 }
