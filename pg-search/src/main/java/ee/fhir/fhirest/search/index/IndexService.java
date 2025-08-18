@@ -100,6 +100,15 @@ public class IndexService {
       Map<String, List<StructureElement>> map = structureDefinitionHolder.getStructureElements().get(blindex.getResourceType());
       List<StructureElement> elements = map != null ? map.get(blindex.getPath()) : null;
 
+      if (version == null || version.getContent() == null) {
+        List<T> values = elements.stream().flatMap(el -> {
+        return JsonUtil.fhirpathSimple(jsonObject, el.getChild()).flatMap(obj -> 
+          repo.map(obj, el.getType())).filter(Objects::nonNull);
+        }).collect(toList());
+        repo.save(sid, version, blindex, values);
+        return;
+      }
+
       // decide if we should use FHIRPath evaluation
       boolean hasPredicates = blindex.getPath().contains(".where(") || blindex.getPath().contains(".exists()") || 
           blindex.getPath().contains("!=") || blindex.getPath().contains("=") || blindex.getPath().contains("<") || blindex.getPath().contains(">");
