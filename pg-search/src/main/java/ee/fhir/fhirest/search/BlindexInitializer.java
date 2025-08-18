@@ -123,14 +123,24 @@ public class BlindexInitializer {
         String originalPath = b.getPath();
         
         if (!elements.containsKey(originalPath)) {
-          // Build candidate variants
+          // Build candidate variants of the FHIRPath expression to handle differences
+          // between SearchParameter expressions and StructureDefinition element keys.
+          // Strip away any .where(...) predicates to get the "raw" path
           String stripped = originalPath.replaceAll("\\.where\\(.*?\\)", "");
+
+          // Ensure path is prefixed with the resource type, e.g. "Measure.relatedArtifact"
           String prefixed = b.getResourceType() + "." + stripped;
+
+          // Remove the resource type prefix, in case elements are keyed without it
           String dePrefixed = StringUtils.removeStart(stripped, b.getResourceType() + ".");
+
+          // Handle polymorphic "value[x]" cases:
+          // Replace .valueReference with .value (may appear in StructureDefinitions this way)
           String poly1 = stripped.replace(".valueReference", ".value");
           String poly2 = prefixed.replace(".valueReference", ".value");
           String poly3 = dePrefixed.replace(".valueReference", ".value");
         
+          // Collect all candidate variants to test
           List<String> candidates = new ArrayList<>();
           candidates.add(originalPath);
           candidates.add(stripped);
@@ -140,11 +150,12 @@ public class BlindexInitializer {
           candidates.add(poly2);
           candidates.add(poly3);
         
+          // Try to find the first variant that matches the known StructureDefinition elements
           String matched = null;
           for (String c : candidates) {
             if (elements.containsKey(c)) { matched = c; break; }
           }
-        
+
           // Last resort: scan entries where the child list contains the Reference we want
           if (matched == null) {
             for (Map.Entry<String, List<StructureElement>> e : elements.entrySet()) {
