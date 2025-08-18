@@ -9,7 +9,8 @@ BEGIN
       return _blindex;
     END IF;
 
-    _idx_name := lower(_resource_type) || '_' || _param_type || '_' || lower(replace(_path, '.', '_'));
+    _idx_name := lower(_resource_type) || '_' || _param_type || '_' || lower(replace(regexp_replace(_path, '[^a-zA-Z0-9_]', '_', 'g'), '.', '_'));
+    _idx_name := left(_idx_name, 55) || '_' || substr(md5(_path), 1, 7);
 
     INSERT INTO search.blindex (resource_type, path, param_type, index_name) values (_resource_type, _path, _param_type, _idx_name);
     SELECT * into _blindex FROM search.blindex WHERE resource_type = _resource_type AND path = _path;

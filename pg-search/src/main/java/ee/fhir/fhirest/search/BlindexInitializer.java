@@ -120,20 +120,75 @@ public class BlindexInitializer {
           return;
         }
         Map<String, List<StructureElement>> elements = structureDefinitionHolder.getStructureElements().get(b.getResourceType());
-        if (!elements.containsKey(b.getPath())) {
-          log.debug("failed {} - {}: unknown yet", b.getResourceType(), b.getKey());
-          errors.add(b.getKey() + ": unknown yet");
+        String originalPath = b.getPath();
+        
+        if (!elements.containsKey(originalPath)) {
+          // Build candidate variants
+          String stripped = originalPath.replaceAll("\\.where\\(.*?\\)", "");
+          String prefixed = b.getResourceType() + "." + stripped;
+          String dePrefixed = StringUtils.removeStart(stripped, b.getResourceType() + ".");
+          String poly1 = stripped.replace(".valueReference", ".value");
+          String poly2 = prefixed.replace(".valueReference", ".value");
+          String poly3 = dePrefixed.replace(".valueReference", ".value");
+        
+          List<String> candidates = new ArrayList<>();
+          candidates.add(originalPath);
+          candidates.add(stripped);
+          candidates.add(prefixed);
+          candidates.add(dePrefixed);
+          candidates.add(poly1);
+          candidates.add(poly2);
+          candidates.add(poly3);
+        
+          String matched = null;
+          for (String c : candidates) {
+            if (elements.containsKey(c)) { matched = c; break; }
+          }
+        
+          // Last resort: scan entries where the child list contains the Reference we want
+          if (matched == null) {
+            for (Map.Entry<String, List<StructureElement>> e : elements.entrySet()) {
+              boolean hit = e.getValue().stream().anyMatch(se ->
+                  "Reference".equals(se.getType()) &&
+                  ( "answer.valueReference".equals(se.getChild())
+                    || se.getChild().endsWith(".answer.valueReference")
+                    || "answer.value[x]".equals(se.getChild())
+                    || se.getChild().endsWith(".answer.value[x]") )
+              );
+              if (hit) { matched = e.getKey(); break; }
+            }
+          }
+        
+          if (matched == null) {
+            log.info("failed {} - {}: unknown yet", b.getResourceType(), b.getKey());
+            errors.add(b.getKey() + ": unknown yet");
+            return;
+          }
+        
+          // Use the matched structural key for type checks; still store the ORIGINAL path in blindex
+          if (elements.get(matched).stream().anyMatch(el -> {
+            return List.of("canonical", "Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType())
+                   || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri"));
+          })) {
+            log.debug("failed {} - {}: not configured", b.getResourceType(), b.getKey());
+            errors.add(b.getKey() + ": not configured");
+            return;
+          }
+        
+          createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), originalPath));
           return;
         }
-        if (elements.get(b.getPath()).stream().anyMatch(el -> {
+        
+        // Normal path (exact key already exists)
+        if (elements.get(originalPath).stream().anyMatch(el -> {
           return List.of("canonical", "Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType())
-                 || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri")); //TODO
+                 || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri"));
         })) {
           log.debug("failed {} - {}: not configured", b.getResourceType(), b.getKey());
-          errors.add(b.getKey() + ": " + " not configured");
+          errors.add(b.getKey() + ":  not configured");
           return;
         }
-        createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), b.getPath()));
+        createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), originalPath));
       } catch (Exception e) {
         String err = e.getMessage();
         if (e.getCause() instanceof PSQLException) {
