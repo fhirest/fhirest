@@ -101,10 +101,13 @@ public class IndexService {
       List<StructureElement> elements = map != null ? map.get(blindex.getPath()) : null;
 
       if (version == null || version.getContent() == null) {
-        List<T> values = elements.stream().flatMap(el -> {
-        return JsonUtil.fhirpathSimple(jsonObject, el.getChild()).flatMap(obj -> 
-          repo.map(obj, el.getType())).filter(Objects::nonNull);
-        }).collect(toList());
+        // version deleted: index nothing (empty values).
+        List<T> values = (elements == null) ? List.of()
+            : elements.stream()
+                .flatMap(el -> JsonUtil.fhirpathSimple(null, el.getChild())    // jsonObject is null
+                    .flatMap(obj -> repo.map(obj, el.getType()))
+                    .filter(Objects::nonNull))
+                .collect(toList());
         repo.save(sid, version, blindex, values);
         return;
       }
