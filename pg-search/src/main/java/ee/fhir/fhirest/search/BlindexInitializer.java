@@ -148,13 +148,70 @@ public class BlindexInitializer {
           // Last resort: scan entries where the child list contains the Reference we want
           if (matched == null) {
             for (Map.Entry<String, List<StructureElement>> e : elements.entrySet()) {
-              boolean hit = e.getValue().stream().anyMatch(se ->
-                  "Reference".equals(se.getType()) &&
-                  ( "answer.valueReference".equals(se.getChild())
-                    || se.getChild().endsWith(".answer.valueReference")
-                    || "answer.value[x]".equals(se.getChild())
-                    || se.getChild().endsWith(".answer.value[x]") )
-              );
+              boolean hit = e.getValue().stream().anyMatch(se -> {
+              String t = se.getType();
+            
+              // --- Reference search parameter ---
+              // A reference-type SP (paramType=reference) can be satisfied by:
+              // - "Reference" (normal FHIR reference)
+              // - "canonical" (FHIR spec uses canonical for relatedArtifact.resource, Library dependencies, etc.)
+              // - "uri" (sometimes a Reference is stored as a plain uri in structure defs)
+              if ("reference".equalsIgnoreCase(b.getParamType())) {
+                return List.of("Reference", "canonical", "uri").contains(t);
+              }
+            
+              // --- Token search parameter ---
+              // Token-type SPs can be backed by:
+              // - "Coding" (most direct carrier of system+code)
+              // - "CodeableConcept" (wraps one or more Coding, sometimes only text)
+              // - "Identifier" (system+value behave like token)
+              // - "ContactPoint" (system+value also treated like token)
+              // - "boolean" and "string" (FHIR spec allows indexing of simple booleans/strings as token codes)
+              if ("token".equalsIgnoreCase(b.getParamType())) {
+                return List.of("Coding", "CodeableConcept", "Identifier", "ContactPoint", "boolean", "string").contains(t);
+              }
+            
+              // --- String search parameter ---
+              // String-type SPs may be satisfied by any primitive string-like element:
+              // - "string", "markdown", "id", "code" (all map to string search behavior)
+              // - "uri" and "canonical" (sometimes stored as strings, treated like text for searching)
+              if ("string".equalsIgnoreCase(b.getParamType())) {
+                return List.of("string", "markdown", "id", "code", "uri", "canonical").contains(t);
+              }
+            
+              // --- URI search parameter ---
+              // URI-type SPs specifically accept:
+              // - "uri" (native)
+              // - "canonical" (valid per spec; considered URI under the hood)
+              if ("uri".equalsIgnoreCase(b.getParamType())) {
+                return List.of("uri", "canonical").contains(t);
+              }
+            
+              // --- Quantity search parameter ---
+              // Quantity-type SPs must be real quantities:
+              // - "Quantity" (has value, unit, system, code)
+              if ("quantity".equalsIgnoreCase(b.getParamType())) {
+                return "Quantity".equals(t);
+              }
+            
+              // --- Date search parameter ---
+              // Date-type SPs are satisfied by date-like primitives and complex Periods:
+              // - "date", "dateTime", "instant" (point-in-time types)
+              // - "Period" (start/end ranges)
+              if ("date".equalsIgnoreCase(b.getParamType())) {
+                return List.of("date", "dateTime", "instant", "Period").contains(t);
+              }
+            
+              // --- Number search parameter ---
+              // Number-type SPs accept numeric primitives:
+              // - "decimal", "integer", "unsignedInt", "positiveInt"
+              if ("number".equalsIgnoreCase(b.getParamType())) {
+                return List.of("decimal", "integer", "unsignedInt", "positiveInt").contains(t);
+              }
+            
+              // Fallback: nothing matched
+              return false;
+            });
               if (hit) { matched = e.getKey(); break; }
             }
           }
@@ -167,8 +224,7 @@ public class BlindexInitializer {
         
           // Use the matched structural key for type checks; still store the ORIGINAL path in blindex
           if (elements.get(matched).stream().anyMatch(el -> {
-            return List.of("canonical", "Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType())
-                   || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri"));
+            return List.of("Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType());
           })) {
             log.debug("failed {} - {}: not configured", b.getResourceType(), b.getKey());
             errors.add(b.getKey() + ": not configured");
@@ -181,8 +237,7 @@ public class BlindexInitializer {
         
         // Normal path (exact key already exists)
         if (elements.get(originalPath).stream().anyMatch(el -> {
-          return List.of("canonical", "Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType())
-                 || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri"));
+          return List.of("Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType());
         })) {
           log.debug("failed {} - {}: not configured", b.getResourceType(), b.getKey());
           errors.add(b.getKey() + ":  not configured");
