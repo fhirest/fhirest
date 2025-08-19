@@ -195,12 +195,6 @@ public class IndexService {
     for (Object o : hits) {
       if (o instanceof Reference ref && ref.hasReference()) {
         out.add(Map.of("reference", ref.getReference()));
-      } else if (o instanceof UriType uri && uri.hasValue()) {
-        // Some .resource/canonical cases may surface as UriType
-        out.add(Map.of("reference", uri.getValue()));
-      } else if (o instanceof StringType st && st.hasValue()) {
-        // If FHIRPath gives a plain string "Patient/123"
-        out.add(Map.of("reference", st.getValue()));
       }
     }
     return out;
@@ -281,12 +275,12 @@ public class IndexService {
     return out;
   }
 
-  private static List<Map<String, Object>> adaptUris(List<?> hits) {
-    List<Map<String, Object>> out = new ArrayList<>();
+  private static List<String> adaptUris(List<?> hits) {
+    List<String> out = new ArrayList<>();
     for (Object o : hits) {
       if (o instanceof Base b) {
         String v = b.primitiveValue();
-        if (v != null) out.add(Map.of("uri", v));
+        if (v != null) out.add(v);
       }
     }
     return out;

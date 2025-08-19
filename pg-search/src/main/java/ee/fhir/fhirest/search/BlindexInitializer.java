@@ -165,10 +165,8 @@ public class BlindexInitializer {
               // --- Reference search parameter ---
               // A reference-type SP (paramType=reference) can be satisfied by:
               // - "Reference" (normal FHIR reference)
-              // - "canonical" (FHIR spec uses canonical for relatedArtifact.resource, Library dependencies, etc.)
-              // - "uri" (sometimes a Reference is stored as a plain uri in structure defs)
               if ("reference".equalsIgnoreCase(b.getParamType())) {
-                return List.of("Reference", "canonical", "uri").contains(t);
+                return "Reference".equals(t);  // spec-accurate: references only
               }
             
               // --- Token search parameter ---
@@ -186,6 +184,7 @@ public class BlindexInitializer {
               // String-type SPs may be satisfied by any primitive string-like element:
               // - "string", "markdown", "id", "code" (all map to string search behavior)
               // - "uri" and "canonical" (sometimes stored as strings, treated like text for searching)
+              // - these may be "references" which are not of type Reference
               if ("string".equalsIgnoreCase(b.getParamType())) {
                 return List.of("string", "markdown", "id", "code", "uri", "canonical").contains(t);
               }

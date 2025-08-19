@@ -50,6 +50,9 @@ public class ReferenceIndexRepository extends TypeIndexRepository<Value> {
 
   @Override
   public Stream<Value> map(Object value, String valueType) {
+    if (!(value instanceof Map<?, ?>)) {
+      return Stream.empty();  // only accept {"reference": "..."}
+    }
     return getValue((Map) value, valueType).filter(v -> v != null && v.getId() != null);
   }
 

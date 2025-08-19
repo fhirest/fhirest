@@ -13,7 +13,7 @@ BEGIN
     _idx_name := left(_idx_name, 55) || '_' || substr(md5(_path), 1, 7);
 
     INSERT INTO search.blindex (resource_type, path, param_type, index_name) values (_resource_type, _path, _param_type, _idx_name);
-    SELECT * into _blindex FROM search.blindex WHERE resource_type = _resource_type AND path = _path;
+    SELECT * into _blindex FROM search.blindex WHERE resource_type = _resource_type AND path = _path AND param_type = _param_type;
 
     _base_idx := case
                    when _param_type = 'string' then 'base_index_string'
