@@ -100,23 +100,11 @@ public class IndexService {
       Map<String, List<StructureElement>> map = structureDefinitionHolder.getStructureElements().get(blindex.getResourceType());
       List<StructureElement> elements = map != null ? map.get(blindex.getPath()) : null;
 
-      if (version == null || version.getContent() == null) {
-        // version deleted: index nothing (empty values).
-        List<T> values = (elements == null) ? List.of()
-            : elements.stream()
-                .flatMap(el -> JsonUtil.fhirpathSimple(null, el.getChild())    // jsonObject is null
-                    .flatMap(obj -> repo.map(obj, el.getType()))
-                    .filter(Objects::nonNull))
-                .collect(toList());
-        repo.save(sid, version, blindex, values);
-        return;
-      }
-
       // decide if we should use FHIRPath evaluation
       boolean hasPredicates = blindex.getPath().contains(".where(") || blindex.getPath().contains(".exists()") || 
           blindex.getPath().contains("!=") || blindex.getPath().contains("=") || blindex.getPath().contains("<") || blindex.getPath().contains(">");
 
-      if (elements == null || hasPredicates) {
+      if ((elements == null || hasPredicates) && version != null && version.getContent() != null) {
         // Build full FHIRPath expression (ensure it starts with ResourceType.)
         String fullExpr = blindex.getPath().startsWith(blindex.getResourceType() + ".")
             ? blindex.getPath()
@@ -130,7 +118,7 @@ public class IndexService {
             .replace(".valueUri", ".value.ofType(uri)")
             .replace(".valueBoolean", ".value.ofType(boolean)")
             .replace(".valueQuantity", ".value.ofType(Quantity)");
-        
+
         // Evaluate against the resource JSON
         List<?> hits = fhirPath.evaluate(version.getContent().getValue(), evalExpr);
 
