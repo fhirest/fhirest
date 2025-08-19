@@ -116,7 +116,6 @@ public class IndexService {
       boolean hasPredicates = blindex.getPath().contains(".where(") || blindex.getPath().contains(".exists()") || 
           blindex.getPath().contains("!=") || blindex.getPath().contains("=") || blindex.getPath().contains("<") || blindex.getPath().contains(">");
 
-      
       if (elements == null || hasPredicates) {
         // Build full FHIRPath expression (ensure it starts with ResourceType.)
         String fullExpr = blindex.getPath().startsWith(blindex.getResourceType() + ".")
@@ -190,14 +189,19 @@ public class IndexService {
                       .filter(Objects::nonNull)
               ).collect(toList());
             }
-          };
-
-          repo.save(sid, version, blindex, values);
-          return;
-       }
+        };
+        repo.save(sid, version, blindex, values);
+        return;
+      }
+      List<T> values = elements.stream()
+        .flatMap(el -> JsonUtil.fhirpathSimple(jsonObject, el.getChild())
+            .flatMap(obj -> repo.map(obj, el.getType()))
+            .filter(Objects::nonNull))
+        .collect(toList());
+      repo.save(sid, version, blindex, values);
     });
   }
-  
+
   private static List<Map<String, Object>> adaptReferences(List<?> hits) {
     List<Map<String, Object>> out = new ArrayList<>();
     for (Object o : hits) {
