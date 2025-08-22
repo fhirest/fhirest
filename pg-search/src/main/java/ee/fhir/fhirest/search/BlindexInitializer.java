@@ -240,11 +240,19 @@ public class BlindexInitializer {
             errors.add(b.getKey() + ": not configured");
             return;
           }
-        
-          createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), originalPath));
+
+          // --- Minimal new logic: infer effective type and override if needed
+          String effectiveParamType = inferEffectiveParamType(b, elements, matched);
+          if (!Objects.equals(effectiveParamType, b.getParamType())) {
+            log.warn("blindex: {} -> overriding paramType {} → {} (path={}, leafTypes={})",
+                b.getKey(), b.getParamType(), effectiveParamType, matched,
+                elements.get(matched).stream().map(StructureElement::getType).collect(Collectors.toSet()));
+          }
+
+          createdIndexed.add(blindexRepository.createIndex(effectiveParamType, b.getResourceType(), originalPath));
           return;
         }
-        
+
         // Normal path (exact key already exists)
         if (elements.get(originalPath).stream().anyMatch(el -> {
           return List.of("Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType());
@@ -253,7 +261,16 @@ public class BlindexInitializer {
           errors.add(b.getKey() + ":  not configured");
           return;
         }
-        createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), originalPath));
+
+        // --- Minimal new logic here too: infer effective type with the exact key
+        String effectiveParamType = inferEffectiveParamType(b, elements, originalPath);
+        if (!Objects.equals(effectiveParamType, b.getParamType())) {
+          log.warn("blindex: {} -> overriding paramType {} → {} (path={}, leafTypes={})",
+              b.getKey(), b.getParamType(), effectiveParamType, originalPath,
+              elements.get(originalPath).stream().map(StructureElement::getType).collect(Collectors.toSet()));
+        }
+
+        createdIndexed.add(blindexRepository.createIndex(effectiveParamType, b.getResourceType(), originalPath));
       } catch (Exception e) {
         String err = e.getMessage();
         if (e.getCause() instanceof PSQLException) {
@@ -291,9 +308,7 @@ public class BlindexInitializer {
           while (true) {
             SearchResult search = resourceSearchService.search(type, "_count", batch.toString(), "_page", page.toString());
             indexes.forEach(i -> search.getEntries().forEach(v -> indexService.saveIndex(v, i)));
-            if (search.getEntries().size() < batch) {
-              break;
-            }
+            if (search.getEntries().size() < batch) break;
             page++;
           }
         } catch (Exception e) {
@@ -315,4 +330,29 @@ public class BlindexInitializer {
     }
   }
 
+  // -------- NEW: minimal helper to infer effective param type ----------
+  private String inferEffectiveParamType(Blindex b, Map<String, List<StructureElement>> elements, String matchedPath) {
+    String declared = b.getParamType();
+    List<StructureElement> leafs = elements.get(matchedPath);
+    if (leafs == null || leafs.isEmpty()) return declared;
+
+    var leafTypes = leafs.stream().map(StructureElement::getType).collect(Collectors.toSet());
+
+    if ("reference".equalsIgnoreCase(declared)) {
+      boolean hasReference = leafTypes.contains("Reference");
+      boolean hasCanonicalOrUri = leafTypes.contains("canonical") || leafTypes.contains("uri") || leafTypes.contains("url");
+      boolean isResourceReferencePath = matchedPath.endsWith(".resourceReference");
+      boolean isResourceCanonicalPath  = matchedPath.endsWith(".resource");
+      if (!hasReference && hasCanonicalOrUri && (isResourceCanonicalPath && !isResourceReferencePath)) {
+        return "uri";
+      }
+    }
+
+    if ("string".equalsIgnoreCase(declared)) {
+      boolean hasCanonicalOrUri = leafTypes.contains("canonical") || leafTypes.contains("uri") || leafTypes.contains("url");
+      if (hasCanonicalOrUri) return "uri";
+    }
+
+    return declared;
+  }
 }

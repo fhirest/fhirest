@@ -9,6 +9,21 @@ BEGIN
       return _blindex;
     END IF;
 
+    -- ✳️ Minimal normalization: if caller passed 'reference' (or 'string') but the leaf is canonical (.resource),
+    -- flip to 'uri'. This catches R5 RelatedArtifact.resource etc.
+    IF lower(_param_type) = 'reference'
+       AND position('.resourceReference' in _path) = 0
+       AND right(_path, 9) = '.resource' THEN
+      _param_type := 'uri';
+    END IF;
+
+    -- (optional) also normalize 'string'→'uri' for canonical leaves
+    IF lower(_param_type) = 'string'
+       AND position('.resourceReference' in _path) = 0
+       AND right(_path, 9) = '.resource' THEN
+      _param_type := 'uri';
+    END IF;
+
     _idx_name := lower(_resource_type) || '_' || _param_type || '_' || lower(replace(regexp_replace(_path, '[^a-zA-Z0-9_]', '_', 'g'), '.', '_'));
     _idx_name := left(_idx_name, 55) || '_' || substr(md5(_path), 1, 7);
 

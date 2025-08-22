@@ -35,6 +35,8 @@ import jakarta.inject.Named;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+
+import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +49,9 @@ public class PgSearchRepository {
   @Inject
   private Optional<PgResourceSearchFilter> pgResourceSearchFilter;
 
+  private static final java.util.Set<String> CANONICAL_REF_PARAMS =
+      java.util.Set.of("predecessor", "successor", "derived-from", "depends-on", "composed-of");
+  
   public Integer count(SearchCriterion criteria) {
     SqlBuilder sb = new SqlBuilder("SELECT count(1) FROM search.resource base ");
     sb.append(joins(criteria));
@@ -55,6 +60,24 @@ public class PgSearchRepository {
     pgResourceSearchFilter.ifPresent(f -> f.filter(sb, "base"));
     log.debug(sb.getPretty());
     return jdbcTemplate.queryForObject(sb.getSql(), Integer.class, sb.getParams());
+  }
+  
+  private QueryParam maybeFlipToUri(QueryParam p) {
+    // Only flip well-known RelatedArtifact-based params when they were declared as REFERENCE
+    if (p.getType() == SearchParamType.REFERENCE && CANONICAL_REF_PARAMS.contains(p.getKey())) {
+      QueryParam q = new QueryParam(p.getKey(), p.getModifier(), SearchParamType.URI, p.getResourceType());
+      // Important: add chains BEFORE setting values (addChain asserts values==null)
+      if (p.getChains() != null) {
+        for (QueryParam c : p.getChains()) {
+          q.addChain(c);
+        }
+      }
+      if (p.getValues() != null) {
+        q.setValues(p.getValues()); // will propagate to chains if present
+      }
+      return q;
+    }
+    return p;
   }
 
   public List<ResourceId> search(SearchCriterion criteria) {
@@ -87,7 +110,8 @@ public class PgSearchRepository {
   private SqlBuilder criteria(SearchCriterion criteria) {
     SqlBuilder sb = new SqlBuilder();
     for (QueryParam param : criteria.getConditions()) {
-      SqlBuilder peanut = SearchSqlUtil.condition(param, "base");
+      QueryParam effective = maybeFlipToUri(param);
+      SqlBuilder peanut = SearchSqlUtil.condition(effective, "base");
       if (peanut != null) {
         sb.and("(").append(peanut).append(")");
       }
