@@ -1,0 +1,530 @@
+{
+	"info": {
+		"_postman_id": "ea968015-dea3-42ce-bafb-a1b1fe71205b",
+		"name": "49-fhir-path",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2569444"
+	},
+	"item": [
+		{
+			"name": "measure-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Measure\",\n  \"id\": \"new-measure\",\n  \"url\": \"https://fhir.ee/fhir/Measure/new-measure\",\n  \"status\": \"active\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"https://fhir.ee/fhir/old-measure\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure?predecessor=https://fhir.ee/fhir/old-measure",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "https://fhir.ee/fhir/old-measure"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Measure\",\n  \"status\": \"active\",\n  \"url\": \"http://fhir.e/fhir/Measure/example-current-with-depends-on\",\n  \"version\": \"2.0.0\",\n  \"name\": \"ExampleMeasureCurrent\",\n  \"title\": \"Example Measure With Dependency\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"depends-on\",\n      \"resource\": \"http://fhir.ee/fhir/Measure/example\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure?depends-on=http://fhir.ee/fhir/Measure/example",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure"
+					],
+					"query": [
+						{
+							"key": "depends-on",
+							"value": "http://fhir.ee/fhir/Measure/example"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "codesystem-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"CodeSystem\",\n  \"id\": \"new-codesystem\",\n  \"url\": \"http://fhir.ee/fhir/CodeSystem/new-codesystem\",\n  \"status\": \"active\",\n  \"name\": \"NewExampleCodeSystem\",\n  \"title\": \"New Example Code System\",\n  \"version\": \"2.0.0\",\n  \"content\": \"complete\",\n  \"concept\": [\n    {\n      \"code\": \"alpha\",\n      \"display\": \"Alpha Concept\"\n    },\n    {\n      \"code\": \"beta\",\n      \"display\": \"Beta Concept\"\n    }\n  ],\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/fhir/CodeSystem/old-codesystem\"\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}/CodeSystem",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"CodeSystem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "codesystem-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/CodeSystem/new-codesystem\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "pm.test(\"OK\", function () {\r\n  pm.expect(pm.response.code).to.be.oneOf([200]);\r\n});\r\npm.test(\"validate search result\", function () {\r\n    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r\n    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r\n    pm.expect(pm.response.json().total).to.eql(1);\r\n    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r\n});\r\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}/CodeSystem?predecessor=http://fhir.ee/fhir/CodeSystem/old-codesystem",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"CodeSystem"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/fhir/CodeSystem/old-codesystem"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"PlanDefinition\",\n  \"status\": \"active\",\n  \"url\": \"http://fhir.ee/fhir/PlanDefinition/example-current\",\n  \"version\": \"2.0.0\",\n  \"title\": \"Example PlanDefinition with Canonical Predecessor\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/fhir/PlanDefinition/example-previous\"\n    }\n  ],\n  \"action\": [\n    {\n      \"title\": \"Initial Assessment\",\n      \"description\": \"Perform an initial patient assessment.\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/PlanDefinition/example-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "pm.test(\"OK\", function () {\r\n  pm.expect(pm.response.code).to.be.oneOf([200]);\r\n});\r\npm.test(\"validate search result\", function () {\r\n    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r\n    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r\n    pm.expect(pm.response.json().total).to.eql(1);\r\n    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r\n});\r\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition?predecessor=http://fhir.ee/fhir/PlanDefinition/example-previous",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/fhir/PlanDefinition/example-previous"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "questionnaireresponse-isSubject",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"resourceType\": \"QuestionnaireResponse\",\n    \"language\": \"et-EE\",\n    \"extension\": [\n        {\n            \"extension\": [\n                {\n                    \"url\": \"category\",\n                    \"valueCoding\": {\n                        \"system\": \"https://fhir.ee/CodeSystem/tervisekontrolli-kasutusala\",\n                        \"code\": \"occupational\"\n                    }\n                }\n            ],\n            \"url\": \"https://fhir.ee/hdecl/StructureDefinition/ee-health-declaration-category\"\n        }\n    ],\n    \"questionnaire\": \"https://fhir.ee/qre/Questionnaire-health-declaration|1.0.0\",\n    \"status\": \"in-progress\",\n    \"subject\": {\n        \"reference\": \"Patient/1236\"\n    },\n    \"author\": {\n        \"reference\": \"Patient/1236\"\n    },\n    \"item\": [\n    {\n      \"linkId\": \"subject\",\n      \"text\": \"something\",\n      \"extension\": [\n        {\n          \"url\": \"http://hl7.org/fhir/StructureDefinition/questionnaireresponse-isSubject\",\n          \"valueBoolean\": true\n        }\n      ],\n      \"answer\": [\n        { \"valueReference\": { \"reference\": \"Patient/1269\" } }\n      ]\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/QuestionnaireResponse",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"QuestionnaireResponse"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "questionnaireresponse-isSubject",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.questionnaire).to.eql(\"https://fhir.ee/qre/Questionnaire-health-declaration|1.0.0\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/QuestionnaireResponse?item-subject=Patient/1269",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"QuestionnaireResponse"
+					],
+					"query": [
+						{
+							"key": "item-subject",
+							"value": "Patient/1269"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "patientId",
+			"value": ""
+		},
+		{
+			"key": "randomIdentifier",
+			"value": ""
+		}
+	]
+}

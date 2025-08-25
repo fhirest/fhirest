@@ -42,6 +42,7 @@ import ee.fhir.fhirest.util.sql.SqlBuilder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.hl7.fhir.r5.model.Enumerations.SearchParamType;
 
 public final class SearchSqlUtil {
@@ -85,6 +86,31 @@ public final class SearchSqlUtil {
     return providers.get(param.getType()).makeExpression(param, alias);
   }
 
+  /** Force-build using a specific SearchParamType (e.g., URI or REFERENCE) without mutating the original. */
+  public static SqlBuilder conditionAsType(QueryParam param, SearchParamType forcedType, String alias) {
+    if (param.getType() == forcedType) {
+      return condition(param, alias);
+    }
+    QueryParam copy = copyWithType(param, forcedType);
+    return condition(copy, alias);
+  }
+
+  /** Combine limited-to types. If both URI and REFERENCE requested, returns "(uriExpr OR refExpr)". */
+  public static SqlBuilder conditionLimitedTo(QueryParam param, String alias, Set<SearchParamType> allowedTypes) {
+    if (allowedTypes == null || allowedTypes.isEmpty()) {
+      return condition(param, alias);
+    }
+    boolean wantUri = allowedTypes.contains(SearchParamType.URI);
+    boolean wantRef = allowedTypes.contains(SearchParamType.REFERENCE);
+    SqlBuilder uriExpr = wantUri ? conditionAsType(param, SearchParamType.URI, alias) : null;
+    SqlBuilder refExpr = wantRef ? conditionAsType(param, SearchParamType.REFERENCE, alias) : null;
+
+    if (uriExpr != null && refExpr != null) {
+      return new SqlBuilder().append("(").append(uriExpr).append(" OR ").append(refExpr).append(")");
+    }
+    return uriExpr != null ? uriExpr : refExpr;
+  }
+
   public static SqlBuilder order(QueryParam param, String alias) {
     String value = param.getValues().get(0);
     String direction = "ASC";
@@ -103,4 +129,18 @@ public final class SearchSqlUtil {
     return providers.get(type).order(param.getResourceType(), value, alias, direction).append(direction);
   }
 
+  // ---- helper: shallow copy with a different SearchParamType ----
+  private static QueryParam copyWithType(QueryParam p, SearchParamType newType) {
+    if (p.getType() == newType) return p;
+    QueryParam q = new QueryParam(p.getKey(), p.getModifier(), newType, p.getResourceType());
+    if (p.getChains() != null) {
+      for (QueryParam c : p.getChains()) {
+        q.addChain(c);
+      }
+    }
+    if (p.getValues() != null) {
+      q.setValues(p.getValues());
+    }
+    return q;
+  }
 }
