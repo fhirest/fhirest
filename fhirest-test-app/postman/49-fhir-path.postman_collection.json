@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "ea968015-dea3-42ce-bafb-a1b1fe71205b",
-		"name": "49-fhir-path",
+		"_postman_id": "8f5636b7-ff85-4a97-b69d-e631dab4f4c0",
+		"name": "01-fhir-path",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "2569444"
 	},
@@ -164,7 +164,7 @@
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
 							"    pm.expect(pm.response.json().total).to.eql(1);\r",
-							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.e/fhir/Measure/example-current-with-depends-on\");\r",
 							"});\r",
 							""
 						],
