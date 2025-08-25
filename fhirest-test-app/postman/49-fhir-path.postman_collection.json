@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "c59a157e-dc84-4957-b106-04d7f264da84",
+		"_postman_id": "ef308ca6-5b7f-4ac4-a8ae-4fc6db1675ec",
 		"name": "49-fhir-path",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "2569444"
@@ -88,7 +88,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "pm.test(\"OK\", function () {\r\n  pm.expect(pm.response.code).to.be.oneOf([200]);\r\n});\r\npm.test(\"validate search result\", function () {\r\n    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r\n    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r\n    pm.expect(pm.response.json().total).to.eql(1);\r\n    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r\n});\r\n"
+					"raw": ""
 				},
 				"url": {
 					"raw": "{{fhirest}}/CodeSystem?predecessor=http://fhir.ee/fhir/CodeSystem/old-codesystem",
@@ -266,7 +266,7 @@
 							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
 							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
 							"    pm.expect(pm.response.json().total).to.eql(1);\r",
-							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.e/fhir/Measure/example-current-with-depends-on\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/Measure/example-current-with-depends-on\");\r",
 							"});\r",
 							""
 						],
@@ -394,7 +394,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "pm.test(\"OK\", function () {\r\n  pm.expect(pm.response.code).to.be.oneOf([200]);\r\n});\r\npm.test(\"validate search result\", function () {\r\n    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r\n    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r\n    pm.expect(pm.response.json().total).to.eql(1);\r\n    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r\n});\r\n"
+					"raw": ""
 				},
 				"url": {
 					"raw": "{{fhirest}}/PlanDefinition?predecessor=http://fhir.ee/fhir/PlanDefinition/example-previous",
@@ -496,7 +496,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "pm.test(\"OK\", function () {\r\n  pm.expect(pm.response.code).to.be.oneOf([200]);\r\n});\r\npm.test(\"validate search result\", function () {\r\n    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r\n    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r\n    pm.expect(pm.response.json().total).to.eql(1);\r\n    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r\n});\r\n"
+					"raw": ""
 				},
 				"url": {
 					"raw": "{{fhirest}}/PlanDefinition?depends-on=http://fhir.ee/fhir/PlanDefinition/other-plandef",
@@ -700,7 +700,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "pm.test(\"OK\", function () {\r\n  pm.expect(pm.response.code).to.be.oneOf([200]);\r\n});\r\npm.test(\"validate search result\", function () {\r\n    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r\n    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r\n    pm.expect(pm.response.json().total).to.eql(1);\r\n    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r\n});\r\n"
+					"raw": ""
 				},
 				"url": {
 					"raw": "{{fhirest}}/Library?depends-on=http://fhir.ee/Library/dependency",
@@ -803,7 +803,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "pm.test(\"OK\", function () {\r\n  pm.expect(pm.response.code).to.be.oneOf([200]);\r\n});\r\npm.test(\"validate search result\", function () {\r\n    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r\n    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r\n    pm.expect(pm.response.json().total).to.eql(1);\r\n    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r\n});\r\n"
+					"raw": ""
 				},
 				"url": {
 					"raw": "{{fhirest}}/Patient?telecom=test.telecom@fhir.ee",
@@ -817,6 +817,109 @@
 						{
 							"key": "telecom",
 							"value": "test.telecom@fhir.ee"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "organizationAffiliation-telecom",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"OrganizationAffiliation\",\n  \"active\": true,\n  \"organization\": { \"reference\": \"Organization/org-prim\" },\n  \"participatingOrganization\": { \"reference\": \"Organization/org-part\" },\n  \"contact\": [\n    {\n      \"telecom\": [\n        { \"system\": \"email\", \"value\": \"test.affiliation@fhir.ee\", \"use\": \"work\" }\n      ]\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/OrganizationAffiliation",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"OrganizationAffiliation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "organizationAffiliation-telecom",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.organization.reference).to.eql(\"Organization/org-prim\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.participatingOrganization.reference).to.eql(\"Organization/org-part\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/OrganizationAffiliation?telecom=test.affiliation@fhir.ee",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"OrganizationAffiliation"
+					],
+					"query": [
+						{
+							"key": "telecom",
+							"value": "test.affiliation@fhir.ee"
 						}
 					]
 				}
