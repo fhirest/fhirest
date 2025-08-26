@@ -5725,6 +5725,312 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "careteam-alias",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"CareTeam\",\n  \"status\": \"active\",\n  \"name\": \"Cardio Rapid Response Team\",\n  \"extension\": [\n    {\n      \"url\": \"http://hl7.org/fhir/StructureDefinition/careteam-alias\",\n      \"valueString\": \"CRRT-A\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/CareTeam",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"CareTeam"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "careteam-alias",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.extension[0].valueString).to.eql(\"CRRT-A\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/CareTeam?name=CRRT-A",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"CareTeam"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "CRRT-A"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundle-entry-composition",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"identifier\": { \"system\": \"http://fhir.ee/doc/bundle-id\", \"value\": \"bundle-123-20250826\" },\n  \"type\": \"document\",\n  \"timestamp\": \"2025-08-26T12:00:00Z\",\n  \"entry\": [\n    {\n      \"fullUrl\": \"http://fhir.ee/fhir/Composition/doc-1\",\n      \"resource\": {\n        \"resourceType\": \"Composition\",\n        \"id\": \"doc-1\",\n        \"status\": \"final\",\n        \"type\": {\n          \"coding\": [\n            { \"system\": \"http://loinc.org\", \"code\": \"11488-4\", \"display\": \"Consult note\" }\n          ]\n        },\n        \"date\": \"2025-08-26T11:45:00Z\",\n        \"title\": \"Consult note\",\n        \"subject\": [\n          { \"reference\": \"http://fhir.ee/fhir/Patient/pt-testPatient\" }\n        ],\n        \"author\": [\n          { \"reference\": \"http://fhir.ee/fhir/Practitioner/pr1\" }\n        ]\n      }\n    },\n    {\n      \"fullUrl\": \"http://fhir.ee/fhir/Patient/pt-testPatient\",\n      \"resource\": {\n        \"resourceType\": \"Patient\",\n        \"id\": \"pt-testPatient\",\n        \"name\": [ { \"use\": \"official\", \"family\": \"testPatientFamily\", \"given\": [\"testPatientGiven\"] } ]\n      }\n    },\n    {\n      \"fullUrl\": \"http://fhir.ee/fhir/Practitioner/pr1\",\n      \"resource\": {\n        \"resourceType\": \"Practitioner\",\n        \"id\": \"pr1\",\n        \"name\": [ { \"family\": \"TestPractitionerFamily\", \"given\": [\"testPractitionerGiven\"] } ]\n      }\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Bundle",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Bundle"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundle-entry-composition",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.entry[0].fullUrl).to.eql(\"http://fhir.ee/fhir/Composition/doc-1\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Bundle?composition=doc-1",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Bundle"
+					],
+					"query": [
+						{
+							"key": "composition",
+							"value": "doc-1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bodystructure-excludedstructure",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"BodyStructure\",\n  \"patient\": { \"reference\": \"Patient/pt-test\" },\n  \"description\": \"Example with an excluded heart region\",\n  \"excludedStructure\": [\n    {\n      \"structure\": {\n        \"coding\": [\n          { \"system\": \"http://snomed.info/sct\", \"code\": \"302509004\", \"display\": \"Entire heart\" }\n        ],\n        \"text\": \"Heart\"\n      }\n    }\n  ],\n  \"includedStructure\": [\n    {\n      \"structure\": {\n        \"coding\": [\n          { \"system\": \"http://snomed.info/sct\", \"code\": \"281158006\", \"display\": \"Entire liver\" }\n        ],\n        \"text\": \"Liver\"\n      }\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/BodyStructure",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"BodyStructure"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bodystructure-excludedstructure",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.excludedStructure[0].structure.coding[0].display).to.eql(\"Entire heart\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/BodyStructure?excluded_structure=302509004",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"BodyStructure"
+					],
+					"query": [
+						{
+							"key": "excluded_structure",
+							"value": "302509004"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"variable": [

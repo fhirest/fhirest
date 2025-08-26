@@ -47,7 +47,6 @@ import org.hl7.fhir.r5.model.Identifier;
 import org.hl7.fhir.r5.model.Quantity;
 import org.hl7.fhir.r5.model.Reference;
 import org.hl7.fhir.r5.model.StringType;
-import org.hl7.fhir.r5.model.UriType;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -113,8 +112,13 @@ public class IndexService {
       }
 
       // decide if we should use FHIRPath evaluation
-      boolean hasPredicates = blindex.getPath().contains(".where(") || blindex.getPath().contains(".exists()") || 
-          blindex.getPath().contains("!=") || blindex.getPath().contains("=") || blindex.getPath().contains("<") || blindex.getPath().contains(">");
+      boolean hasPredicates = blindex.getPath().contains(".where(") ||
+          blindex.getPath().contains(".exists()") || 
+          blindex.getPath().contains("!=") ||
+          blindex.getPath().contains("=") ||
+          blindex.getPath().contains("<") ||
+          blindex.getPath().contains(">") || 
+          blindex.getPath().contains("resourceComposition");
 
       if ((elements == null || hasPredicates) && version != null && version.getContent() != null) {
         // Build full FHIRPath expression (ensure it starts with ResourceType.)
@@ -129,6 +133,7 @@ public class IndexService {
             .replace(".valueString", ".value.ofType(string)")
             .replace(".valueUri", ".value.ofType(uri)")
             .replace(".valueBoolean", ".value.ofType(boolean)")
+            .replace(".resourceComposition", ".resource as Composition")
             .replace(".valueQuantity", ".value.ofType(Quantity)");
 
         // Evaluate against the resource JSON
@@ -147,12 +152,7 @@ public class IndexService {
               .collect(toList());
 
           case "string" -> {
-              List<String> ss;
-              if (blindex.getPath().contains("location-boundary-geojson")) {
-                ss = adaptSpecialAsStringFlat(hits);  // returns List<String>
-              } else {
-                ss = adaptStringsFlat(hits);          // returns List<String>
-              }
+              List<String> ss = adaptStringsFlat(hits);
               yield ss.stream()
                   .flatMap(v -> repo.map(v, "string"))  // pass raw strings to the indexer
                   .filter(Objects::nonNull)
@@ -218,23 +218,27 @@ public class IndexService {
     return out;
   }
 
-  private static List<String> adaptSpecialAsStringFlat(List<?> hits) {
-    List<String> out = new ArrayList<>();
-    for (Object o : hits) {
-      if (o instanceof Base b) {
-        String v = b.primitiveValue();
-        if (v == null) v = toJsonString(b); // your existing fallback
-        if (v != null) out.add(v);
-      }
-    }
-    return out;
-  }
-
   private static List<Map<String, Object>> adaptReferences(List<?> hits) {
     List<Map<String, Object>> out = new ArrayList<>();
     for (Object o : hits) {
       if (o instanceof Reference ref && ref.hasReference()) {
         out.add(Map.of("reference", ref.getReference()));
+      } else if (o instanceof org.hl7.fhir.r5.model.Resource r
+          && r.hasIdElement() && !r.getIdElement().isEmpty()) {
+        String type = r.fhirType();
+        String idPart = r.getIdElement().getIdPart();
+        if (idPart != null && !idPart.isBlank()) {
+          out.add(Map.of("reference", type + "/" + idPart)); // e.g., Composition/doc-1
+        }
+      } else if (o instanceof Map<?,?> m) {                 // ← JSON node case
+        Object rt = m.get("resourceType");
+        Object id = m.get("id");
+        Object ref = m.get("reference");
+        if (ref instanceof String s && !s.isBlank()) {
+          out.add(Map.of("reference", s));
+        } else if (rt instanceof String type && id instanceof String idPart && !idPart.isBlank()) {
+          out.add(Map.of("reference", type + "/" + idPart));
+        }
       }
     }
     return out;
