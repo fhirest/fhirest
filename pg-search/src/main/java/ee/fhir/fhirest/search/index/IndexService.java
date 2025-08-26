@@ -147,14 +147,14 @@ public class IndexService {
               .collect(toList());
 
           case "string" -> {
-              List<Map<String,Object>> ss;
+              List<String> ss;
               if (blindex.getPath().contains("location-boundary-geojson")) {
-                ss = adaptSpecialAsString(hits);
+                ss = adaptSpecialAsStringFlat(hits);  // returns List<String>
               } else {
-                ss = adaptStrings(hits);
+                ss = adaptStringsFlat(hits);          // returns List<String>
               }
               yield ss.stream()
-                  .flatMap(obj -> repo.map(obj, "string"))
+                  .flatMap(v -> repo.map(v, "string"))  // pass raw strings to the indexer
                   .filter(Objects::nonNull)
                   .collect(toList());
             }
@@ -200,6 +200,34 @@ public class IndexService {
         .collect(toList());
       repo.save(sid, version, blindex, values);
     });
+  }
+  
+  private static List<String> adaptStringsFlat(List<?> hits) {
+    List<String> out = new ArrayList<>();
+    for (Object o : hits) {
+      if (o instanceof Base b) {
+        String v = b.primitiveValue();
+        if (v != null) out.add(v);
+      } else if (o instanceof String s) {
+        out.add(s);
+      } else if (o != null) {
+        // be tolerant; only if you want to keep non-Base primitives
+        out.add(String.valueOf(o));
+      }
+    }
+    return out;
+  }
+
+  private static List<String> adaptSpecialAsStringFlat(List<?> hits) {
+    List<String> out = new ArrayList<>();
+    for (Object o : hits) {
+      if (o instanceof Base b) {
+        String v = b.primitiveValue();
+        if (v == null) v = toJsonString(b); // your existing fallback
+        if (v != null) out.add(v);
+      }
+    }
+    return out;
   }
 
   private static List<Map<String, Object>> adaptReferences(List<?> hits) {
@@ -274,17 +302,6 @@ public class IndexService {
       String pv = b.primitiveValue();
       return pv != null ? pv : String.valueOf(b);
     }
-  }
-
-  private static List<Map<String, Object>> adaptStrings(List<?> hits) {
-    List<Map<String, Object>> out = new ArrayList<>();
-    for (Object o : hits) {
-      if (o instanceof Base b) {
-        String v = b.primitiveValue();
-        if (v != null) out.add(Map.of("value", v));
-      }
-    }
-    return out;
   }
 
   private static List<String> adaptUris(List<?> hits) {
