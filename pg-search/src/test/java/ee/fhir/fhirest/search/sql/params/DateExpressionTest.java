@@ -57,6 +57,7 @@ public class DateExpressionTest {
         Blindex b = new Blindex();
         b.setResourceType("Patient");
         b.setPath("h.o.y");
+        b.setParamType("date");
         b.setName("date_index_table");
         return Collections.singletonList(b);
       };
@@ -90,8 +91,10 @@ public class DateExpressionTest {
     if (expectedCondition == null) {
       Assertions.assertEquals("", result.getSql());
     } else {
-      String expected =
-          String.format("EXISTS (SELECT 1 FROM search.date_index_table i WHERE i.active = true and i.sid = a.sid  AND %s)", expectedCondition);
+      String fqtn = BlindexRepository.getIndex("Patient", "h.o.y");
+      String expected = String.format(
+          "EXISTS (SELECT 1 FROM %s i WHERE i.active = true and i.sid = a.sid  AND %s)",
+          fqtn, expectedCondition);
       Assertions.assertEquals(expected, result.getSql());
     }
   }
