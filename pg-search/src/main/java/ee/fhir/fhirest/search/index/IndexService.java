@@ -202,6 +202,12 @@ public class IndexService {
     });
   }
   
+  /**
+   * Normalize FHIRPath hits into plain strings for the string-index.
+   *
+   * Handles Base primitives and raw String; anything else is stringified.
+   * Output is a flat List<String> suitable for StringIndexRepository.map(...).
+  */
   private static List<String> adaptStringsFlat(List<?> hits) {
     List<String> out = new ArrayList<>();
     for (Object o : hits) {
@@ -218,6 +224,18 @@ public class IndexService {
     return out;
   }
 
+  /**
+   * Normalize FHIRPath hits into reference-index rows.
+   *
+   * Input (hits): items from fhirPath.evaluate(...) that may be:
+   *  - Reference        → use reference.reference (e.g., "Patient/123")
+   *  - Resource         → synthesize "Type/id" if id present (e.g., Composition/doc-1)
+   *  - Map (JSON node)  → accept "reference", or "resourceType"+"id"
+   *
+   * Output: List<Map> where each map has {"reference": "<Type/id or literal>"}.
+   * This is consumed by ReferenceIndexRepository.map(...).
+   * Nulls/empties are dropped.
+  */
   private static List<Map<String, Object>> adaptReferences(List<?> hits) {
     List<Map<String, Object>> out = new ArrayList<>();
     for (Object o : hits) {
@@ -244,6 +262,19 @@ public class IndexService {
     return out;
   }
 
+  /**
+   * Normalize FHIRPath hits into token-index rows.
+   *
+   * Accepts the common token carriers and converts them to a uniform map:
+   *  - Coding           → {system?, code, display?}
+   *  - CodeableConcept  → first Coding if present else {code: text}
+   *  - Identifier       → {system?, code: value}
+   *  - ContactPoint     → {system?: system, code: value}
+   *  - boolean          → {code: "true"|"false"}
+   *  - string           → {code: "<value>"}
+   *
+   * Output: List<Map> for TokenIndexRepository.map(...).
+  */
   private static List<Map<String, Object>> adaptTokens(List<?> hits) {
     List<Map<String, Object>> out = new ArrayList<>();
     for (Object o : hits) {
@@ -286,18 +317,6 @@ public class IndexService {
     return out;
   }
 
-  private static List<Map<String, Object>> adaptSpecialAsString(List<?> hits) {
-    List<Map<String, Object>> out = new ArrayList<>();
-    for (Object o : hits) {
-      if (o instanceof Base b) {
-        String v = b.primitiveValue();
-        if (v == null) v = toJsonString(b);
-        if (v != null) out.add(Map.of("value", v));
-      }
-    }
-    return out;
-  }
-
   private static String toJsonString(Base b) {
     if (b == null) return null;
     try {
@@ -308,6 +327,12 @@ public class IndexService {
     }
   }
 
+  /**
+   * Normalize FHIRPath hits into URI-index values.
+   *
+   * Reads Base.primitiveValue() (canonical/uri/url) and returns List<String>.
+   * Used by UriIndexRepository (column i.uri).
+  */
   private static List<String> adaptUris(List<?> hits) {
     List<String> out = new ArrayList<>();
     for (Object o : hits) {
@@ -319,6 +344,12 @@ public class IndexService {
     return out;
   }
 
+  /**
+   * Normalize FHIRPath hits into quantity-index rows.
+   *
+   * Quantity → { value, unit?, system?, code? }
+   * Output is consumed by QuantityIndexRepository.map(...).
+  */
   private static List<Map<String, Object>> adaptQuantities(List<?> hits) {
     List<Map<String, Object>> out = new ArrayList<>();
     for (Object o : hits) {
