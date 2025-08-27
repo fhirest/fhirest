@@ -91,10 +91,10 @@ public class DateExpressionTest {
     if (expectedCondition == null) {
       Assertions.assertEquals("", result.getSql());
     } else {
-      String fqtn = BlindexRepository.getIndex("Patient", "h.o.y");
+      String fullyQualifiedTableName = BlindexRepository.getIndex("Patient", "h.o.y");
       String expected = String.format(
           "EXISTS (SELECT 1 FROM %s i WHERE i.active = true and i.sid = a.sid  AND %s)",
-          fqtn, expectedCondition);
+          fullyQualifiedTableName, expectedCondition);
       Assertions.assertEquals(expected, result.getSql());
     }
   }

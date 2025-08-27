@@ -169,69 +169,72 @@ public class BlindexInitializer {
           if (matched == null) {
             for (Map.Entry<String, List<StructureElement>> e : elements.entrySet()) {
               boolean hit = e.getValue().stream().anyMatch(se -> {
-              String t = se.getType();
-            
-              // --- Reference search parameter ---
-              // A reference-type SP (paramType=reference) can be satisfied by:
-              // - "Reference" (normal FHIR reference)
-              if ("reference".equalsIgnoreCase(b.getParamType())) {
-                return "Reference".equals(t);  // spec-accurate: references only
+                String t = se.getType();
+              
+                // --- Reference search parameter ---
+                // A reference-type SP (paramType=reference) can be satisfied by:
+                // - "Reference" (normal FHIR reference)
+                if ("reference".equalsIgnoreCase(b.getParamType())) {
+                  return "Reference".equals(t);  // spec-accurate: references only
+                }
+              
+                // --- Token search parameter ---
+                // Token-type SPs can be backed by:
+                // - "Coding" (most direct carrier of system+code)
+                // - "CodeableConcept" (wraps one or more Coding, sometimes only text)
+                // - "Identifier" (system+value behave like token)
+                // - "ContactPoint" (system+value also treated like token)
+                // - "boolean" and "string" (FHIR spec allows indexing of simple booleans/strings as token codes)
+                if ("token".equalsIgnoreCase(b.getParamType())) {
+                  return List.of("Coding", "CodeableConcept", "Identifier", "ContactPoint", "boolean", "string").contains(t);
+                }
+              
+                // --- String search parameter ---
+                // String-type SPs may be satisfied by any primitive string-like element:
+                // - "string", "markdown", "id", "code" (all map to string search behavior)
+                // - "uri" and "canonical" (sometimes stored as strings, treated like text for searching)
+                // - these may be "references" which are not of type Reference
+                if ("string".equalsIgnoreCase(b.getParamType())) {
+                  return List.of("string", "markdown", "id", "code", "uri", "canonical").contains(t);
+                }
+              
+                // --- URI search parameter ---
+                // URI-type SPs specifically accept:
+                // - "uri" (native)
+                // - "canonical" (valid per spec; considered URI under the hood)
+                if ("uri".equalsIgnoreCase(b.getParamType())) {
+                  return List.of("uri", "canonical").contains(t);
+                }
+              
+                // --- Quantity search parameter ---
+                // Quantity-type SPs must be real quantities:
+                // - "Quantity" (has value, unit, system, code)
+                if ("quantity".equalsIgnoreCase(b.getParamType())) {
+                  return "Quantity".equals(t);
+                }
+              
+                // --- Date search parameter ---
+                // Date-type SPs are satisfied by date-like primitives and complex Periods:
+                // - "date", "dateTime", "instant" (point-in-time types)
+                // - "Period" (start/end ranges)
+                if ("date".equalsIgnoreCase(b.getParamType())) {
+                  return List.of("date", "dateTime", "instant", "Period").contains(t);
+                }
+              
+                // --- Number search parameter ---
+                // Number-type SPs accept numeric primitives:
+                // - "decimal", "integer", "unsignedInt", "positiveInt"
+                if ("number".equalsIgnoreCase(b.getParamType())) {
+                  return List.of("decimal", "integer", "unsignedInt", "positiveInt").contains(t);
+                }
+              
+                // Fallback: nothing matched
+                return false;
+              });
+              if (hit) {
+                matched = e.getKey(); 
+                break;
               }
-            
-              // --- Token search parameter ---
-              // Token-type SPs can be backed by:
-              // - "Coding" (most direct carrier of system+code)
-              // - "CodeableConcept" (wraps one or more Coding, sometimes only text)
-              // - "Identifier" (system+value behave like token)
-              // - "ContactPoint" (system+value also treated like token)
-              // - "boolean" and "string" (FHIR spec allows indexing of simple booleans/strings as token codes)
-              if ("token".equalsIgnoreCase(b.getParamType())) {
-                return List.of("Coding", "CodeableConcept", "Identifier", "ContactPoint", "boolean", "string").contains(t);
-              }
-            
-              // --- String search parameter ---
-              // String-type SPs may be satisfied by any primitive string-like element:
-              // - "string", "markdown", "id", "code" (all map to string search behavior)
-              // - "uri" and "canonical" (sometimes stored as strings, treated like text for searching)
-              // - these may be "references" which are not of type Reference
-              if ("string".equalsIgnoreCase(b.getParamType())) {
-                return List.of("string", "markdown", "id", "code", "uri", "canonical").contains(t);
-              }
-            
-              // --- URI search parameter ---
-              // URI-type SPs specifically accept:
-              // - "uri" (native)
-              // - "canonical" (valid per spec; considered URI under the hood)
-              if ("uri".equalsIgnoreCase(b.getParamType())) {
-                return List.of("uri", "canonical").contains(t);
-              }
-            
-              // --- Quantity search parameter ---
-              // Quantity-type SPs must be real quantities:
-              // - "Quantity" (has value, unit, system, code)
-              if ("quantity".equalsIgnoreCase(b.getParamType())) {
-                return "Quantity".equals(t);
-              }
-            
-              // --- Date search parameter ---
-              // Date-type SPs are satisfied by date-like primitives and complex Periods:
-              // - "date", "dateTime", "instant" (point-in-time types)
-              // - "Period" (start/end ranges)
-              if ("date".equalsIgnoreCase(b.getParamType())) {
-                return List.of("date", "dateTime", "instant", "Period").contains(t);
-              }
-            
-              // --- Number search parameter ---
-              // Number-type SPs accept numeric primitives:
-              // - "decimal", "integer", "unsignedInt", "positiveInt"
-              if ("number".equalsIgnoreCase(b.getParamType())) {
-                return List.of("decimal", "integer", "unsignedInt", "positiveInt").contains(t);
-              }
-            
-              // Fallback: nothing matched
-              return false;
-            });
-              if (hit) { matched = e.getKey(); break; }
             }
           }
         
