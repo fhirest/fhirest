@@ -79,13 +79,15 @@ public abstract class DefaultExpressionProvider extends ExpressionProvider {
 
   protected static String index(String resourceType, String key, String parentAlias) {
     List<String> indexes = getPaths(resourceType, key).stream().map(p -> {
-      String index = BlindexRepository.getIndex(resourceType, p);
-      return String.format("search.%s i WHERE i.active = true and i.sid = %s.sid ", index, parentAlias);
+      String fqtn = BlindexRepository.getIndex(resourceType, p); // already schema-qualified
+      return String.format("%s i WHERE i.active = true and i.sid = %s.sid ", fqtn, parentAlias);
     }).collect(toList());
     if (indexes.size() == 1) {
       return indexes.get(0);
     }
-    return "(" + indexes.stream().map(i -> "select * from " + i).collect(Collectors.joining(" UNION ALL ")) + ") i where 1=1 ";
+    return "(" + indexes.stream()
+        .map(i -> "select * from " + i)
+        .collect(Collectors.joining(" UNION ALL ")) + ") i where 1=1 ";
   }
 
 }

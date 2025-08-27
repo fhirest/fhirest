@@ -179,8 +179,9 @@ public class PgSearchRepository {
     for (Blindex b : uriIdx) {
       if (!first) out.append(" OR ");
       first = false;
-      out.append("EXISTS (SELECT 1 FROM search.")
-         .append(b.getName())
+      String fqtn = BlindexRepository.getIndex(resourceType, b.getPath()); // ← physical table
+      out.append("EXISTS (SELECT 1 FROM ")
+         .append(fqtn)
          .append(" i WHERE i.active = true and i.sid = ")
          .append(baseAlias)
          .append(".sid AND i.uri = ?)", canonical);
@@ -206,8 +207,9 @@ public class PgSearchRepository {
     for (Blindex b : refIdx) {
       if (!first) out.append(" OR ");
       first = false;
-      out.append("EXISTS (SELECT 1 FROM search.")
-         .append(b.getName())
+      String fqtn = BlindexRepository.getIndex(resourceType, b.getPath()); // ← physical table
+      out.append("EXISTS (SELECT 1 FROM ")
+         .append(fqtn)
          .append(" i WHERE i.active = true and i.sid = ")
          .append(baseAlias)
          .append(".sid AND i.id = ? AND i.type_id = search.rt_id(?))", rId, rType);

@@ -64,7 +64,16 @@ public class BlindexRepository {
     if (!INDEXES.containsKey(resourceType) || !INDEXES.get(resourceType).containsKey(path)) {
       throw new FhirServerException(resourceType + "." + path + " not indexed");
     }
-    return INDEXES.get(resourceType).get(path).getName();
+    Blindex b = INDEXES.get(resourceType).get(path);
+    String physical = computePhysicalName(b.getResourceType(), b.getParamType(), b.getPath());
+    return "search." + physical;
+  }
+
+  private static String computePhysicalName(String resourceType, String paramType, String path) {
+    String base = (resourceType + "_" + paramType + "_" +
+        path.replaceAll("[^a-zA-Z0-9_]", "_").replace(".", "_")).toLowerCase();
+    // cap at 63 chars (same as SQL)
+    return base.length() > 63 ? base.substring(0, 63) : base;
   }
 
   public List<Blindex> loadIndexes() {
@@ -72,8 +81,9 @@ public class BlindexRepository {
     return jdbcTemplate.query(sql, new BlindexRowMapper());
   }
 
-  public Blindex createIndex(String paramType, String resourceType, String path) {
-    return adminJdbcTemplate.queryForObject("SELECT * from search.create_blindex(?,?,?)", new BlindexRowMapper(), paramType, resourceType, path);
+  public Blindex createIndex(String paramType, String resourceType, String path, String spCode) {
+    return adminJdbcTemplate.queryForObject("SELECT * from search.create_blindex(?,?,?,?)",
+      new BlindexRowMapper(), paramType, resourceType, path, spCode);
   }
 
   public void dropIndex(String paramType, String resourceType, String path) {

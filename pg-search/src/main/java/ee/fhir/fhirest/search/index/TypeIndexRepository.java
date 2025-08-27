@@ -26,6 +26,7 @@ package ee.fhir.fhirest.search.index;
 
 import ee.fhir.fhirest.core.model.ResourceVersion;
 import ee.fhir.fhirest.search.model.Blindex;
+import ee.fhir.fhirest.search.repository.BlindexRepository;
 import ee.fhir.fhirest.util.sql.SqlBuilder;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -55,38 +56,46 @@ public abstract class TypeIndexRepository<T> {
     }
   }
 
+
   protected void update(Long sid, Blindex blindex, List<T> values) {
-    String name = "search." + blindex.getName();
-    String fields = fields();
+    // ✅ Use physical partition name computed from (resourceType,paramType,path)
+    final String name = BlindexRepository.getIndex(blindex.getResourceType(), blindex.getPath());
+    final String flds = fields();
+
     if (CollectionUtils.isEmpty(values)) {
       jdbcTemplate.update("update " + name + " set active = false where sid = ? and active = true", sid);
       return;
     }
+
     SqlBuilder sb = new SqlBuilder();
-    sb.append("with vals(" + fields + ") as (values");
+    sb.append("with vals(" + flds + ") as (values");
     sb.append(withValues(values));
     sb.append(")");
 
-    sb.append(", deleted as (update " + name + " set active = false where sid = ? and active = true and (" + fields + ") not in (select * from vals))", sid);
-    sb.append(", created as (insert into " + name + "(sid, blindex_id, " + fields + ")" +
-            " select ?, ?, vals.* from vals where (" + fields + ") not in (select " + fields + " from " + name + " where active = true and sid = ?))", sid,
-        blindex.getId(), sid);
+    sb.append(", deleted as (update " + name + " set active = false where sid = ? and active = true and (" + flds + ") not in (select * from vals))", sid);
+    sb.append(", created as (insert into " + name + "(sid, blindex_id, " + flds + ") " +
+              "select ?, ?, vals.* from vals where (" + flds + ") not in (select " + flds + " from " + name + " where active = true and sid = ?))",
+              sid, blindex.getId(), sid);
     sb.append("select 1");
+
     jdbcTemplate.queryForObject(sb.getSql(), Object.class, sb.getParams());
   }
 
   protected void create(Long sid, Blindex blindex, List<T> values) {
-    if (CollectionUtils.isEmpty(values)) {
-      return;
-    }
-    String name = "search." + blindex.getName();
-    String fields = fields();
+    if (CollectionUtils.isEmpty(values)) return;
+
+    // ✅ Use physical partition name computed from (resourceType,paramType,path)
+    final String name = BlindexRepository.getIndex(blindex.getResourceType(), blindex.getPath());
+    final String flds = fields();
+
     SqlBuilder sb = new SqlBuilder();
-    sb.append("with vals(" + fields + ") as (values");
+    sb.append("with vals(" + flds + ") as (values");
     sb.append(withValues(values));
     sb.append(")");
 
-    sb.append("insert into " + name + "(sid, blindex_id, " + fields + ") select ?, ?, vals.* from vals", sid, blindex.getId());
+    sb.append("insert into " + name + "(sid, blindex_id, " + flds + ") select ?, ?, vals.* from vals",
+              sid, blindex.getId());
+
     jdbcTemplate.update(sb.getSql(), sb.getParams());
   }
 }

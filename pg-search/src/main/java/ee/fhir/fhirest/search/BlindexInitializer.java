@@ -68,11 +68,20 @@ public class BlindexInitializer {
 
     log.info("refreshing search indexes...");
     List<SearchParameter> searchParameters = findCapabilityDefinedParameters();
+    
+    Map<String, String> codeByKey = new HashMap<>();
+
     Map<String, Blindex> create =
         searchParameters.stream()
             .filter(sp -> sp.getExpression() != null && sp.getType() != SearchParamType.COMPOSITE)
             .flatMap(sp -> SearchPathUtil.parsePaths(sp.getExpression()).stream()
-                .map(s -> new Blindex(sp.getType().toCode(), StringUtils.substringBefore(s, "."), StringUtils.substringAfter(s, "."))))
+                .map(s -> {
+                  Blindex b = new Blindex(sp.getType().toCode(),
+                                          StringUtils.substringBefore(s, "."),
+                                          StringUtils.substringAfter(s, "."));
+                  codeByKey.put(b.getKey(), sp.getCode());   // ← remember the query code
+                  return b;
+                }))
             .collect(Collectors.toMap(Blindex::getKey, b -> b, (b1, b2) -> b1));
     Map<String, Blindex> current = blindexRepository.loadIndexes().stream().collect(Collectors.toMap(Blindex::getKey, b -> b));
     Map<String, Blindex> drop = new HashMap<>(current);
@@ -81,7 +90,7 @@ public class BlindexInitializer {
     log.debug("currently indexed: {}", current.keySet());
     log.debug("need to create: {}", create.keySet());
     log.debug("need to remove: {}", drop.keySet());
-    create(create.values());
+    create(create.values(), codeByKey);
     drop(drop.values());
     blindexRepository.refreshCache();
     log.info("blindex initialization finished");
@@ -108,7 +117,7 @@ public class BlindexInitializer {
   }
 
 
-  private void create(Collection<Blindex> create) {
+  private void create(Collection<Blindex> create, Map<String,String> codeByKey) {
     List<String> errors = new ArrayList<>();
     List<Blindex> createdIndexed = new ArrayList<>();
     create.forEach(b -> {
@@ -249,7 +258,8 @@ public class BlindexInitializer {
                 elements.get(matched).stream().map(StructureElement::getType).collect(Collectors.toSet()));
           }
 
-          createdIndexed.add(blindexRepository.createIndex(effectiveParamType, b.getResourceType(), originalPath));
+          createdIndexed.add(blindexRepository.createIndex(effectiveParamType, 
+              b.getResourceType(), originalPath, codeByKey.get(b.getKey()))); 
           return;
         }
 
@@ -270,7 +280,8 @@ public class BlindexInitializer {
               elements.get(originalPath).stream().map(StructureElement::getType).collect(Collectors.toSet()));
         }
 
-        createdIndexed.add(blindexRepository.createIndex(effectiveParamType, b.getResourceType(), originalPath));
+        createdIndexed.add(blindexRepository.createIndex(effectiveParamType, b.getResourceType(), originalPath,
+            codeByKey.get(b.getKey())));
       } catch (Exception e) {
         String err = e.getMessage();
         if (e.getCause() instanceof PSQLException) {
