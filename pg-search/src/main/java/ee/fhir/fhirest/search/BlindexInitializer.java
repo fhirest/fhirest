@@ -68,7 +68,8 @@ public class BlindexInitializer {
 
     log.info("refreshing search indexes...");
     List<SearchParameter> searchParameters = findCapabilityDefinedParameters();
-    
+    // Map blindex-key → SearchParameter.code so we can label blindex.index_name with the query param code 
+    // (e.g. "name", "date")
     Map<String, String> codeByKey = new HashMap<>();
 
     Map<String, Blindex> create =
@@ -79,7 +80,7 @@ public class BlindexInitializer {
                   Blindex b = new Blindex(sp.getType().toCode(),
                                           StringUtils.substringBefore(s, "."),
                                           StringUtils.substringAfter(s, "."));
-                  codeByKey.put(b.getKey(), sp.getCode());   // ← remember the query code
+                  codeByKey.put(b.getKey(), sp.getCode());
                   return b;
                 }))
             .collect(Collectors.toMap(Blindex::getKey, b -> b, (b1, b2) -> b1));
@@ -151,7 +152,6 @@ public class BlindexInitializer {
         
           // Collect all candidate variants to test
           List<String> candidates = new ArrayList<>();
-          candidates.add(originalPath);
           candidates.add(stripped);
           candidates.add(prefixed);
           candidates.add(dePrefixed);
@@ -250,7 +250,7 @@ public class BlindexInitializer {
             return;
           }
 
-          // --- Minimal new logic: infer effective type and override if needed
+          // infer effective type and override if needed
           String effectiveParamType = inferEffectiveParamType(b, elements, matched);
           if (!Objects.equals(effectiveParamType, b.getParamType())) {
             log.warn("blindex: {} -> overriding paramType {} → {} (path={}, leafTypes={})",
@@ -272,7 +272,7 @@ public class BlindexInitializer {
           return;
         }
 
-        // --- Minimal new logic here too: infer effective type with the exact key
+        // infer effective type with the exact key
         String effectiveParamType = inferEffectiveParamType(b, elements, originalPath);
         if (!Objects.equals(effectiveParamType, b.getParamType())) {
           log.warn("blindex: {} -> overriding paramType {} → {} (path={}, leafTypes={})",
@@ -341,15 +341,16 @@ public class BlindexInitializer {
     }
   }
 
-  // -------- NEW: minimal helper to infer effective param type ----------
   private String inferEffectiveParamType(Blindex b, Map<String, List<StructureElement>> elements, String matchedPath) {
-    String declared = b.getParamType();
+    String declaredParamType = b.getParamType();
     List<StructureElement> leafs = elements.get(matchedPath);
-    if (leafs == null || leafs.isEmpty()) return declared;
+    if (leafs == null || leafs.isEmpty()) return declaredParamType;
 
     var leafTypes = leafs.stream().map(StructureElement::getType).collect(Collectors.toSet());
 
-    if ("reference".equalsIgnoreCase(declared)) {
+    // if search parameter declares "reference" but this path ends at canonical ".resource" (not ".resourceReference"):
+    // no actual Reference node present → flip to URI so we index under base_index_uri and apply URI semantics.
+    if ("reference".equalsIgnoreCase(declaredParamType)) {
       boolean hasReference = leafTypes.contains("Reference");
       boolean hasCanonicalOrUri = leafTypes.contains("canonical") || leafTypes.contains("uri") || leafTypes.contains("url");
       boolean isResourceReferencePath = matchedPath.endsWith(".resourceReference");
@@ -359,11 +360,13 @@ public class BlindexInitializer {
       }
     }
 
-    if ("string".equalsIgnoreCase(declared)) {
+    // If search parameter declares "string" but the terminal node is canonical|uri|url,
+    // flip to URI so we index in base_index_uri and apply URI semantics (:below/:above, exact)
+    if ("string".equalsIgnoreCase(declaredParamType)) {
       boolean hasCanonicalOrUri = leafTypes.contains("canonical") || leafTypes.contains("uri") || leafTypes.contains("url");
       if (hasCanonicalOrUri) return "uri";
     }
 
-    return declared;
+    return declaredParamType;
   }
 }
