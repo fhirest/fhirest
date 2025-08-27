@@ -70,6 +70,26 @@ public class PgSearchRepository {
     return jdbcTemplate.queryForObject(sb.getSql(), Integer.class, sb.getParams());
   }
 
+  /**
+   * Query-time safety net.
+   *
+   * Some RelatedArtifact params (predecessor/successor/derived-from/composed-of)
+   * end at a canonical URL (".resource") but may be declared as REFERENCE in SP
+   * metadata. If such a param arrives as REFERENCE, flip it to URI so we:
+   *  • hit the URI index family (base_index_uri / i.uri),
+   *  • apply URI semantics (exact match, :below / :above, canonical|version).
+   *
+   * NOTE: We intentionally do NOT flip "depends-on" here because it's mixed:
+   * canonical ".resource" OR reference ".library". That one is handled by
+   * building two EXISTS branches (URI + REFERENCE) and OR-ing them.
+   *
+   * Implementation: returns a cloned QueryParam with type=URI (preserving
+   * key/modifier/resourceType/chains/values). Chains are copied BEFORE values
+   * because addChain() asserts values == null.
+   *
+   * @param p incoming QueryParam (possibly declared as REFERENCE)
+   * @return the same param if no flip needed, or a URI-typed clone if canonical-only
+  */
   private QueryParam maybeFlipToUri(QueryParam p) {
     // Only flip well-known RelatedArtifact-based params when they were declared as REFERENCE
     // Skip mixed (depends-on) so we can build both branches
