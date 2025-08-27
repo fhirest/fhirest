@@ -37,7 +37,7 @@ BEGIN
       _param_type := 'uri';
     END IF;
 
-    -- 🔧 Physical partition table name: no hash (dev)
+    -- 🔧 Physical partition table name
     _idx_name :=
       lower(_resource_type) || '_' || lower(_param_type) || '_' ||
       lower(replace(regexp_replace(_path, '[^a-zA-Z0-9_]', '_', 'g'), '.', '_'));

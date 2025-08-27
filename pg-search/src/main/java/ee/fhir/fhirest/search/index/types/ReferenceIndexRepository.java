@@ -50,8 +50,11 @@ public class ReferenceIndexRepository extends TypeIndexRepository<Value> {
 
   @Override
   public Stream<Value> map(Object value, String valueType) {
+    // only accept {"reference": "..."}, this protects against case where 
+    // QuestionnaireResponse.questionnaire is being sent as uri but marked in 
+    // conformance/index as reference
     if (!(value instanceof Map<?, ?>)) {
-      return Stream.empty();  // only accept {"reference": "..."}
+      return Stream.empty();
     }
     return getValue((Map) value, valueType).filter(v -> v != null && v.getId() != null);
   }
