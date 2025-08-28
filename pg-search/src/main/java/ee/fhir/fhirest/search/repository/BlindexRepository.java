@@ -73,7 +73,12 @@ public class BlindexRepository {
   }
 
   public Blindex createIndex(String paramType, String resourceType, String path) {
-    return adminJdbcTemplate.queryForObject("SELECT * from search.create_blindex(?,?,?)", new BlindexRowMapper(), paramType, resourceType, path);
+    return createIndex(paramType, resourceType, path, null);
+  }
+
+  public Blindex createIndex(String paramType, String resourceType, String path, String searchParamCode) {
+    return adminJdbcTemplate.queryForObject("SELECT * from search.create_blindex(?,?,?,?)",
+        new BlindexRowMapper(), paramType, resourceType, path, searchParamCode);
   }
 
   public void dropIndex(String paramType, String resourceType, String path) {
@@ -94,6 +99,7 @@ public class BlindexRepository {
       p.setPath(rs.getString("path"));
       p.setName(rs.getString("index_name"));
       p.setParamType(rs.getString("param_type"));
+      p.setFhirPath(rs.getBoolean("fhirpath"));
       return p;
     }
 

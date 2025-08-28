@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION search.create_blindex(_param_type text, _resource_type text, _path text) RETURNS search.blindex AS $$
+CREATE OR REPLACE FUNCTION search.create_blindex(_param_type text, _resource_type text, _path text, _sp_code text DEFAULT NULL) RETURNS search.blindex AS $$
 DECLARE
   _idx_name text;
   _base_idx text;
@@ -9,9 +9,15 @@ BEGIN
       return _blindex;
     END IF;
 
-    _idx_name := lower(_resource_type) || '_' || _param_type || '_' || lower(replace(_path, '.', '_'));
+    IF _sp_code is NULL THEN
+      _idx_name := lower(_resource_type) || '_' || _param_type || '_' || lower(replace(_path, '.', '_'));
+    ELSE
+      _idx_name := lower(_resource_type) || '_' || _param_type || '_fp_' || replace(_sp_code, '-', '_');
+      _idx_name := _idx_name || '_' || (select count(1) from search.blindex where index_name like _idx_name || '%');
+    END IF;
 
-    INSERT INTO search.blindex (resource_type, path, param_type, index_name) values (_resource_type, _path, _param_type, _idx_name);
+    INSERT INTO search.blindex (resource_type, path, param_type, index_name, fhirpath)
+        values (_resource_type, _path, _param_type, _idx_name, _sp_code is not null);
     SELECT * into _blindex FROM search.blindex WHERE resource_type = _resource_type AND path = _path;
 
     _base_idx := case

@@ -55,7 +55,7 @@ public class TokenIndexRepository extends TypeIndexRepository<Value> {
   private Stream<Value> getValue(Object value, String valueType) {
     return switch (valueType) {
       case "code", "string" -> Stream.of(new Value(null, (String) value));
-      case "boolean" -> Stream.of(new Value(null, ((Boolean) value).toString()));
+      case "boolean" -> Stream.of(new Value(null, value instanceof String ? (String) value : ((Boolean) value).toString()));
       case "Coding" -> {
         Map obj = (Map) value;
         yield Stream.of(new Value((String) obj.get("system"), (String) obj.get("code")));
