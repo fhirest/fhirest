@@ -32,7 +32,6 @@ import ee.fhir.fhirest.search.StructureDefinitionHolder;
 import ee.fhir.fhirest.search.model.Blindex;
 import ee.fhir.fhirest.search.model.StructureElement;
 import ee.fhir.fhirest.search.repository.BlindexRepository;
-import ee.fhir.fhirest.structure.service.ResourceFormatService;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -53,15 +52,13 @@ public class IndexService {
   private final Map<String, TypeIndexRepository> indexRepos;
   private final StructureDefinitionHolder structureDefinitionHolder;
   private final FhirPath fhirPath;
-  private final ResourceFormatService formatService;
 
   public IndexService(SearchIndexRepository searchIndexRepository, List<TypeIndexRepository> repos, StructureDefinitionHolder structureDefinitionHolder,
-                      FhirPath fhirPath, ResourceFormatService formatService) {
+                      FhirPath fhirPath) {
     this.searchIndexRepository = searchIndexRepository;
     this.indexRepos = repos.stream().collect(Collectors.toMap(TypeIndexRepository::getType, r -> r));
     this.structureDefinitionHolder = structureDefinitionHolder;
     this.fhirPath = fhirPath;
-    this.formatService = formatService;
   }
 
   public void saveIndexes(ResourceVersion version) {
