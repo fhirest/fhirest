@@ -37,6 +37,13 @@ import ca.uhn.hapi.converters.canonical.VersionCanonicalizer;
 import ee.fhir.fhirest.core.api.conformance.ConformanceUpdateListener;
 import ee.fhir.fhirest.core.api.conformance.HapiValidationSupportProvider;
 import jakarta.annotation.PostConstruct;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService;
 import org.hl7.fhir.common.hapi.validation.support.InMemoryTerminologyServerValidationSupport;
@@ -58,13 +65,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.hl7.fhir.common.hapi.validation.support.CommonCodeSystemsTerminologyService.getFhirVersionEnum;
@@ -101,6 +101,11 @@ public class HapiContextHolder implements ConformanceUpdateListener {
   @PostConstruct
   public void init() {
     context = FhirContext.forR5();
+  }
+
+  @Override
+  public Integer getOrder() {
+    return 30;
   }
 
   @Override
