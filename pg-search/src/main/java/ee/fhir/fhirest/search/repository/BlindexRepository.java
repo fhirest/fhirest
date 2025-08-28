@@ -53,6 +53,7 @@ public class BlindexRepository {
   @PostConstruct
   @PostgresChangeListener(table = "search.blindex")
   public void refreshCache() {
+    INDEXES.clear();
     loadIndexes().forEach(p -> INDEXES.computeIfAbsent(p.getResourceType(), x -> new HashMap<>()).put(p.getPath(), p));
   }
 
