@@ -28,14 +28,13 @@ fhirest-blockchain openapi
 ver=$1
 module=$2
 [[ -z "$ver" ]] && echo "give me a version" && exit 1
-gr=./gradlew
 out=publish
 user=$SONATYPE_USER
 pw=$SONATYPE_PASSWORD
 auth=$(echo "${user}:${pw}" | base64)
 
 build() {
-  gradle -Pversion=$ver clean assemble generatePom sign || exit 1
+  ./gradlew -Pversion=$ver clean assemble generatePom sign || exit 1
 }
 
 publish() {
