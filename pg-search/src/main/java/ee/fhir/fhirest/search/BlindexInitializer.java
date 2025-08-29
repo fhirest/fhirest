@@ -68,11 +68,16 @@ public class BlindexInitializer {
 
     log.info("refreshing search indexes...");
     List<SearchParameter> searchParameters = findCapabilityDefinedParameters();
+    Map<String, String> searchParameterCodes = new HashMap<>();
     Map<String, Blindex> create =
         searchParameters.stream()
             .filter(sp -> sp.getExpression() != null && sp.getType() != SearchParamType.COMPOSITE)
             .flatMap(sp -> SearchPathUtil.parsePaths(sp.getExpression()).stream()
-                .map(s -> new Blindex(sp.getType().toCode(), StringUtils.substringBefore(s, "."), StringUtils.substringAfter(s, "."))))
+                .map(s -> {
+                  Blindex blindex = new Blindex(sp.getType().toCode(), StringUtils.substringBefore(s, "."), StringUtils.substringAfter(s, "."));
+                  searchParameterCodes.put(blindex.getKey(), sp.getCode());
+                  return blindex;
+                }))
             .collect(Collectors.toMap(Blindex::getKey, b -> b, (b1, b2) -> b1));
     Map<String, Blindex> current = blindexRepository.loadIndexes().stream().collect(Collectors.toMap(Blindex::getKey, b -> b));
     Map<String, Blindex> drop = new HashMap<>(current);
@@ -81,7 +86,7 @@ public class BlindexInitializer {
     log.debug("currently indexed: {}", current.keySet());
     log.debug("need to create: {}", create.keySet());
     log.debug("need to remove: {}", drop.keySet());
-    create(create.values());
+    create(create.values(), searchParameterCodes);
     drop(drop.values());
     blindexRepository.refreshCache();
     log.info("blindex initialization finished");
@@ -108,7 +113,7 @@ public class BlindexInitializer {
   }
 
 
-  private void create(Collection<Blindex> create) {
+  private void create(Collection<Blindex> create, Map<String, String> searchParameterCodes) {
     List<String> errors = new ArrayList<>();
     List<Blindex> createdIndexed = new ArrayList<>();
     create.forEach(b -> {
@@ -120,26 +125,26 @@ public class BlindexInitializer {
           return;
         }
         Map<String, List<StructureElement>> elements = structureDefinitionHolder.getStructureElements().get(b.getResourceType());
-        if (!elements.containsKey(b.getPath())) {
-          log.debug("failed {} - {}: unknown yet", b.getResourceType(), b.getKey());
-          errors.add(b.getKey() + ": unknown yet");
+        if (elements.containsKey(b.getPath())) { // simple path
+          if (elements.get(b.getPath()).stream()
+              .anyMatch(el -> List.of("Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType()))) {
+            log.debug("failed {} - {}: not configured", b.getResourceType(), b.getKey());
+            errors.add(b.getKey() + ": " + " not configured");
+            return;
+          }
+          createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), b.getPath()));
           return;
         }
-        if (elements.get(b.getPath()).stream().anyMatch(el -> {
-          return List.of("canonical", "Money", "url", "Address", "BackboneElement", "Duration").contains(el.getType())
-                 || (b.getParamType().equalsIgnoreCase("reference") && el.getType().equals("uri")); //TODO
-        })) {
-          log.debug("failed {} - {}: not configured", b.getResourceType(), b.getKey());
-          errors.add(b.getKey() + ": " + " not configured");
-          return;
-        }
-        createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), b.getPath()));
+
+        // consider everything else as a fhirpath
+        String name = searchParameterCodes.get(b.getKey());
+        createdIndexed.add(blindexRepository.createIndex(b.getParamType(), b.getResourceType(), b.getPath(), name));
       } catch (Exception e) {
         String err = e.getMessage();
         if (e.getCause() instanceof PSQLException) {
           err = (e.getCause().getMessage().substring(0, e.getCause().getMessage().indexOf("\n")));
         }
-        log.info("failed {} - {}: {}", b.getResourceType(), b.getKey(), err);
+        log.error("failed {} - {}: {}", b.getResourceType(), b.getKey(), err);
         errors.add(b.getKey() + ": " + err);
       }
     });

@@ -26,15 +26,22 @@ package ee.fhir.fhirest.search.index;
 
 import ee.fhir.fhirest.core.model.ResourceId;
 import ee.fhir.fhirest.core.model.ResourceVersion;
+import ee.fhir.fhirest.core.service.FhirPath;
 import ee.fhir.fhirest.core.util.JsonUtil;
 import ee.fhir.fhirest.search.StructureDefinitionHolder;
 import ee.fhir.fhirest.search.model.Blindex;
 import ee.fhir.fhirest.search.model.StructureElement;
 import ee.fhir.fhirest.search.repository.BlindexRepository;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.hl7.fhir.r5.formats.JsonParser;
+import org.hl7.fhir.r5.model.Base;
+import org.hl7.fhir.r5.model.DataType;
+import org.hl7.fhir.r5.model.Resource;
 import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
@@ -44,11 +51,14 @@ public class IndexService {
   private final SearchIndexRepository searchIndexRepository;
   private final Map<String, TypeIndexRepository> indexRepos;
   private final StructureDefinitionHolder structureDefinitionHolder;
+  private final FhirPath fhirPath;
 
-  public IndexService(SearchIndexRepository searchIndexRepository, List<TypeIndexRepository> repos, StructureDefinitionHolder structureDefinitionHolder) {
+  public IndexService(SearchIndexRepository searchIndexRepository, List<TypeIndexRepository> repos, StructureDefinitionHolder structureDefinitionHolder,
+                      FhirPath fhirPath) {
     this.searchIndexRepository = searchIndexRepository;
     this.indexRepos = repos.stream().collect(Collectors.toMap(TypeIndexRepository::getType, r -> r));
     this.structureDefinitionHolder = structureDefinitionHolder;
+    this.fhirPath = fhirPath;
   }
 
   public void saveIndexes(ResourceVersion version) {
@@ -70,6 +80,20 @@ public class IndexService {
         return;
       }
       TypeIndexRepository<T> repo = indexRepos.get(blindex.getParamType());
+      if (version == null) { // delete operation. remove indexes
+        repo.save(sid, null, blindex, null);
+        return;
+      }
+      if (blindex.isFhirPath()) {
+        List<T> values = fhirPath.<Base>evaluate(version.getContent().getValue(), blindex.getPath()).stream()
+            .flatMap(el -> {
+              return el instanceof Resource elr ?
+                  repo.map(elr.getResourceType().name() + "/" + elr.getId(), "canonical") :
+                  repo.map(el.isPrimitive() ? el.primitiveValue() : JsonUtil.fromJson(compose((DataType) el)), el.fhirType());
+            }).toList();
+        repo.save(sid, version, blindex, values);
+        return;
+      }
       List<StructureElement> elements = structureDefinitionHolder.getStructureElements().get(blindex.getResourceType()).get(blindex.getPath());
       List<T> values = elements.stream().flatMap(el -> {
         return JsonUtil.fhirpathSimple(jsonObject, el.getChild()).flatMap(obj -> repo.map(obj, el.getType())).filter(Objects::nonNull);
@@ -82,6 +106,17 @@ public class IndexService {
     Long sid = searchIndexRepository.deleteResource(id);
     if (sid != null) {
       saveIndexes(sid, null, BlindexRepository.getIndexes(id.getResourceType()));
+    }
+  }
+
+  public String compose(DataType dt) {
+    try {
+      ByteArrayOutputStream output = new ByteArrayOutputStream();
+      JsonParser parser = new JsonParser();
+      parser.compose(output, dt, "hz");
+      return output.toString(StandardCharsets.UTF_8);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 }

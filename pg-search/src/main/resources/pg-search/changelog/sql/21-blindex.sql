@@ -14,3 +14,7 @@ create table search.blindex (
 --changeset fhirest:blindex-notifier
 select core.add_object_notifier('search.blindex');
 --
+
+--changeset fhirest:blindex-add-fhirpath
+alter table search.blindex add column fhirpath boolean default false not null;
+--

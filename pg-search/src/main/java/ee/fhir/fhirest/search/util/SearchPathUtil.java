@@ -37,9 +37,6 @@ public final class SearchPathUtil {
   public static Set<String> parsePaths(String expression) {
     return Stream.of(expression.split("\\|"))
         .map(SearchPathUtil::trim)
-        .map(SearchPathUtil::replaceAs)
-        .map(SearchPathUtil::replaceFhirpathAs)
-        .map(SearchPathUtil::replaceFhirpathOfType)
         .map(SearchPathUtil::replaceFhirpathWhereResolve)
         .collect(Collectors.toSet());
   }
@@ -50,40 +47,6 @@ public final class SearchPathUtil {
       s = s.substring(1, s.length() - 1);
     }
     return s;
-  }
-
-  private static String replaceAs(String s) {
-    if (!s.contains(" as ")) {
-      return s;
-    }
-    s = StringUtils.remove(s, "(");
-    s = StringUtils.remove(s, ")");
-    String[] p = s.split(" as ");
-    return p[0] + StringUtils.capitalize(p[1]);
-  }
-
-  /**
-   * who are we to implement fhirpath?
-   * "value.as(Quantity)" seems to mean wh should search by "valueQuantity". hack it!
-   */
-  private static String replaceFhirpathAs(String s) {
-    if (!s.contains(".as(")) {
-      return s;
-    }
-    String[] p = s.split(".as");
-    p[1] = StringUtils.remove(p[1], ")");
-    p[1] = StringUtils.remove(p[1], "(");
-    return p[0] + StringUtils.capitalize(p[1]);
-  }
-
-  private static String replaceFhirpathOfType(String s) {
-    if (!s.contains(".ofType(")) {
-      return s;
-    }
-    String[] p = s.split(".ofType");
-    p[1] = StringUtils.remove(p[1], ")");
-    p[1] = StringUtils.remove(p[1], "(");
-    return p[0] + StringUtils.capitalize(p[1]);
   }
 
   /**

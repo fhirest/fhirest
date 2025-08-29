@@ -61,6 +61,6 @@ public class FhirPath implements ConformanceUpdateListener {
 
   @Override
   public Integer getOrder() {
-    return 200;
+    return 90;
   }
 }

@@ -1,0 +1,7049 @@
+{
+	"info": {
+		"_postman_id": "8a0edc38-e0fc-4a4c-8371-67931498332a",
+		"name": "49-fhir-path",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2569444"
+	},
+	"item": [
+		{
+			"name": "codesystem-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"CodeSystem\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"http://fhir.ee/fhir/CodeSystem/new-codesystem\",\n  \"status\": \"active\",\n  \"name\": \"NewExampleCodeSystem\",\n  \"title\": \"New Example Code System\",\n  \"version\": \"2.0.0\",\n  \"content\": \"complete\",\n  \"concept\": [\n    {\n      \"code\": \"alpha\",\n      \"display\": \"Alpha Concept\"\n    },\n    {\n      \"code\": \"beta\",\n      \"display\": \"Beta Concept\"\n    }\n  ],\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/fhir/CodeSystem/old-codesystem\"\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}/CodeSystem/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"CodeSystem",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "codesystem-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/CodeSystem/new-codesystem\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/CodeSystem?predecessor=http://fhir.ee/fhir/CodeSystem/old-codesystem&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"CodeSystem"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/fhir/CodeSystem/old-codesystem"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Measure\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"https://fhir.ee/fhir/Measure/new-measure\",\n  \"status\": \"active\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"https://fhir.ee/fhir/old-measure\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"https://fhir.ee/fhir/Measure/new-measure\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure?predecessor=https://fhir.ee/fhir/old-measure&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "https://fhir.ee/fhir/old-measure"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Measure\",\n  \"status\": \"active\",\n  \"url\": \"http://fhir.ee/fhir/Measure/example-current-with-depends-on\",\n  \"version\": \"2.0.0\",\n  \"name\": \"ExampleMeasureCurrent\",\n  \"title\": \"Example Measure With Dependency\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"depends-on\",\n      \"resource\": \"http://fhir.ee/fhir/Measure/example\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/Measure/example-current-with-depends-on\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure?depends-on=http://fhir.ee/fhir/Measure/example&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure"
+					],
+					"query": [
+						{
+							"key": "depends-on",
+							"value": "http://fhir.ee/fhir/Measure/example"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"PlanDefinition\",\n  \"status\": \"active\",\n  \"url\": \"http://fhir.ee/fhir/PlanDefinition/example-current\",\n  \"version\": \"2.0.0\",\n  \"title\": \"Example PlanDefinition with Canonical Predecessor\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/fhir/PlanDefinition/example-previous\"\n    }\n  ],\n  \"action\": [\n    {\n      \"title\": \"Initial Assessment\",\n      \"description\": \"Perform an initial patient assessment.\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/PlanDefinition/example-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition?predecessor=http://fhir.ee/fhir/PlanDefinition/example-previous&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/fhir/PlanDefinition/example-previous"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"PlanDefinition\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"http://fhir.ee/fhir/PlanDefinition/example-plandef\",\n  \"version\": \"0.1.0\",\n  \"status\": \"active\",\n  \"title\": \"Example PlanDefinition that depends on others\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"depends-on\",\n      \"resource\": \"http://fhir.ee/fhir/PlanDefinition/other-plandef\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/PlanDefinition/example-plandef\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition?depends-on=http://fhir.ee/fhir/PlanDefinition/other-plandef&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition"
+					],
+					"query": [
+						{
+							"key": "depends-on",
+							"value": "http://fhir.ee/fhir/PlanDefinition/other-plandef"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "questionnaireresponse-is-subject",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"resourceType\": \"QuestionnaireResponse\",\n    \"language\": \"et-EE\",\n    \"extension\": [\n        {\n            \"extension\": [\n                {\n                    \"url\": \"category\",\n                    \"valueCoding\": {\n                        \"system\": \"https://fhir.ee/CodeSystem/tervisekontrolli-kasutusala\",\n                        \"code\": \"occupational\"\n                    }\n                }\n            ],\n            \"url\": \"https://fhir.ee/hdecl/StructureDefinition/ee-health-declaration-category\"\n        }\n    ],\n    \"questionnaire\": \"https://fhir.ee/qre/Questionnaire-health-declaration|1.0.0\",\n    \"status\": \"in-progress\",\n    \"subject\": {\n        \"reference\": \"Patient/1236\"\n    },\n    \"author\": {\n        \"reference\": \"Patient/1236\"\n    },\n    \"item\": [\n    {\n      \"linkId\": \"subject\",\n      \"text\": \"something\",\n      \"extension\": [\n        {\n          \"url\": \"http://hl7.org/fhir/StructureDefinition/questionnaireresponse-isSubject\",\n          \"valueBoolean\": true\n        }\n      ],\n      \"answer\": [\n        { \"valueReference\": { \"reference\": \"Patient/1269\" } }\n      ]\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/QuestionnaireResponse/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"QuestionnaireResponse",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "questionnaireresponse-is-subject",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.questionnaire).to.eql(\"https://fhir.ee/qre/Questionnaire-health-declaration|1.0.0\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/QuestionnaireResponse?item-subject=Patient/1269&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"QuestionnaireResponse"
+					],
+					"query": [
+						{
+							"key": "item-subject",
+							"value": "Patient/1269"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "library-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Library\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"http://fhir.ee/Library/example-library\",\n  \"version\": \"0.1.0\",\n  \"status\": \"active\",\n  \"type\": {\n    \"coding\": [\n      {\n        \"system\": \"http://terminology.hl7.org/CodeSystem/library-type\",\n        \"code\": \"logic-library\"\n      }\n    ]\n  },\n  \"title\": \"Example Library depending on other artifacts\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"depends-on\",\n      \"resource\": \"http://fhir.ee/Library/dependency\"\n    }\n  ],\n  \"content\": [\n    {\n      \"contentType\": \"text/cql\",\n      \"data\": \"Ly8gYmFzZTY0LUNRTCBoZXJlICgxKQ==\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Library/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Library",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "library-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/Library/example-library\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Library?depends-on=http://fhir.ee/Library/dependency&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Library"
+					],
+					"query": [
+						{
+							"key": "depends-on",
+							"value": "http://fhir.ee/Library/dependency"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patient-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Patient\",\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"email\", \"value\": \"test.telecom@fhir.ee\", \"use\": \"home\" }\n  ],\n  \"gender\": \"female\",\n  \"birthDate\": \"1990-05-10\"\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patient-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].family).to.eql(\"TestFamily\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].given[0]).to.eql(\"TestGiven\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient?email=test.telecom@fhir.ee&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "test.telecom@fhir.ee"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "organizationaffiliation-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"OrganizationAffiliation\",\n  \"active\": true,\n  \"organization\": { \"reference\": \"Organization/org-prim\" },\n  \"participatingOrganization\": { \"reference\": \"Organization/org-part\" },\n  \"contact\": [\n    {\n      \"telecom\": [\n        { \"system\": \"email\", \"value\": \"test.affiliation@fhir.ee\", \"use\": \"work\" }\n      ]\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/OrganizationAffiliation/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"OrganizationAffiliation",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "organizationaffiliation-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.organization.reference).to.eql(\"Organization/org-prim\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.participatingOrganization.reference).to.eql(\"Organization/org-part\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/OrganizationAffiliation?email=test.affiliation@fhir.ee&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"OrganizationAffiliation"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "test.affiliation@fhir.ee"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "namingsystem-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"NamingSystem\",\n  \"url\": \"http://fhir.ee/NamingSystem/ee-patient-id\",\n  \"name\": \"ee-patient-id\",\n  \"title\": \"TestTitle\",\n  \"status\": \"active\",\n  \"kind\": \"identifier\",\n  \"date\": \"2025-08-25\",\n  \"publisher\": \"TestPublisher\",\n  \"responsible\": \"TestResponsible\",\n  \"description\": \"TestDescription\",\n  \"uniqueId\": [\n    {\n      \"type\": \"uri\",\n      \"value\": \"http://fhir.ee/sid/patient-id\",\n      \"preferred\": true\n    }\n  ],\n  \"relatedArtifact\": [\n    {\n      \"type\": \"derived-from\",\n      \"resource\": \"http://fhir.ee/CodeSystem/identifier-type\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/NamingSystem/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"NamingSystem",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "namingsystem-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/NamingSystem/ee-patient-id\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/NamingSystem?derived-from=http://fhir.ee/CodeSystem/identifier-type&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"NamingSystem"
+					],
+					"query": [
+						{
+							"key": "derived-from",
+							"value": "http://fhir.ee/CodeSystem/identifier-type"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "evidencevariable-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"EvidenceVariable\",\n  \"url\": \"http://fhir.ee/EvidenceVariable/ev-current\",\n  \"version\": \"2.0.0\",\n  \"status\": \"active\",\n  \"name\": \"ev_current\",\n  \"title\": \"Current Evidence Variable\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/EvidenceVariable/ev-previous\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/EvidenceVariable/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EvidenceVariable",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "evidencevariable-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/EvidenceVariable/ev-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/EvidenceVariable?predecessor=http://fhir.ee/EvidenceVariable/ev-previous&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EvidenceVariable"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/EvidenceVariable/ev-previous"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "namingsystem-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"NamingSystem\",\n  \"url\": \"http://fhir.ee/NamingSystem/current\",\n  \"name\": \"ee-patient-id\",\n  \"title\": \"TestTitle\",\n  \"status\": \"active\",\n  \"kind\": \"identifier\",\n  \"date\": \"2025-08-25\",\n  \"publisher\": \"TestPublisher\",\n  \"responsible\": \"TestResponsible\",\n  \"description\": \"TestDescription\",\n  \"uniqueId\": [\n    {\n      \"type\": \"uri\",\n      \"value\": \"http://fhir.ee/sid/patient-id\",\n      \"preferred\": true\n    }\n  ],\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/fhir/NamingSystem/example-previous\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/NamingSystem/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"NamingSystem",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "namingsystem-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/NamingSystem/current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/NamingSystem?predecessor=http://fhir.ee/fhir/NamingSystem/example-previous&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"NamingSystem"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/fhir/NamingSystem/example-previous"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activitydefinition-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"ActivityDefinition\",\n  \"url\": \"http://fhir.ee/ActivityDefinition/ad-current\",\n  \"version\": \"2.0.0\",\n  \"status\": \"active\",\n  \"name\": \"ad_current\",\n  \"title\": \"Current ActivityDefinition\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"derived-from\",\n      \"resource\": \"http://fhir.ee/ActivityDefinition/previous\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/ActivityDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ActivityDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activitydefinition-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/ActivityDefinition/ad-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/ActivityDefinition?derived-from=http://fhir.ee/ActivityDefinition/previous&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ActivityDefinition"
+					],
+					"query": [
+						{
+							"key": "derived-from",
+							"value": "http://fhir.ee/ActivityDefinition/previous"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "practitionerrole-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"PractitionerRole\",\n  \"active\": true,\n  \"contact\": [\n    {\n      \"telecom\": [\n        { \"system\": \"phone\", \"value\": \"+372Test\", \"use\": \"work\" }\n      ]\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/PractitionerRole/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PractitionerRole",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "practitionerrole-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/PractitionerRole?phone=%2B372Test&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PractitionerRole"
+					],
+					"query": [
+						{
+							"key": "phone",
+							"value": "%2B372Test"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "relatedperson-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"RelatedPerson\",\n  \"active\": true,\n  \"patient\": { \"reference\": \"Patient/pt-patient\" },\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"email\", \"value\": \"relatedPerson@fhir.ee\", \"use\": \"home\" }\n  ],\n  \"relationship\": [\n    { \"coding\": [{ \"system\": \"http://terminology.hl7.org/CodeSystem/v3-RoleCode\", \"code\": \"MTH\" }] }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/RelatedPerson/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"RelatedPerson",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "relatedperson-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].family).to.eql(\"TestFamily\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].given[0]).to.eql(\"TestGiven\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/RelatedPerson?email=relatedPerson@fhir.ee&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"RelatedPerson"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "relatedPerson@fhir.ee"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "relatedperson-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"RelatedPerson\",\n  \"active\": true,\n  \"patient\": { \"reference\": \"Patient/pt-patient\" },\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"phone\", \"value\": \"+372Test\", \"use\": \"work\" }\n  ],\n  \"relationship\": [\n    { \"coding\": [{ \"system\": \"http://terminology.hl7.org/CodeSystem/v3-RoleCode\", \"code\": \"MTH\" }] }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/RelatedPerson/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"RelatedPerson",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "relatedperson-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].family).to.eql(\"TestFamily\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].given[0]).to.eql(\"TestGiven\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/RelatedPerson?phone=%2B372Test&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"RelatedPerson"
+					],
+					"query": [
+						{
+							"key": "phone",
+							"value": "%2B372Test"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "library-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Library\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"http://fhir.ee/Library/example-library\",\n  \"version\": \"0.1.0\",\n  \"status\": \"active\",\n  \"type\": {\n    \"coding\": [\n      {\n        \"system\": \"http://terminology.hl7.org/CodeSystem/library-type\",\n        \"code\": \"logic-library\"\n      }\n    ]\n  },\n  \"title\": \"Example Library depending on other artifacts\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"composed-of\",\n      \"resource\": \"http://fhir.ee/Library/lib-test\"\n    }\n  ],\n  \"content\": [\n    {\n      \"contentType\": \"text/cql\",\n      \"data\": \"Ly8gYmFzZTY0LUNRTCBoZXJlICgxKQ==\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Library/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Library",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "library-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/Library/example-library\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Library?composed-of=http://fhir.ee/Library/lib-test&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Library"
+					],
+					"query": [
+						{
+							"key": "composed-of",
+							"value": "http://fhir.ee/Library/lib-test"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "evidencevariable-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"EvidenceVariable\",\n  \"url\": \"http://fhir.ee/EvidenceVariable/ev-current-dep-test\",\n  \"version\": \"2.0.0\",\n  \"status\": \"active\",\n  \"name\": \"ev_current\",\n  \"title\": \"Current Evidence Variable\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"depends-on\",\n      \"resource\": \"http://fhir.ee/fhir/EvidenceVariable/other-ev\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/EvidenceVariable/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EvidenceVariable",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "evidencevariable-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/EvidenceVariable/ev-current-dep-test\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/EvidenceVariable?depends-on=http://fhir.ee/fhir/EvidenceVariable/other-ev&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EvidenceVariable"
+					],
+					"query": [
+						{
+							"key": "depends-on",
+							"value": "http://fhir.ee/fhir/EvidenceVariable/other-ev"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "valueset-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"ValueSet\",\n  \"url\": \"http://fhir.ee/ValueSet/vs-current\",\n  \"version\": \"2.0.0\",\n  \"name\": \"VSCurrent\",\n  \"title\": \"Current ValueSet\",\n  \"status\": \"active\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/ValueSet/vs-previous\"\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}/ValueSet/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ValueSet",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "valueset-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/ValueSet/vs-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/ValueSet?predecessor=http://fhir.ee/ValueSet/vs-previous&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ValueSet"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/ValueSet/vs-previous"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"PlanDefinition\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"http://fhir.ee/fhir/PlanDefinition/example-plandef-composed-of-test\",\n  \"version\": \"0.1.0\",\n  \"status\": \"active\",\n  \"title\": \"Example PlanDefinition that depends on others\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"composed-of\",\n      \"resource\": \"http://fhir.ee/fhir/PlanDefinition/other-plandef-composed-of-test\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/PlanDefinition/example-plandef-composed-of-test\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition?composed-of=http://fhir.ee/fhir/PlanDefinition/other-plandef-composed-of-test&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition"
+					],
+					"query": [
+						{
+							"key": "composed-of",
+							"value": "http://fhir.ee/fhir/PlanDefinition/other-plandef-composed-of-test"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conceptmap-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"ConceptMap\",\n  \"url\": \"http://fhir.ee/ConceptMap/cm-current\",\n  \"version\": \"2.0.0\",\n  \"name\": \"CM_Current\",\n  \"title\": \"Current ConceptMap\",\n  \"status\": \"active\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/ConceptMap/cm-previous\"\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}/ConceptMap/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ConceptMap",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conceptmap-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/ConceptMap/cm-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/ConceptMap?predecessor=http://fhir.ee/ConceptMap/cm-previous&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ConceptMap"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/ConceptMap/cm-previous"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eventdefinition-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"EventDefinition\",\n  \"url\": \"http://fhir.ee/EventDefinition/ed-current\",\n  \"version\": \"2.0.0\",\n  \"name\": \"ED_Current\",\n  \"title\": \"Current Event Definition\",\n  \"status\": \"active\",\n  \"trigger\": [\n    {\n      \"type\": \"named-event\",\n      \"name\": \"patient-view\"\n    }\n  ],\n  \"relatedArtifact\": [\n    {\n      \"type\": \"derived-from\",\n      \"resource\": \"http://fhir.ee/EventDefinition/ed-source\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/EventDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EventDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eventdefinition-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/EventDefinition/ed-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/EventDefinition?derived-from=http://fhir.ee/EventDefinition/ed-source&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EventDefinition"
+					],
+					"query": [
+						{
+							"key": "derived-from",
+							"value": "http://fhir.ee/EventDefinition/ed-source"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "practitioner-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Practitioner\",\n  \"active\": true,\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"phone\", \"value\": \"+372Test\", \"use\": \"work\" }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Practitioner/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Practitioner",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "practitioner-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].family).to.eql(\"TestFamily\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].given[0]).to.eql(\"TestGiven\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Practitioner?phone=%2B372Test&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Practitioner"
+					],
+					"query": [
+						{
+							"key": "phone",
+							"value": "%2B372Test"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Measure\",\n  \"status\": \"active\",\n  \"url\": \"http://fhir.ee/fhir/Measure/example-current-co\",\n  \"version\": \"2.0.0\",\n  \"name\": \"ExampleMeasureCurrent\",\n  \"title\": \"Example Measure With Dependency\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"composed-of\",\n      \"resource\": \"http://fhir.ee/fhir/Measure/example-co\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/Measure/example-current-co\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure?composed-of=http://fhir.ee/fhir/Measure/example-co&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure"
+					],
+					"query": [
+						{
+							"key": "composed-of",
+							"value": "http://fhir.ee/fhir/Measure/example-co"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activitydefinition-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"ActivityDefinition\",\n  \"url\": \"http://fhir.ee/ActivityDefinition/ad-current\",\n  \"version\": \"2.0.0\",\n  \"status\": \"active\",\n  \"name\": \"ad_current\",\n  \"title\": \"Current ActivityDefinition\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"successor\",\n      \"resource\": \"http://fhir.ee/ActivityDefinition/next\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/ActivityDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ActivityDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activitydefinition-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/ActivityDefinition/ad-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/ActivityDefinition?successor=http://fhir.ee/ActivityDefinition/next&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ActivityDefinition"
+					],
+					"query": [
+						{
+							"key": "successor",
+							"value": "http://fhir.ee/ActivityDefinition/next"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activitydefinition-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"ActivityDefinition\",\n  \"url\": \"http://fhir.ee/ActivityDefinition/ad-current\",\n  \"version\": \"2.0.0\",\n  \"status\": \"active\",\n  \"name\": \"ad_current\",\n  \"title\": \"Current ActivityDefinition\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"composed-of\",\n      \"resource\": \"http://fhir.ee/ActivityDefinition/co-test\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/ActivityDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ActivityDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activitydefinition-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/ActivityDefinition/ad-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/ActivityDefinition?composed-of=http://fhir.ee/ActivityDefinition/co-test&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ActivityDefinition"
+					],
+					"query": [
+						{
+							"key": "composed-of",
+							"value": "http://fhir.ee/ActivityDefinition/co-test"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Measure\",\n  \"status\": \"active\",\n  \"url\": \"http://fhir.ee/fhir/Measure/example-current-s\",\n  \"version\": \"2.0.0\",\n  \"name\": \"ExampleMeasureCurrent\",\n  \"title\": \"Example Measure With Dependency\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"successor\",\n      \"resource\": \"http://fhir.ee/fhir/Measure/next-measure\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/Measure/example-current-s\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure?successor=http://fhir.ee/fhir/Measure/next-measure&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure"
+					],
+					"query": [
+						{
+							"key": "successor",
+							"value": "http://fhir.ee/fhir/Measure/next-measure"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Measure\",\n  \"status\": \"active\",\n  \"url\": \"http://fhir.ee/fhir/Measure/example-current-df\",\n  \"version\": \"2.0.0\",\n  \"name\": \"ExampleMeasureCurrent\",\n  \"title\": \"Example Measure With Dependency\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"derived-from\",\n      \"resource\": \"http://fhir.ee/fhir/Measure/source-measure\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "measure-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/Measure/example-current-df\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Measure?derived-from=http://fhir.ee/fhir/Measure/source-measure&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Measure"
+					],
+					"query": [
+						{
+							"key": "derived-from",
+							"value": "http://fhir.ee/fhir/Measure/source-measure"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "organizationaffiliation-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"OrganizationAffiliation\",\n  \"active\": true,\n  \"organization\": { \"reference\": \"Organization/org-prim\" },\n  \"participatingOrganization\": { \"reference\": \"Organization/org-part\" },\n  \"contact\": [\n    {\n      \"telecom\": [\n        { \"system\": \"phone\", \"value\": \"+372Test\", \"use\": \"work\" }\n      ]\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/OrganizationAffiliation/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"OrganizationAffiliation",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "organizationaffiliation-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.organization.reference).to.eql(\"Organization/org-prim\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.participatingOrganization.reference).to.eql(\"Organization/org-part\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/OrganizationAffiliation?phone=%2B372Test&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"OrganizationAffiliation"
+					],
+					"query": [
+						{
+							"key": "phone",
+							"value": "%2B372Test"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eventdefinition-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"EventDefinition\",\n  \"url\": \"http://fhir.ee/EventDefinition/ed-current\",\n  \"version\": \"2.0.0\",\n  \"name\": \"ED_Current\",\n  \"title\": \"Current Event Definition\",\n  \"status\": \"active\",\n  \"trigger\": [\n    {\n      \"type\": \"named-event\",\n      \"name\": \"patient-view\"\n    }\n  ],\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/EventDefinition/ed-previous\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/EventDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EventDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eventdefinition-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/EventDefinition/ed-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/EventDefinition?predecessor=http://fhir.ee/EventDefinition/ed-previous&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EventDefinition"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/EventDefinition/ed-previous"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "library-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Library\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"http://fhir.ee/Library/example-library\",\n  \"version\": \"0.1.0\",\n  \"status\": \"active\",\n  \"type\": {\n    \"coding\": [\n      {\n        \"system\": \"http://terminology.hl7.org/CodeSystem/library-type\",\n        \"code\": \"logic-library\"\n      }\n    ]\n  },\n  \"title\": \"Example Library depending on other artifacts\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/Library/lib-previous\"\n    }\n  ],\n  \"content\": [\n    {\n      \"contentType\": \"text/cql\",\n      \"data\": \"Ly8gYmFzZTY0LUNRTCBoZXJlICgxKQ==\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Library/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Library",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "library-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/Library/example-library\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Library?predecessor=http://fhir.ee/Library/lib-previous&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Library"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/Library/lib-previous"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"PlanDefinition\",\n  \"status\": \"active\",\n  \"url\": \"http://fhir.ee/fhir/PlanDefinition/example-current\",\n  \"version\": \"2.0.0\",\n  \"title\": \"Example PlanDefinition with Canonical Predecessor\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"successor\",\n      \"resource\": \"http://fhir.ee/fhir/PlanDefinition/example-next\"\n    }\n  ],\n  \"action\": [\n    {\n      \"title\": \"Initial Assessment\",\n      \"description\": \"Perform an initial patient assessment.\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/PlanDefinition/example-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition?successor=http://fhir.ee/fhir/PlanDefinition/example-next&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition"
+					],
+					"query": [
+						{
+							"key": "successor",
+							"value": "http://fhir.ee/fhir/PlanDefinition/example-next"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activitydefinition-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"ActivityDefinition\",\n  \"url\": \"http://fhir.ee/ActivityDefinition/ad-current\",\n  \"version\": \"2.0.0\",\n  \"status\": \"active\",\n  \"name\": \"ad_current\",\n  \"title\": \"Current ActivityDefinition\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"predecessor\",\n      \"resource\": \"http://fhir.ee/ActivityDefinition/previous\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/ActivityDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ActivityDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activitydefinition-predecessor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/ActivityDefinition/ad-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/ActivityDefinition?predecessor=http://fhir.ee/ActivityDefinition/previous&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ActivityDefinition"
+					],
+					"query": [
+						{
+							"key": "predecessor",
+							"value": "http://fhir.ee/ActivityDefinition/previous"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "codesystem-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"CodeSystem\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"http://fhir.ee/fhir/CodeSystem/new-codesystem\",\n  \"status\": \"active\",\n  \"name\": \"NewExampleCodeSystem\",\n  \"title\": \"New Example Code System\",\n  \"version\": \"2.0.0\",\n  \"content\": \"complete\",\n  \"concept\": [\n    {\n      \"code\": \"alpha\",\n      \"display\": \"Alpha Concept\"\n    },\n    {\n      \"code\": \"beta\",\n      \"display\": \"Beta Concept\"\n    }\n  ],\n  \"relatedArtifact\": [\n    {\n      \"type\": \"derived-from\",\n      \"resource\": \"http://fhir.ee/fhir/CodeSystem/source-codesystem\"\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}/CodeSystem/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"CodeSystem",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "codesystem-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/CodeSystem/new-codesystem\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/CodeSystem?derived-from=http://fhir.ee/fhir/CodeSystem/source-codesystem&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"CodeSystem"
+					],
+					"query": [
+						{
+							"key": "derived-from",
+							"value": "http://fhir.ee/fhir/CodeSystem/source-codesystem"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "evidencevariable-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"EvidenceVariable\",\n  \"url\": \"http://fhir.ee/EvidenceVariable/ev-current-dep-test\",\n  \"version\": \"2.0.0\",\n  \"status\": \"active\",\n  \"name\": \"ev_current\",\n  \"title\": \"Current Evidence Variable\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"successor\",\n      \"resource\": \"http://fhir.ee/fhir/EvidenceVariable/next-ev\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/EvidenceVariable/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EvidenceVariable",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "evidencevariable-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/EvidenceVariable/ev-current-dep-test\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/EvidenceVariable?successor=http://fhir.ee/fhir/EvidenceVariable/next-ev&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EvidenceVariable"
+					],
+					"query": [
+						{
+							"key": "successor",
+							"value": "http://fhir.ee/fhir/EvidenceVariable/next-ev"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "practitioner-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Practitioner\",\n  \"active\": true,\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"email\", \"value\": \"practitioner@fhir.ee\", \"use\": \"home\" }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Practitioner/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Practitioner",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "practitioner-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].family).to.eql(\"TestFamily\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].given[0]).to.eql(\"TestGiven\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Practitioner?email=practitioner@fhir.ee&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Practitioner"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "practitioner@fhir.ee"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "evidencevariable-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"EvidenceVariable\",\n  \"url\": \"http://fhir.ee/EvidenceVariable/ev-current-dep-test\",\n  \"version\": \"2.0.0\",\n  \"status\": \"active\",\n  \"name\": \"ev_current\",\n  \"title\": \"Current Evidence Variable\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"derived-from\",\n      \"resource\": \"http://fhir.ee/fhir/EvidenceVariable/source-ev\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/EvidenceVariable/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EvidenceVariable",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "evidencevariable-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/EvidenceVariable/ev-current-dep-test\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/EvidenceVariable?derived-from=http://fhir.ee/fhir/EvidenceVariable/source-ev&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EvidenceVariable"
+					],
+					"query": [
+						{
+							"key": "derived-from",
+							"value": "http://fhir.ee/fhir/EvidenceVariable/source-ev"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "library-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Library\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"http://fhir.ee/Library/example-library\",\n  \"version\": \"0.1.0\",\n  \"status\": \"active\",\n  \"type\": {\n    \"coding\": [\n      {\n        \"system\": \"http://terminology.hl7.org/CodeSystem/library-type\",\n        \"code\": \"logic-library\"\n      }\n    ]\n  },\n  \"title\": \"Example Library depending on other artifacts\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"derived-from\",\n      \"resource\": \"http://fhir.ee/Library/lib-source\"\n    }\n  ],\n  \"content\": [\n    {\n      \"contentType\": \"text/cql\",\n      \"data\": \"Ly8gYmFzZTY0LUNRTCBoZXJlICgxKQ==\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Library/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Library",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "library-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/Library/example-library\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Library?derived-from=http://fhir.ee/Library/lib-source&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Library"
+					],
+					"query": [
+						{
+							"key": "derived-from",
+							"value": "http://fhir.ee/Library/lib-source"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"PlanDefinition\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"http://fhir.ee/fhir/PlanDefinition/example-plandef-composed-of-test\",\n  \"version\": \"0.1.0\",\n  \"status\": \"active\",\n  \"title\": \"Example PlanDefinition that depends on others\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"derived-from\",\n      \"resource\": \"http://fhir.ee/fhir/PlanDefinition/plandef-source\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "plandefinition-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/fhir/PlanDefinition/example-plandef-composed-of-test\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/PlanDefinition?derived-from=http://fhir.ee/fhir/PlanDefinition/plandef-source&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PlanDefinition"
+					],
+					"query": [
+						{
+							"key": "derived-from",
+							"value": "http://fhir.ee/fhir/PlanDefinition/plandef-source"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eventdefinition-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"EventDefinition\",\n  \"url\": \"http://fhir.ee/EventDefinition/ed-current\",\n  \"version\": \"2.0.0\",\n  \"name\": \"ED_Current\",\n  \"title\": \"Current Event Definition\",\n  \"status\": \"active\",\n  \"trigger\": [\n    {\n      \"type\": \"named-event\",\n      \"name\": \"patient-view\"\n    }\n  ],\n  \"relatedArtifact\": [\n    {\n      \"type\": \"composed-of\",\n      \"resource\": \"http://fhir.ee/EventDefinition/ed-co\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/EventDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EventDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eventdefinition-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/EventDefinition/ed-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/EventDefinition?composed-of=http://fhir.ee/EventDefinition/ed-co&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EventDefinition"
+					],
+					"query": [
+						{
+							"key": "composed-of",
+							"value": "http://fhir.ee/EventDefinition/ed-co"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "person-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Person\",\n  \"active\": true,\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"email\", \"value\": \"person@fhir.ee\", \"use\": \"home\" }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Person/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Person",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "person-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].family).to.eql(\"TestFamily\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].given[0]).to.eql(\"TestGiven\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Person?email=person@fhir.ee&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Person"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "person@fhir.ee"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eventdefinition-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"EventDefinition\",\n  \"url\": \"http://fhir.ee/EventDefinition/ed-current\",\n  \"version\": \"2.0.0\",\n  \"name\": \"ED_Current\",\n  \"title\": \"Current Event Definition\",\n  \"status\": \"active\",\n  \"trigger\": [\n    {\n      \"type\": \"named-event\",\n      \"name\": \"patient-view\"\n    }\n  ],\n  \"relatedArtifact\": [\n    {\n      \"type\": \"successor\",\n      \"resource\": \"http://fhir.ee/EventDefinition/ed-next\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/EventDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EventDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eventdefinition-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/EventDefinition/ed-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/EventDefinition?successor=http://fhir.ee/EventDefinition/ed-next&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EventDefinition"
+					],
+					"query": [
+						{
+							"key": "successor",
+							"value": "http://fhir.ee/EventDefinition/ed-next"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eventdefinition-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"EventDefinition\",\n  \"url\": \"http://fhir.ee/EventDefinition/ed-current\",\n  \"version\": \"2.0.0\",\n  \"name\": \"ED_Current\",\n  \"title\": \"Current Event Definition\",\n  \"status\": \"active\",\n  \"trigger\": [\n    {\n      \"type\": \"named-event\",\n      \"name\": \"patient-view\"\n    }\n  ],\n  \"relatedArtifact\": [\n    {\n      \"type\": \"depends-on\",\n      \"resource\": \"http://fhir.ee/EventDefinition/ed-dependency\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/EventDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EventDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "eventdefinition-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/EventDefinition/ed-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/EventDefinition?depends-on=http://fhir.ee/EventDefinition/ed-dependency&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EventDefinition"
+					],
+					"query": [
+						{
+							"key": "depends-on",
+							"value": "http://fhir.ee/EventDefinition/ed-dependency"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "person-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Person\",\n  \"active\": true,\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"phone\", \"value\": \"+372Test\", \"use\": \"work\" }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Person/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Person",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "person-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].family).to.eql(\"TestFamily\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].given[0]).to.eql(\"TestGiven\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Person?phone=%2B372Test&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Person"
+					],
+					"query": [
+						{
+							"key": "phone",
+							"value": "%2B372Test"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "evidencevariable-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"EvidenceVariable\",\n  \"url\": \"http://fhir.ee/EvidenceVariable/ev-current-dep-test\",\n  \"version\": \"2.0.0\",\n  \"status\": \"active\",\n  \"name\": \"ev_current\",\n  \"title\": \"Current Evidence Variable\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"composed-of\",\n      \"resource\": \"http://fhir.ee/fhir/EvidenceVariable/ev-co\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/EvidenceVariable/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EvidenceVariable",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "evidencevariable-composed-of",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/EvidenceVariable/ev-current-dep-test\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/EvidenceVariable?composed-of=http://fhir.ee/fhir/EvidenceVariable/ev-co&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"EvidenceVariable"
+					],
+					"query": [
+						{
+							"key": "composed-of",
+							"value": "http://fhir.ee/fhir/EvidenceVariable/ev-co"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patient-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Patient\",\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"phone\", \"value\": \"+372Test\", \"use\": \"work\" }\n  ],\n  \"gender\": \"female\",\n  \"birthDate\": \"1990-05-10\"\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patient-telecom-phone",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].family).to.eql(\"TestFamily\");\r",
+							"    pm.expect(pm.response.json().entry[0].resource.name[0].given[0]).to.eql(\"TestGiven\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient?phone=%2B372Test&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "phone",
+							"value": "%2B372Test"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conceptmap-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"ConceptMap\",\n  \"url\": \"http://fhir.ee/ConceptMap/cm-current\",\n  \"version\": \"2.0.0\",\n  \"name\": \"CM_Current\",\n  \"title\": \"Current ConceptMap\",\n  \"status\": \"active\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"derived-from\",\n      \"resource\": \"http://fhir.ee/ConceptMap/cm-source\"\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}/ConceptMap/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ConceptMap",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "conceptmap-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/ConceptMap/cm-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/ConceptMap?derived-from=http://fhir.ee/ConceptMap/cm-source&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ConceptMap"
+					],
+					"query": [
+						{
+							"key": "derived-from",
+							"value": "http://fhir.ee/ConceptMap/cm-source"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "practitionerrole-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"PractitionerRole\",\n  \"active\": true,\n  \"contact\": [\n    {\n      \"telecom\": [\n        { \"system\": \"email\", \"value\": \"practitionerrole@fhir.ee\", \"use\": \"home\" }\n      ]\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/PractitionerRole/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PractitionerRole",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "practitionerrole-telecom-email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/PractitionerRole?email=practitionerrole@fhir.ee&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"PractitionerRole"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "practitionerrole@fhir.ee"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activitydefinition-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"ActivityDefinition\",\n  \"url\": \"http://fhir.ee/ActivityDefinition/ad-current\",\n  \"version\": \"2.0.0\",\n  \"status\": \"active\",\n  \"name\": \"ad_current\",\n  \"title\": \"Current ActivityDefinition\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"depends-on\",\n      \"resource\": \"http://fhir.ee/ActivityDefinition/ad-dependency\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/ActivityDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ActivityDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activitydefinition-depends-on",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/ActivityDefinition/ad-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/ActivityDefinition?depends-on=http://fhir.ee/ActivityDefinition/ad-dependency&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ActivityDefinition"
+					],
+					"query": [
+						{
+							"key": "depends-on",
+							"value": "http://fhir.ee/ActivityDefinition/ad-dependency"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "valueset-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"ValueSet\",\n  \"url\": \"http://fhir.ee/ValueSet/vs-current\",\n  \"version\": \"2.0.0\",\n  \"name\": \"VSCurrent\",\n  \"title\": \"Current ValueSet\",\n  \"status\": \"active\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"derived-from\",\n      \"resource\": \"http://fhir.ee/ValueSet/vs-source\"\n    }\n  ]\n}\n"
+				},
+				"url": {
+					"raw": "{{fhirest}}/ValueSet/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ValueSet",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "valueset-derived-from",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/ValueSet/vs-current\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/ValueSet?derived-from=http://fhir.ee/ValueSet/vs-source&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"ValueSet"
+					],
+					"query": [
+						{
+							"key": "derived-from",
+							"value": "http://fhir.ee/ValueSet/vs-source"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "library-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Library\",\n  \"id\": \"{{uuid}}\",\n  \"url\": \"http://fhir.ee/Library/example-library\",\n  \"version\": \"0.1.0\",\n  \"status\": \"active\",\n  \"type\": {\n    \"coding\": [\n      {\n        \"system\": \"http://terminology.hl7.org/CodeSystem/library-type\",\n        \"code\": \"logic-library\"\n      }\n    ]\n  },\n  \"title\": \"Example Library depending on other artifacts\",\n  \"relatedArtifact\": [\n    {\n      \"type\": \"successor\",\n      \"resource\": \"http://fhir.ee/Library/lib-next\"\n    }\n  ],\n  \"content\": [\n    {\n      \"contentType\": \"text/cql\",\n      \"data\": \"Ly8gYmFzZTY0LUNRTCBoZXJlICgxKQ==\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Library/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Library",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "library-successor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.url).to.eql(\"http://fhir.ee/Library/example-library\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Library?successor=http://fhir.ee/Library/lib-next&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Library"
+					],
+					"query": [
+						{
+							"key": "successor",
+							"value": "http://fhir.ee/Library/lib-next"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "person-deceased",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Person\",\n  \"active\": true,\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"email\", \"value\": \"deceasedperson@fhir.ee\", \"use\": \"home\" }\n  ],\n  \"deceasedBoolean\": true\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Person/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Person",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "person-deceased",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.telecom[0].value).to.eql(\"deceasedperson@fhir.ee\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Person?deceased=true&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Person"
+					],
+					"query": [
+						{
+							"key": "deceased",
+							"value": "true"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patient-deceased",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Patient\",\n  \"active\": true,\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"email\", \"value\": \"deceasedpatient@fhir.ee\", \"use\": \"home\" }\n  ],\n  \"deceasedBoolean\": true\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patient-deceased",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.telecom[0].value).to.eql(\"deceasedpatient@fhir.ee\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Patient?deceased=true&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Patient"
+					],
+					"query": [
+						{
+							"key": "deceased",
+							"value": "true"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "practitioner-deceased",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Practitioner\",\n  \"active\": true,\n  \"name\": [\n    { \"use\": \"official\", \"family\": \"TestFamily\", \"given\": [\"TestGiven\"] }\n  ],\n  \"telecom\": [\n    { \"system\": \"email\", \"value\": \"deceasedpractitioner@fhir.ee\", \"use\": \"home\" }\n  ],\n  \"deceasedBoolean\": true\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Practitioner/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Practitioner",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "practitioner-deceased",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.telecom[0].value).to.eql(\"deceasedpractitioner@fhir.ee\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Practitioner?deceased=true&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Practitioner"
+					],
+					"query": [
+						{
+							"key": "deceased",
+							"value": "true"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "device-identifier",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Device\",\n  \"status\": \"active\",\n  \"manufacturer\": \"Acme Devices\",\n  \"displayName\": \"Acme Heart Monitor\",\n  \"identifier\": [\n    {\n      \"type\": {\n        \"coding\": [\n          {\n            \"system\": \"http://terminology.hl7.org/CodeSystem/v2-0203\",\n            \"code\": \"SNO\",\n            \"display\": \"Serial Number\"\n          }\n        ]\n      },\n      \"system\": \"http://fhir.ee/device/serial\",\n      \"value\": \"SN-EE-12345\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Device/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Device",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "device-identifier",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"SN-EE-12345\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Device?identifier=SN-EE-12345&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Device"
+					],
+					"query": [
+						{
+							"key": "identifier",
+							"value": "SN-EE-12345"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "devicedefinition-classification",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"DeviceDefinition\",\n  \"identifier\": [\n    { \"system\": \"http://fhir.ee/device/model\", \"value\": \"OXI-2000\" }\n  ],\n  \"classification\": [\n    {\n      \"type\": {\n        \"coding\": [\n          {\n            \"system\": \"http://snomed.info/sct\",\n            \"code\": \"706164001\",\n            \"display\": \"Pulse oximeter\"\n          }\n        ],\n        \"text\": \"Pulse oximeter\"\n      }\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/DeviceDefinition/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"DeviceDefinition",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "devicedefinition-classification",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.identifier[0].value).to.eql(\"OXI-2000\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/DeviceDefinition?device-name=Pulse%20oximeter&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"DeviceDefinition"
+					],
+					"query": [
+						{
+							"key": "device-name",
+							"value": "Pulse%20oximeter"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "careteam-alias",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"CareTeam\",\n  \"status\": \"active\",\n  \"name\": \"Cardio Rapid Response Team\",\n  \"extension\": [\n    {\n      \"url\": \"http://hl7.org/fhir/StructureDefinition/careteam-alias\",\n      \"valueString\": \"CRRT-A\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/CareTeam/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"CareTeam",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "careteam-alias",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.extension[0].valueString).to.eql(\"CRRT-A\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/CareTeam?name=CRRT-A&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"CareTeam"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "CRRT-A"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundle-entry-composition",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"Bundle\",\n  \"identifier\": { \"system\": \"http://fhir.ee/doc/bundle-id\", \"value\": \"bundle-123-20250826\" },\n  \"type\": \"document\",\n  \"timestamp\": \"2025-08-26T12:00:00Z\",\n  \"entry\": [\n    {\n      \"fullUrl\": \"http://fhir.ee/fhir/Composition/doc-1\",\n      \"resource\": {\n        \"resourceType\": \"Composition\",\n        \"id\": \"doc-1\",\n        \"status\": \"final\",\n        \"type\": {\n          \"coding\": [\n            { \"system\": \"http://loinc.org\", \"code\": \"11488-4\", \"display\": \"Consult note\" }\n          ]\n        },\n        \"date\": \"2025-08-26T11:45:00Z\",\n        \"title\": \"Consult note\",\n        \"subject\": [\n          { \"reference\": \"http://fhir.ee/fhir/Patient/pt-testPatient\" }\n        ],\n        \"author\": [\n          { \"reference\": \"http://fhir.ee/fhir/Practitioner/pr1\" }\n        ]\n      }\n    },\n    {\n      \"fullUrl\": \"http://fhir.ee/fhir/Patient/pt-testPatient\",\n      \"resource\": {\n        \"resourceType\": \"Patient\",\n        \"id\": \"pt-testPatient\",\n        \"name\": [ { \"use\": \"official\", \"family\": \"testPatientFamily\", \"given\": [\"testPatientGiven\"] } ]\n      }\n    },\n    {\n      \"fullUrl\": \"http://fhir.ee/fhir/Practitioner/pr1\",\n      \"resource\": {\n        \"resourceType\": \"Practitioner\",\n        \"id\": \"pr1\",\n        \"name\": [ { \"family\": \"TestPractitionerFamily\", \"given\": [\"testPractitionerGiven\"] } ]\n      }\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/Bundle/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Bundle",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bundle-entry-composition",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.entry[0].fullUrl).to.eql(\"http://fhir.ee/fhir/Composition/doc-1\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/Bundle?composition=doc-1&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"Bundle"
+					],
+					"query": [
+						{
+							"key": "composition",
+							"value": "doc-1"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bodystructure-excludedstructure",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"uuid\")) {\r",
+							"    pm.environment.set(\"uuid\", 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => (c === 'x' ? (Math.random()*16|0) : ((Math.random()*16|0)&0x3|0x8)).toString(16)));\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resourceType\": \"BodyStructure\",\n  \"patient\": { \"reference\": \"Patient/pt-test\" },\n  \"description\": \"Example with an excluded heart region\",\n  \"excludedStructure\": [\n    {\n      \"structure\": {\n        \"coding\": [\n          { \"system\": \"http://snomed.info/sct\", \"code\": \"302509004\", \"display\": \"Entire heart\" }\n        ],\n        \"text\": \"Heart\"\n      }\n    }\n  ],\n  \"includedStructure\": [\n    {\n      \"structure\": {\n        \"coding\": [\n          { \"system\": \"http://snomed.info/sct\", \"code\": \"281158006\", \"display\": \"Entire liver\" }\n        ],\n        \"text\": \"Liver\"\n      }\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{fhirest}}/BodyStructure/{{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"BodyStructure",
+						"{{uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bodystructure-excludedstructure",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"OK\", function () {\r",
+							"  pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+							"});\r",
+							"pm.test(\"validate search result\", function () {\r",
+							"    pm.expect(pm.response.json().resourceType).to.eql(\"Bundle\");\r",
+							"    pm.expect(pm.response.json().type).to.eql(\"searchset\");\r",
+							"    pm.expect(pm.response.json().total).to.eql(1);\r",
+							"    pm.expect(pm.response.json().entry[0].resource.excludedStructure[0].structure.coding[0].display).to.eql(\"Entire heart\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{auth}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{fhirest}}/BodyStructure?excluded_structure=302509004&_id={{uuid}}",
+					"host": [
+						"{{fhirest}}"
+					],
+					"path": [
+						"BodyStructure"
+					],
+					"query": [
+						{
+							"key": "excluded_structure",
+							"value": "302509004"
+						},
+						{
+							"key": "_id",
+							"value": "{{uuid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "patientId",
+			"value": ""
+		},
+		{
+			"key": "randomIdentifier",
+			"value": ""
+		}
+	]
+}

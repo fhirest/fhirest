@@ -66,6 +66,11 @@ CREATE INDEX ON search.base_index_reference (sid) where active = true;
 CREATE INDEX ON search.base_index_reference (type_id, id) where active = true;
 --
 
+--changeset fhirest:base_index_reference--add-base-2
+alter table search.base_index_reference add column base text;
+CREATE INDEX ON search.base_index_reference (base) where active = true;
+--
+
 --changeset fhirest:base_index_date dbms:postgresql
 CREATE TABLE search.base_index_date (
   sid bigint, -- references search.resource(sid),
@@ -87,6 +92,3 @@ CREATE TABLE search.base_index_uri (
 CREATE INDEX ON search.base_index_uri (sid) where active = true;
 CREATE INDEX ON search.base_index_uri (uri) where active = true;
 --
-
-
-

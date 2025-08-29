@@ -28,6 +28,8 @@ import ee.fhir.fhirest.core.exception.FhirException;
 import ee.fhir.fhirest.core.exception.FhirestIssue;
 import ee.fhir.fhirest.core.model.search.QueryParam;
 import ee.fhir.fhirest.core.service.conformance.ConformanceHolder;
+import ee.fhir.fhirest.search.index.types.ReferenceIndexRepository;
+import ee.fhir.fhirest.search.index.types.ReferenceIndexRepository.Value;
 import ee.fhir.fhirest.search.repository.ResourceStructureRepository;
 import ee.fhir.fhirest.search.sql.SearchSqlUtil;
 import ee.fhir.fhirest.search.util.SearchPathUtil;
@@ -53,8 +55,9 @@ public class ReferenceExpressionProvider extends DefaultExpressionProvider {
 
   @Override
   protected SqlBuilder makeCondition(QueryParam param, String v) {
-    String type = StringUtils.contains(v, "/") ? StringUtils.substringBefore(v, "/") : null;
-    String id = StringUtils.contains(v, "/") ? StringUtils.substringAfter(v, "/") : v;
+    Value value = ReferenceIndexRepository.parseUri(v);
+    String type = value.getType();
+    String id = value.getId();
     if (param.getModifier() != null) {
       if (type != null && !param.getModifier().equals(type)) {
         throw new FhirException(FhirestIssue.FEST_034, "value", param.getKey());
@@ -63,7 +66,7 @@ public class ReferenceExpressionProvider extends DefaultExpressionProvider {
     }
 
     String expr = ConformanceHolder.requireSearchParam(param.getResourceType(), param.getKey()).getExpression();
-    expr = Arrays.stream(expr.split("\\|")).map(e -> StringUtils.trim(e)).filter(e -> e.startsWith(param.getResourceType())).findFirst().orElse(null);
+    expr = Arrays.stream(expr.split("\\|")).map(StringUtils::trim).filter(e -> e.startsWith(param.getResourceType())).findFirst().orElse(null);
     String fhirPathType = SearchPathUtil.getFhirpathWhereResolveType(expr);
     if (fhirPathType != null) {
       if (type != null && !fhirPathType.equals(type)) {
@@ -75,6 +78,11 @@ public class ReferenceExpressionProvider extends DefaultExpressionProvider {
     SqlBuilder sb = new SqlBuilder();
     sb.append("(");
     sb.append("i.id = ?", id);
+    if (value.getBase() == null) {
+      sb.append(" and i.base is null");
+    } else {
+      sb.append(" and i.base = ?", value.getBase());
+    }
     sb.appendIfNotNull(" and i.type_id = search.rt_id(?)", type);
     sb.append(")");
     return sb;
