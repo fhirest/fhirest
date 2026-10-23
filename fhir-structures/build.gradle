@@ -5,9 +5,9 @@ dependencies {
   api "ca.uhn.hapi.fhir:hapi-fhir-base:$hapiVersion"
   api "ca.uhn.hapi.fhir:hapi-fhir-structures-r5:$hapiVersion"
   api "ca.uhn.hapi.fhir:hapi-fhir-validation-resources-r5:$hapiVersion"
-  api("ca.uhn.hapi.fhir:hapi-fhir-validation:$hapiVersion") {
-    exclude group: 'org.apache.commons', module: 'commons-compress'
-  }
+  api "ca.uhn.hapi.fhir:hapi-fhir-validation:$hapiVersion"
+  // Needed by HAPI's NpmPackage to read implementation guide packages (.tgz).
+  api "org.apache.commons:commons-compress:1.27.1"
   api "ca.uhn.hapi.fhir:hapi-fhir-caching-caffeine:$hapiVersion"
 
   implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
