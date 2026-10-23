@@ -14,6 +14,7 @@ List of released versions with changelog available in the [github releases](http
 
 | Release | FHIR version | Supported FHIR versions | Spring version | Java Version |
 |---------|--------------|-------------------------|----------------|--------------|
+| 3.0     | R5           | R5, R4                  | 3.5            | 17           |
 | 1.2     | R5           | R5, R4                  | 3.4            | 17           |
 | 1.0     | R5           | R5, R4                  | 3.2            | 17           |
 
