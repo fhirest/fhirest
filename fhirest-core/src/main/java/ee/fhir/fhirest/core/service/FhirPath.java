@@ -31,7 +31,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r5.model.Resource;
-import org.hl7.fhir.r5.utils.FHIRPathEngine;
+import org.hl7.fhir.r5.fhirpath.FHIRPathEngine;
 import org.springframework.stereotype.Component;
 
 @Component
